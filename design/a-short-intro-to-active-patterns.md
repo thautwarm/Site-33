@@ -58,7 +58,7 @@ let rec string_unescape (chars: array_view<char>) : list<char> =
     | ...
 ```
 
-Such code unveils that using active patterns is no more than applying a transformation to match targets. A native implementation of active patterns is suggested as well.
+Such code unveils that using active patterns is no more than applying a transformation to match targets. A naive implementation of active patterns is suggested as well.
 
 ```F#
 let (|Positive|NotPositive|) x = if x >  0 then Positive else NotPositive
