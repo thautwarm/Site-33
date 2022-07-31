@@ -17,6 +17,7 @@ def format_doc_ref(op_doc):
 @set-index-format|format_doc_ref|
 @include|design/a-short-intro-to-active-patterns.op|
 @include|design/linear-time-lr-in-glr.op|
+@include|design/julia-redef-struct.op|
 
 Recently updated programming ideas:
 
@@ -30,6 +31,3 @@ PL articles:
 @begin ptag-filter-index
     Topic(PL, ~level) and P[level == 'Professional']
 @end ptag-filter-index
-
-
-
