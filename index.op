@@ -1,3 +1,11 @@
+@toc|--depth 1|
+@begin md
+## Index
+@end md
+@begin ptag-set
+    Index
+@end ptag-set
+
 @begin py
 from datetime import datetime, timedelta
 from original_posting.ptag_dsl import match_any_tag
