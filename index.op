@@ -1,0 +1,25 @@
+@begin py
+from datetime import datetime, timedelta
+DATE_FORMAT = '%Y-%m-%d'
+def parse_date(s):
+    return datetime.strptime(s, DATE_FORMAT)
+@end py
+
+@include|design/a-short-intro-to-active-patterns.op|
+@include|design/linear-time-lr-in-glr.op|
+
+Recently updated programming ideas:
+
+@begin ptag-filter-index
+    Time(~x) and P[parse_date(x) - datetime.now() < timedelta(days=365)]
+@end ptag-filter-index
+
+
+PL articles:
+
+@begin ptag-filter-index
+    Topic(PL, ~level) and P[level == 'Professional']
+@end ptag-filter-index
+
+
+
