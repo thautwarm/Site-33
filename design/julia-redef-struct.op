@@ -102,13 +102,13 @@ ERROR: invalid redefinition of constant f
 
 但在我所关心的场景中，交互会话应该支持重定义——以方便用户进行实验。
 
-目前，即使是交互会话也没有很好的实现：
+目前，结构体乃至通用的const绑定的重定义，并没有很好的实现：
 
 要么使用了非const绑定对类型进行别名绑定，这将导致函数中的`isa`检查退化为动态派发，性能下降数百倍；
 
-要么是利用了泛型参数，这将隐式地导致一些类型转换问题，并且不支持用户定义泛型；
+要么是利用了泛型参数，将字段变成泛型参量，这将隐式地导致一些类型转换问题，并且不支持用户定义泛型；
 
-再要么就是使用`Tuple{...}`或者`Ref{Tuple{...}}`伪装结构体，这几乎是完全工作的，但Julia的Tuple自动协变:
+再要么就是利用type alias，用`Tuple{Tag, ...}`或者`Ref{Tuple{Tag, ...}}`伪装结构体，这几乎是完全工作的，但Julia的Tuple自动协变:
 
 @begin code --lang julia
 Tuple{Union{Int, String}, Int} == Union{Tuple{Int, Int}, Tuple{String, Int}}
