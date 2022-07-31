@@ -1,10 +1,20 @@
 @begin py
 from datetime import datetime, timedelta
+from original_posting.ptag_dsl import match_any_tag
 DATE_FORMAT = '%Y-%m-%d'
 def parse_date(s):
     return datetime.strptime(s, DATE_FORMAT)
+
+def format_doc_ref(op_doc):
+    title = op_doc.title or op_doc.output_path_absolute.name
+    p = @ptag-pat|Time(~time)|
+    scope = {}
+    if match_any_tag(p, op_doc.tags, scope):
+        title += " (%s)" % scope['time']
+    return title
 @end py
 
+@set-index-format|format_doc_ref|
 @include|design/a-short-intro-to-active-patterns.op|
 @include|design/linear-time-lr-in-glr.op|
 
