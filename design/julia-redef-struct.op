@@ -136,7 +136,38 @@ Tuple{Union{Int, String}, Int} == Union{Tuple{Int, Int}, Tuple{String, Int}}
 
 ## 实现
 
-首先，在`~/.julia/config/redef.jl`中增加下列行：
+效果如下:
+
+@begin code --lang julia-repl
+redef> struct S end
+
+redef> f(::S) = 1
+f (generic function with 1 method)
+
+redef> s1 = S()
+S()
+
+redef> f(s1)
+1
+
+redef> struct S
+         a :: Int
+       end
+
+redef> s2 = S(2)
+Main.__Main_0.S(2)
+
+redef> f(::S) = 2
+f (generic function with 2 methods)
+
+redef> f(s1)
+1
+
+redef> f(s2)
+2
+@end code
+
+对于实现，首先，在`~/.julia/config/redef.jl`中增加下列行：
 
 @begin code --lang julia
 include("redef.jl")
