@@ -11,6 +11,7 @@
     Time('2022-08-01')
     Language(Chinese)
     NeedTranslation
+    Revise({time: '2022-08-01', reason: '提供实现'})
 @end ptag-set
 
 @begin md
@@ -131,6 +132,81 @@ Tuple{Union{Int, String}, Int} == Union{Tuple{Int, Int}, Tuple{String, Int}}
 
 当然，不可避免的，和原生Julia不兼容的情况是存在的。有一些宏变换可能会基于模块的引用相等性进行工作，例如PyCall的`@py_str`会使用当前模块，唯一决定一个执行Python代码的命名空间。但这种情况相对比较少，使用模块的引用相等性本身也是不推荐的，遇到这种情况更好的做法是先偷着乐一乐，然后写PR改进上游的实现，例如将PyCall的`@py_str`修改，通过访问模块中一个固定的变量获取Python作用域，若不存在则定义——这种方式就与前述的重定义方案兼容了。
 
-明天给代码实现，35行以内。
+~~明天给代码实现，35行以内。~~
+
+## 实现
+
+首先，在`~/.julia/config/redef.jl`中增加下列行：
+
+@begin code --lang julia
+include("redef.jl")
+atreplinit() do repl
+  try
+      @async begin
+        Redef.start()
+        Redef.setup(Main)
+      end
+  catch e
+    throw(e)
+  end
+end
+@end code
+
+然后创建`~/.julia/config/redef.jl`，填入以下内容：
+
+@begin code --lang julia
+module Redef
+using ReplMaker
+const pat = r"invalid redefinition of constant ([\w|\W]+)"
+const cntRef = Ref(0)
+const curMod = Ref{Module}()
+
+function __init__()
+    cntRef[] = 0
+    cntMod[] = Main
+end
+
+function run(ex)
+    m = curMod[]
+    try
+        Base.eval(m, ex)
+    catch e
+        if e isa ErrorException && (rm = match(pat, e.msg)) !== nothing
+            new_mod = Module(Symbol("__Main_", cntRef[]), true)
+            cntRef[] += 1
+            curMod[] = new_mod
+            interested_name = Symbol(rm.captures[1])
+            for each in names(m; all=true, imported=true)
+                if each == :eval || interested_name === each
+                    continue
+                end
+                full_module_name = Symbol(join(string.(fullname(m)), "."))
+                if isconst(m, each)
+                    Base.eval(new_mod, :(import $full_module_name: $each))
+                else
+                    Base.eval(new_mod, :($each = $m.$each))
+                end
+            end
+            Base.eval(new_mod, ex)
+        else
+            rethrow(e)
+        end
+    end
+end
+
+function redirect_parse(s::AbstractString)
+    ex = Meta.parse(s)
+    :($run($(QuoteNode(ex))))
+end
+
+@inline start() = initrepl(
+    redirect_parse; 
+    prompt_text = "redef> ",
+    prompt_color = :magenta,
+    mode_name = :redef_julia,
+    valid_input_checker=ReplMaker.complete_julia
+)
+end # end module
+@end code
 
 @end md
