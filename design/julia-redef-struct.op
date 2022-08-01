@@ -167,7 +167,7 @@ redef> f(s2)
 2
 @end code
 
-对于实现，首先，在`~/.julia/config/redef.jl`中增加下列行：
+对于实现，首先，在`~/.julia/config/startup.jl`中增加下列行：
 
 @begin code --lang julia
 include("redef.jl")
