@@ -175,7 +175,6 @@ atreplinit() do repl
   try
       @async begin
         Redef.start()
-        Redef.setup(Main)
       end
   catch e
     throw(e)
@@ -194,7 +193,7 @@ const curMod = Ref{Module}()
 
 function __init__()
     cntRef[] = 0
-    cntMod[] = Main
+    curMod[] = Main
 end
 
 function run(ex)
