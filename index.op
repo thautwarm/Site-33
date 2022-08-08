@@ -7,9 +7,13 @@
 @end ptag-set
 
 @begin py
+from original_posting.types import Runtime
 from datetime import datetime, timedelta
 from original_posting.ptag_dsl import match_any_tag
+from pathlib import Path
+Runtime.search_path.append(str(Path('./local-scripts').absolute()))
 DATE_FORMAT = '%Y-%m-%d'
+
 def parse_date(s):
     return datetime.strptime(s, DATE_FORMAT)
 
@@ -26,6 +30,7 @@ def format_doc_ref(op_doc):
 @include|design/a-short-intro-to-active-patterns.op|
 @include|design/linear-time-lr-in-glr.op|
 @include|design/julia-redef-struct.op|
+@include|design/naming-convention-for-c-ident-based-langs.op|
 
 Recently updated programming ideas:
 

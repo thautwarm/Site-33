@@ -87,7 +87,11 @@ f(::S, ::Int64) at ...
 f(::S,) at ...
 @end code
 
-可以看到，如果允许重定义，将会发生`f(::S)`缺失重载，但提示`f(::S)`存在。
+@begin code --lang julia
+@end code
+
+
+可以看到，如果允许重定义，将会发生@code|f(::S)|缺失重载，但提示@code|f(::S)|存在。
 
 
 在使用交互环境时，用户的需求是进行实验迭代。在这个过程中设计快速变动，结构体形状也不例外。
@@ -115,7 +119,10 @@ ERROR: invalid redefinition of constant f
 
 要么是利用了泛型参数，将字段变成泛型参量，这将隐式地导致一些类型转换问题，并且不支持用户定义泛型；
 
-再要么就是利用type alias，用`Tuple{Tag, ...}`或者`Ref{Tuple{Tag, ...}}`伪装结构体，这几乎是完全工作的，但Julia的Tuple自动协变:
+@begin code --lang julia
+@end code
+
+再要么就是利用type alias，用 @code| Tuple{Tag, ...} | 或者@code|Ref{Tuple{Tag, ...}}|伪装结构体，这几乎是完全工作的，但Julia的Tuple自动协变:
 
 @begin code --lang julia
 Tuple{Union{Int, String}, Int} == Union{Tuple{Int, Int}, Tuple{String, Int}}
