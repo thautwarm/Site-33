@@ -14,6 +14,8 @@
     Revise({time: '2022-08-01', reason: '提供实现'})
 @end ptag-set
 
+@center-all| |
+
 @begin md
 
 # Julia交互会话中的重定义问题
@@ -61,9 +63,9 @@ ERROR: invalid redefinition of type S
 2. Julia之所以不愿意花精力支持重绑定const变量名，是因为他们认为这会对用户造成误导。
 
    他们担心的情况确实可能出现，因为和Python不同的是，Julia中的类型大规模地用于“重载”（多重派发），重名类型相比Python会产生更多误导。
-   
+
 考虑下面的情况：
-    
+
 @begin code --lang julia-repl
 julia> struct S
         v1 :: Int
@@ -237,7 +239,7 @@ function redirect_parse(s::AbstractString)
 end
 
 @inline start() = initrepl(
-    redirect_parse; 
+    redirect_parse;
     prompt_text = "redef> ",
     prompt_color = :magenta,
     mode_name = :redef_julia,

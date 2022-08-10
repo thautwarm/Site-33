@@ -11,6 +11,8 @@
 目录:
 @toc|--depth 1|
 
+@center-all| |
+
 @begin md tables code-friendly
 
 @begin code --lang python
@@ -22,21 +24,20 @@
 
 ### 根据副作用的类型对函数进行命名
 
-1. 实际上有副作用,但对外部不可见@footnote|封装副作用:副作用对外部不可见, 但内部可能维护副作用状态|, 或严格无副作用@footnote|语言层副作用:不介入语言层之下如操作系统,调用函数无法观察到任何状态变化|: 
-   变量结尾不是双下划线, 例如 `xx`.
+1. 实际上有副作用,但对外部不可见@footnote|封装副作用:副作用对外部不可见, 但内部可能维护副作用状态|, 或严格无副作用@footnote|语言层副作用:不介入语言层之下如操作系统,调用函数无法观察到任何状态变化|:
+
+   变量结尾不是下划线, 例如 `xx`.
 
     @begin code --lang Python
-
-z = math_func(x, y)
-key = cache_data_by_identity(o)
+    z = math_func(x, y)
+    key = cache_data_by_identity(o)
     @end code
 
-2. 对外部可见的副作用: 变量结尾为单下划线 @code|xx__|
+2. 对外部可见的副作用: 变量结尾为单下划线 @code|xx_|
 
     @begin code
-
-torch.zero_(mat)
-randomize_(data)
+    torch.zero_(mat)
+    randomize_(data)
     @end code
 
 术语简写:
@@ -65,7 +66,7 @@ randomize_(data)
         例如关注点是`sym`和函数名(`func_name`), 目标语言是python, 命名如下
 
         @begin code --lang python
-    sym_func_py = crate_py_sym()
+        sym_func_py = crate_py_sym()
         @end code
 
 

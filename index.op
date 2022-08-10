@@ -26,11 +26,17 @@ def format_doc_ref(op_doc):
     return title
 @end py
 
+@center-all| |
+
 @set-index-format|format_doc_ref|
 @include|design/a-short-intro-to-active-patterns.op|
 @include|design/linear-time-lr-in-glr.op|
 @include|design/julia-redef-struct.op|
 @include|design/naming-convention-for-c-ident-based-langs.op|
+
+@begin plain
+    @include|private/jnumpy.op|
+@ene plain
 
 Recently updated programming ideas:
 
