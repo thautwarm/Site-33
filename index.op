@@ -36,7 +36,7 @@ def format_doc_ref(op_doc):
 
 @begin plain
     @include|private/jnumpy.op|
-@ene plain
+@end plain
 
 Recently updated programming ideas:
 
