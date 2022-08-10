@@ -34,9 +34,9 @@ def format_doc_ref(op_doc):
 @include|design/julia-redef-struct.op|
 @include|design/naming-convention-for-c-ident-based-langs.op|
 
-@begin plain
+@begin comment
     @include|private/jnumpy.op|
-@end plain
+@end comment
 
 Recently updated programming ideas:
 
