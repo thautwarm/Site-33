@@ -23,12 +23,12 @@ sp = lambda n: '&nbsp;' * n
 
 ## 语法和语义
 
+@begin code --lang go
+@end code
+
 ### 什么是语法
 
 语法 (syntax) 是指代码文本的规范，只有符合语法的代码才可能被编译器/解释器处理。
-
-@begin code --lang go
-@end code
 
 例如，@code|a = 1;| 是C语言的赋值语法，而 @code|a := 1| 在C语言中不合法。
 
@@ -320,5 +320,247 @@ int main()
 所幸的是，这种“不正确”丝毫不影响我们精准地理解程序语言的语义，它是一种折衷。如果你真的需要“更正确”的框架描述来描述具有副作用的语言的语义，你可能需要接触Haskell的副作用观点，它巧妙地将副作用表示为状态初值@math|S_0|上发生的一系列变换： @math|S_n = \textit{eff}_n(\cdots, \textit{eff}_2(\textit{eff}_1(S_0)))|。
 
 既然已经“不正确”，索性就更加追求刺激咯。我们直言：在本文以下部分，语法结构是host language中的数据结构，而状态@math|S|以及返回值@math|r|是target language中的数据结构。为了让表述更加方便，我们让host language等于target language，这样一来，前文中@math|\text{Number}(n) \rightsquigarrow n|的含义就非常明确。
+
+@end md
+
+
+@begin md tables code-friendly
+
+## 一个最简单的解释器
+
+我们接下来讨论一个简单的语言，扩展的@math|\Lambda|演算语言 (LC/Lambda Calculus)。
+
+### LC的语法结构和语义
+
+我们先用ASDL定义LC语法结构：
+
+@begin code --lang Python
+LC = Call(func: LC, args: LC)
+   | Var(varname: str)
+   | Func(argname: str, body: LC)
+@end code
+
+可以看到LC的语法结构简单得不得了，只有三种结构，分别是函数调用、读取变量和定义匿名函数。
+
+LC的语义也很简单，只是我们不会像教材一样介绍LC的约归 (reduction) 规则，因为介绍这个基本上没有屁用。之前说过，我们有host language和target language (并且在本文中，两者是一个语言)，我们要立刻将LC用一个实际的语言表达，以建立直觉。
+
+让我们选择 Python = target language = host language。本文之后提到target language，若非特殊说明，都指Python。
+
+为了给出语义，我们还需要定义一些辅助物件。
+
+我们需要一个状态 @math|S|，它表示LC作用域，一个从字符串到target language值的映射 （可以映射到target language中的字典）:
+<p align="center">
+    @math|S = (a_1 \mapsto r_1) (a_2 \mapsto r_2)  \cdots (a_n \mapsto r_n)|
+</p>
+
+其中，@math|a_1, \cdots, a_n|是target language中的字符串。
+
+LC语义如下，其中 @math|r, r_f, r_1, \cdots r_n| 是我们target language中的值：
+
+<hr/>
+
+<p align="center">
+@begin math
+\dfrac{}{ (a_1 \mapsto v_1) \cdots (a_n \mapsto v_n), \text{Var}(a_k) \longrightarrow v_k, (a_1 \mapsto v_1) \cdots (a_n \mapsto v_n) } \\
+\;\;\\
+\;\;\\
+\dfrac{ S, F \longrightarrow S', r_f \quad S', X \longrightarrow r_1, S'' \quad (r_2, S''') = r_f(S'', r_1) }{ S, \text{Call}(F, X) \longrightarrow r_2, S''' }
+\qquad
+\dfrac{ (\dfrac{(a \mapsto r_1)S, X \longrightarrow r_2, S' }{r_f(S, r_1) = (r_2, S')})  }{ S, \text{Func}(a, X) \longrightarrow r_f, S }
+@end math
+</p>
+<hr/>
+
+对Func的语义稍作解释：
+
+因为我们已经指定target language且target language等于host language，语法结构是该语言中的一个数据结构，返回值和状态也都是该语言中的数据结构，因此语义 @math|S, X \longrightarrow r, S| 可视为该语言中的一个函数。
+
+Func的语义解释中，函数@math|r_f|的定义是由 "@math|\longrightarrow|" 导出的：
+
+<p align="center">
+    @math|\dfrac{(a \mapsto r_1)S, X \longrightarrow r_2, S' }{r_f(S, r_1) = (r_2, S')} \;\; \Longleftrightarrow|
+</p>
+
+<p align="center">
+给定一个输入@math|r_1|和当前状态@math|S|，纯函数@math|r_f(S, r_1)|的返回值是@math|(r_2, S')|，其中@math|r_2, S'|由@math|(a \mapsto r_1)S, X \longrightarrow r_2, S'|给出。
+</p>
+
+
+### LC扩展、原语函数和解释器实现
+
+如果不扩展LC语言，它基本没用。这个局面在我们将语法结构做如下扩展时发生逆转。
+
+@begin code --lang Python
+LC = Call(func: LC, args: LC)
+   | Var(varname: str)
+   | Func(argname: str, body: LC)
+   | BoolVal(value: bool)
+   | NumberVal(value: number)
+   | StringVal(value: str)
+@end code
+
+习题：尝试给出@code|BoolVal, NumberVal|和@code|StringVal|的语义？
+
+只做语法结构的扩展，LC仍然没有用处。因为我们甚至不能将数字做加法，不能将字符串做拼接。
+
+其实，即使LC语言不做上述扩展，也有一套自己的办法实现自然数、整数乃至列表、字符串，以及加法减法函数等等。但因为这些模拟没有什么用，如果不对PL感兴趣，但凡看一秒你都亏麻了。
+
+实用的路线是引入原语函数 (intrinsic function) 的概念。著名的实用派函数式语言Idris，其编译产物可以视为一种AST，这个AST会预设一些特殊名字的函数的存在，例如，Idris语言没有定义函数@code|op_str_concat|，但任何字符串拼接操作最后都会调用到它。像@code|op_str_concat|这样的函数被称为原语函数，它被预设存在，以提供语言最基本的、不可划分的操作。
+
+对于练习来说，我们可以任意预设原语函数的存在，最关键的是掌握思路。
+
+现在，让我们根据前面给出的LC语义，在Python语言 (建议Python 3.10以上) 中实现扩展LC的解释器。
+
+
+@begin code --lang Python
+from __future__ import annotations
+from dataclasses import dataclass
+import typing
+
+@dataclass(frozen=True)
+class Call:
+    func: LC
+    arg: LC
+
+@dataclass(frozen=True)
+class Func:
+    name: str
+    body: LC
+
+@dataclass(frozen=True)
+class Var:
+    name: str
+
+# 其他扩展的LC语法结构定义
+...  # 自行实现LC的其他constructor
+
+
+# 定义sort
+LC = Var | Func | Call | NumberVal | BoolVal | StringVal
+
+def eval_lc(S: dict[str, object], syntactic_structure: LC) -> tuple[object, S]:
+    if isinstance(syntactic_structure, Var):
+        return S[syntactic_structure.name]
+    ...  # 自行实现
+
+@end code
+
+
+## LC的语法解析
+
+欢迎来到编译器最傻宝的部分，语法解析。
+
+语法解析对应的具体技术是parser，parser generator和parser combinator等。有许多人喜欢在这上面捣鼓，但在这一主题 (尤其是性能相关的讨论) 上花时间基本是浪费生命，多说一秒都亏麻了。
+
+Parser需要更好的报错，需要更强的表达力，但对极限性能的需求通常相当虚拟。使用ANTLR4 (一个相当使用的parser生成器框架)，按照lua规范实现的lua解析器，其中存在相当多的歧义，因而多少导致了性能问题，但在实践中，这样低质量的lua解析器一秒钟能解析接近10万行的real world工业代码，这个性能远远足够让IDE分析工具在你的每一次落键的瞬间重新解析、分析当前文件并更新补全信息。
+
+因此，大胆地去使用那些表现力足够强、报错足够好的解析器生成器！Tree-sitter，ANTLR4, Python Lark等等等。但要小心那些LL(1)/LR(1)的解析器，如果你不算parser专家，或者不想浪费生命去纠结为什么你的文法不工作。
+
+让我们使用Python的Lark。它的性能非常差，但是非常实用，被大量很重要的Python开源项目使用。
+
+解析器的工作是从源代码文本中提取语法结构——特指抽象语法树。
+
+下面是一个例子：
+
+@begin code --lang antlr
+start : lc
+
+lc    : call
+      | atom
+
+call   : call atom
+       | atom
+
+atom  : CNAME
+      | func
+      | number
+      | boolean
+      | string
+      | "(" lc ")"
+
+string : ESCAPED_STRING
+number : NUMBER
+boolean: "true" | "false"
+var    : CNAME
+func   : "func" "(" CNAME ")" "{" lc "}"
+
+%import common.WS               // 这是空白符token
+%import common.ESCAPED_STRING   // 这是双引号字符串token
+%import common.CNAME            // 这是C标志服token
+%import common.NUMBER           // 这是数字token
+%ignore WS                      // 忽略所有空白符
+@end code
+
+这个文法被一行代码的Lark编译工具处理后，可以生成一个LC语言的解析器：[json_parser全流程](https://lark-parser.readthedocs.io/en/latest/json_tutorial.html)。这个解析器输出的是具体语法树 (CST)，你可能需要手动转换CST到AST。
+
+出于可读性和可维护性的考虑，CST到AST的转换最好在文法中进行 (详见语法制导，或semantic actions)。[Python的发展生动地说明了这点](https://peps.python.org/pep-0617/#intermediate-parse-tree)，虽然我们仍常常听到一些相反意见。对此，我的建议是努力地使用语法制导，但绝不在文法里处理引入除开构造AST以外的逻辑！
+
+@begin code --lang antlr
+// 一个好的使用semantic action的例子
+lc_atom : CNAME { Var(token_to_string($1)) }
+        | "true" { BoolVal(True) }
+        | "false" { BoolVal(False) }
+        | ...
+@end code
+
+现在，根据上面的背景介绍以及样例文法，使用Lark或者别的你觉得趁手的解析器生成工具，为LC语言生成一个解析器，并使用解析器得到我们需要的语法结构。
+
+如果你觉得这个工作很无聊或者不好办，你可以无情地使用使用下面的步骤获得一个parser：
+
+1. 创建一个文件夹 `intp_exercise`
+2. 新建`lc_ast.py`，将扩展LC语言的所有语法结构 (`Call`, `Var`, `Func`, `NumberVal`等) 以及前面`eval_lc`函数，放入`lc_ast.py`中。
+
+3. 在文件夹中创建文件 `lc.lark`，内容如下：
+   @begin code --lang antlr
+    %%
+    from lc_ast import *
+    %%
+    start : lc -> $1
+    lc   : lc atom    -> Call($1, $2)
+         | atom       -> $1
+    atom  : CNAME     -> Var($1.value)
+          | NUMBER    -> NumberVal($1.value)
+          | "true"    -> BoolVal(True)
+          | "false"   -> BoolVal(False)
+          | "func" "(" CNAME ")" "{" lc "}" -> Func($3.value, $6)
+          | ESCAPED_STRING -> StringVal(eval($1.value))
+          | "(" lc ")" -> $2
+    %import common.WS               // 这是空白符token
+    %import common.ESCAPED_STRING   // 这是双引号字符串token
+    %import common.CNAME            // 这是C标志服token
+    %import common.NUMBER           // 这是数字token
+    %ignore WS                      // 忽略所有空白符
+   @end code
+
+4. `pip install lark-action`, 安装我写的`lark-action`包
+
+5. 在文件夹`intp_exercise/`下运行：
+    @begin code --lang bash
+        python -m lark_action  a.lark --package="" --module="lc"
+    @end code
+
+6. 新建文件`lc_run.py`, 内容如下：
+   @begin code --lang Python
+    from lc import parser
+    from lc_ast import eval_lc 
+    S = {add: lambda x: lambda y: x + y}
+    def run_code(source_code):
+            print("执行结果为:", eval_lc(S, parser.parse(source_code)))
+    run_code("add 1 2") # 3
+    run_code("(func (x) {add 2 x})(3)") # 5
+   @end code
+
+7. 执行`python lc_run.py`.
+
+
+尝试修改具体语法，例如你可能更喜欢 `fn x -> x` 而不是 `func (x) { x }`；只需保持最后的抽象语法树不变。
+
+看看效果。
+
+Bonus：尝试实现一个REPL (Read-Eval-Print-Loop)。
+
+## 继续扩展LC语言：赋值语句，语句块
+
+(under construction)
 
 @end md
