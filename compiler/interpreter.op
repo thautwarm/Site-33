@@ -507,7 +507,7 @@ lc_atom : CNAME { Var(token_to_string($1)) }
 
 如果你觉得这个工作很无聊或者不好办，你可以无情地使用使用下面的步骤获得一个parser：
 
-1. 创建一个文件夹 `intp_exercise`
+1. 创建一个项目文件夹 `intp_exercise`。
 2. 新建`lc_ast.py`，将扩展LC语言的所有语法结构 (`Call`, `Var`, `Func`, `NumberVal`等) 以及前面`eval_lc`函数，放入`lc_ast.py`中。
 
 3. 在文件夹中创建文件 `lc.lark`，内容如下：
