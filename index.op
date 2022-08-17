@@ -33,6 +33,7 @@ def format_doc_ref(op_doc):
 @include|design/linear-time-lr-in-glr.op|
 @include|design/julia-redef-struct.op|
 @include|design/naming-convention-for-c-ident-based-langs.op|
+@include|compiler/interpreter.op|
 
 @begin plain
     @include|private/jnumpy.op|
