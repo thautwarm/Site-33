@@ -118,10 +118,17 @@ atom : '(' e ')' | NUMBER
 
 @end md
 
-@begin float --width "30%" --align left
+<table>
+<tr>
+<td>@md|**具体语法树**:|</td>
+<td></td>
+<td>@md|**抽象语法树**:|</td>
+
+</tr>
+<tr>
+<td>
 
 
-@md|**具体语法树**:|
 
 @begin code --lang Python
     Statement(
@@ -134,11 +141,13 @@ atom : '(' e ')' | NUMBER
         ]
     )
 @end code
-@end float
 
-@begin float --width "30%" --align left
+</td>
+<td>
+@py|sp(30)|
+</td>
+<td>
 
-@md|**抽象语法树**:|
 
 @begin code --lang Python
     Assignment(
@@ -147,15 +156,12 @@ atom : '(' e ')' | NUMBER
     )
 @end code
 
-<br>
-
-@end float
+</td>
+</table>
 
 @begin py
 loop = lambda a, n: a * n
 @end py
-
-@py|("<br/>" + sp(30)) * 10|
 
 
 上述的语法树仍然只是简化的形式（略去了行列号等），但可以看到抽象语法树的信息比具体语法树更少也更加紧凑。
@@ -282,7 +288,6 @@ calc(i_1, i_2),\; f \in {+, -, *, /}  \text{分别表示表示计算两个实数
 
 在Java和C++语言中心，我们可以修改一个对象的字段。这是一个副作用，因为它们会引起某些函数对相同参数的调用返回不同的值。
 
-@begin float --width "40%"
 @begin code --lang C++
 static struct MyTypeRef *val = { ... };
 
@@ -302,7 +307,6 @@ int main()
 }
 
 @end code
-@end float
 
 
 我们方才介绍的 @math|| X \rightsquigarrow r || 不足以描述这个语义。我们原先只考虑了返回值，但一些语言中，语法结构涉及上面提到的副作用。
