@@ -22,8 +22,8 @@ class ContainerHtml(CommandEntry):
         head = html.find("head")
         if isinstance(head, bs4.Tag):
             head.contents.append(style)
-        else:
-            html.contents.insert(0, style)
+        # else:
+        html.contents.insert(0, style)
         op.code = str(html)
 
     def proc(self, argv: list[str], start: int, end: int):

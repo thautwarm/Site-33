@@ -1,3 +1,9 @@
+Index Page
+@begin ptag-filter-index
+    Index
+@end ptag-filter-index
+
+TOC
 @toc|--depth 1|
 @begin ptag-set
     Topic(PL, Professional)
