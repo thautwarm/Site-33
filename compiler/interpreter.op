@@ -37,7 +37,7 @@ sp = lambda n: '&nbsp;' * n
 
 例如，@code|a = 1;| 是C语言的赋值语法，而 @code|a := 1| 在C语言中不合法。
 
-一个重要的概念是**语法结构**： 它通常以语法树 (syntax tree) 的形式展现:
+其中，一个重要的概念是**语法结构**，它通常以语法树 (syntax tree) 的形式展现:
 
 <br>
 
@@ -169,7 +169,7 @@ loop = lambda a, n: a * n
 
 在包括编译、解释和各式代码分析的大部分任务中，只会用到抽象语法树，而具体语法树没有用处。这也意味着语言的具体语法通常不影响语言的运行。
 
-一门编程语言可以拥有多种具体语法，只要他们的语法结构和语义相同，他们仍然之间的差异，例如 @code|f(x, y, z)| 和 @code|call f x, y, z| , 是表面的。
+一门编程语言可以拥有多种具体语法，只要他们的语法结构和语义相同，他们之间的差异仍然是表面的，例如 @code|f(x, y, z)| 和 @code|call f x, y, z| 。
 
 @begin md
 
@@ -265,7 +265,7 @@ ArithExpr = Add(left: ArithExpr, right: ArithExpr)
 @begin math
 i, i_1, i_2 \cdots i_n \in \text{实数} \\
 X, Y \in \text{四则运算语言的语法结构全集}\\
-calc(i_1, i_2),\; f \in {+, -, *, /}  \text{分别表示表示计算两个实数的加/减/乘/除} \\
+f(i_1, i_2),\; f \in \{+, -, *, /\}\;\;  \text{分别表示表示计算两个实数的加/减/乘/除} \\
 @end math
 
 <br>
@@ -373,9 +373,9 @@ LC语义如下，其中 @math|r, r_f, r_1, \cdots r_n| 是我们target language�
 \dfrac{}{ (a_1 \mapsto v_1) \cdots (a_n \mapsto v_n), \text{Var}(a_k) \longrightarrow v_k, (a_1 \mapsto v_1) \cdots (a_n \mapsto v_n) } \\
 \;\;\\
 \;\;\\
-\dfrac{ S, F \longrightarrow S', r_f \quad S', X \longrightarrow r_1, S'' \quad (r_2, S''') = r_f(S'', r_1) }{ S, \text{Call}(F, X) \longrightarrow r_2, S''' }
+\dfrac{ S, F \longrightarrow r_f, S' \quad S', X \longrightarrow r_1, S'' \quad (r_2, S''') = r_f(S'', r_1) }{ S, \text{Call}(F, X) \longrightarrow r_2, S''' }
 \qquad
-\dfrac{ (\dfrac{(a \mapsto r_1)S, X \longrightarrow r_2, S' }{r_f(S, r_1) = (r_2, S')})  }{ S, \text{Func}(a, X) \longrightarrow r_f, S }
+\dfrac{ \forall S \forall r (\dfrac{(a \mapsto r)S, X \longrightarrow r', S' }{r_f(S, r) = (r', S)})  }{ S^{*}, \text{Func}(a, X) \longrightarrow r_f, S^{*} }
 @end math
 </p>
 <hr/>
@@ -387,13 +387,14 @@ LC语义如下，其中 @math|r, r_f, r_1, \cdots r_n| 是我们target language�
 Func的语义解释中，函数@math|r_f|的定义是由 "@math|\longrightarrow|" 导出的：
 
 <p align="center">
-    @math|\dfrac{(a \mapsto r_1)S, X \longrightarrow r_2, S' }{r_f(S, r_1) = (r_2, S')} \;\; \Longleftrightarrow|
+在当前状态@math|S^{*}|下定义一个纯函数@math|r_f|，对于任意一个输入参数@math|r|以及一个调用者状态@math|S|，纯函数@math|r_f(S, r)|的返回值是@math|(r', S^{*})|，其中@math|r'|来自
 </p>
 
 <p align="center">
-给定一个输入@math|r_1|和当前状态@math|S|，纯函数@math|r_f(S, r_1)|的返回值是@math|(r_2, S')|，其中@math|r_2, S'|由@math|(a \mapsto r_1)S, X \longrightarrow r_2, S'|给出。
+@math|(a \mapsto r_1)S^{*}, X \longrightarrow r', S'|
 </p>
 
+问题：上述语义下，函数支持“闭包”吗？
 
 ### LC扩展、原语函数和解释器实现
 
@@ -447,9 +448,9 @@ class Var:
 # 定义sort
 LC = Var | Func | Call | NumberVal | BoolVal | StringVal
 
-def eval_lc(S: dict[str, object], syntactic_structure: LC) -> tuple[object, S]:
+def eval_lc(S: dict[str, typing.Any], syntactic_structure: LC) -> tuple[typing.Any, S]:
     if isinstance(syntactic_structure, Var):
-        return S[syntactic_structure.name]
+        return S[syntactic_structure.name], S
     ...  # 自行实现
 
 @end code
@@ -519,7 +520,7 @@ lc_atom : CNAME { Var(token_to_string($1)) }
 1. 创建一个项目文件夹 `intp_exercise`。
 2. 新建`lc_ast.py`，将扩展LC语言的所有语法结构 (`Call`, `Var`, `Func`, `NumberVal`等) 以及前面`eval_lc`函数，放入`lc_ast.py`中。
 
-3. 在文件夹中创建文件 `lc.lark`，内容如下：
+3. 在文件夹中创建文件 `lc1.lark`，内容如下：
    @begin code --lang antlr
     %%
     from lc_ast import *
@@ -528,7 +529,7 @@ lc_atom : CNAME { Var(token_to_string($1)) }
     lc   : lc atom    -> Call($1, $2)
          | atom       -> $1
     atom  : CNAME     -> Var($1.value)
-          | NUMBER    -> NumberVal($1.value)
+          | NUMBER    -> NumberVal(eval($1.value))
           | "true"    -> BoolVal(True)
           | "false"   -> BoolVal(False)
           | "func" "(" CNAME ")" "{" lc "}" -> Func($3.value, $6)
@@ -545,16 +546,17 @@ lc_atom : CNAME { Var(token_to_string($1)) }
 
 5. 在文件夹`intp_exercise/`下运行：
     @begin code --lang bash
-        python -m lark_action  a.lark --package="" --module="lc"
+        python -m lark_action lc1.lark --package="" --module="lc"
     @end code
 
 6. 新建文件`lc_run.py`, 内容如下：
    @begin code --lang Python
     from lc import parser
-    from lc_ast import eval_lc 
+    from lc_ast import eval_lc
     S = {add: lambda x: lambda y: x + y}
     def run_code(source_code):
-            print("执行结果为:", eval_lc(S, parser.parse(source_code)))
+            r, _ = eval_lc(S, parser.parse(source_code))
+            print("执行结果为:", r)
     run_code("add 1 2") # 3
     run_code("(func (x) {add 2 x})(3)") # 5
    @end code

@@ -36,6 +36,10 @@ def format_doc_ref(op_doc):
 @include|compiler/interpreter.op|
 
 @begin comment
+    @include|private/interpreter.op|
+@end comment
+
+@begin comment
     @include|private/jnumpy.op|
 @end comment
 
