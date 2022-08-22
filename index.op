@@ -72,6 +72,7 @@ setInterval(() =>{
         @include|private/jnumpy.op|
     @end comment
     @include|private/ty-mlang.op|
+    @include|private/python-test.op|
 @end IF
 
 Recently updated programming ideas:
