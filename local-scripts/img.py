@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 from original_posting.types import CommandEntry, Context, OPDocument
 from original_posting.parsing import process_nest
