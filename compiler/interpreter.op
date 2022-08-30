@@ -26,6 +26,14 @@ sp = lambda n: '&nbsp;' * n
 
 @toc|--depth 2|
 
+如果你在本页面遭遇问题，请用以下方式联系我：
+
+1. 向 [https://github.com/thautwarm/Site-33/issues](https://github.com/thautwarm/Site-33/issues) 提交issue。
+
+  如果希望我立刻回应，向邮箱 [thaut@logic.cs.tsukuba.ac.jp](mailto:thaut@logic.cs.tsukuba.ac.jp) 发送邮件。
+
+2. （不建议）如果你希望私下和我讨论问题，并不希望其他人看到相关讨论，例如希望我帮忙检查习题，则向 [twshere@outlook.com](mailto:twshere@outlook.com) 发送邮件。
+
 ## 语法和语义
 
 @begin code --lang go
@@ -225,12 +233,12 @@ ArithExpr = Add(left: ArithExpr, right: ArithExpr)
 语法结构@math|X|的执行结果是 @math|r| @math|\Longleftrightarrow| @math|| X \rightsquigarrow r ||.
 </p>
 
-这里的 @math|X| 是一个语法结构，如果对应编程概念，它是host language (实现编译器、解释器所使用的语言) 中的数据结构 @footnote||| X的严格定义: @math|| | X | \rightsquigarrow r || 中的 @math|X| 实际上不应该对应任何编程语言，它是一个形式化的表述，用来简洁、精准地表达一门语言的语法。实际上在学术界中，通常直接使用语言而不是语法结构，这可能是为了直观，却常常导致复杂的歧义/小圈子黑话。 @footnote|(op-seman) TODO: 使用bar表示“向量化”的例子| ||| ；
+这里的 @math|X| 是一个语法结构，如果对应编程概念，它是host language (实现编译器、解释器所使用的语言) 中的一颗语法树@footnote||| X的严格定义: @math|| | X | \rightsquigarrow r || 中的 @math|X| 实际上不应该对应任何编程语言，它是一个形式化的表述，用来简洁、精准地表达一门语言的语法。实际上在学术界中，通常直接使用语言而不是语法结构，这可能是为了直观，却常常导致复杂的歧义/小圈子黑话。 @footnote|(op-seman) TODO: 使用bar表示“向量化”的例子| ||| ；
 
-这里的 @math|r| 是一个值，如果对应编程概念，它属于target language。和上面的 @math|X| 一样，用编程语言比喻这里的值并不精准。@footnote||  r的严格定义: @code|r| 的取值范围，是用BNF定义的、非特定target language的数据结构。||
+这里的 @math|r| 是一个值，如果对应编程概念，它是target language中的一个值。和上面的@math|X|一样，用编程语言比喻这里的值并不精准。@footnote||  r的严格定义: @code|r| 的取值范围，是用BNF定义的、非特定target language的数据结构。||
 
 
-上面这个框架用来表达四则运算语言的语法绰绰有余：
+上面这个框架用来表达四则运算语言的语义绰绰有余：
 
 <p align="center">
     @math| \text{Add(Number(2), Number(2.0))} \rightsquigarrow 4.0 |
@@ -328,7 +336,7 @@ int main()
 
 所幸的是，这种“不正确”丝毫不影响我们精准地理解程序语言的语义，它是一种折衷。如果你真的需要“更正确”的框架描述来描述具有副作用的语言的语义，你可能需要接触Haskell的副作用观点，它巧妙地将副作用表示为状态初值@math|S_0|上发生的一系列变换： @math|S_n = \textit{eff}_n(\cdots, \textit{eff}_2(\textit{eff}_1(S_0)))|。
 
-既然已经“不正确”，索性就更加追求刺激咯。我们直言：在本文以下部分，语法结构是host language中的数据结构，而状态@math|S|以及返回值@math|r|是target language中的数据结构。为了让表述更加方便，我们让host language等于target language，这样一来，前文中@math|\text{Number}(n) \rightsquigarrow n|的含义就非常明确。
+既然已经“不正确”了，便不妨追求更加刺激的语境。我们直言：在本文以下部分，语法结构是host language中的数据结构，而状态@math|S|以及返回值@math|r|是target language中的数据结构。为了让表述更加方便，我们让host language等于target language，这样一来，前文中@math|\text{Number}(n) \rightsquigarrow n|的含义就非常明确。
 
 @end md
 
@@ -357,14 +365,14 @@ LC的语义也很简单，只是我们不会像教材一样介绍LC的约归 (re
 
 为了给出语义，我们还需要定义一些辅助物件。
 
-我们需要一个状态 @math|S|，它表示LC作用域，一个从字符串到target language值的映射 （可以映射到target language中的字典）:
+我们需要一个状态 @math|S|，它表示LC作用域，一个从字符串到target language值的映射，可以被理解为target language中的字典:
 <p align="center">
     @math|S = (a_1 \mapsto r_1) (a_2 \mapsto r_2)  \cdots (a_n \mapsto r_n)|
 </p>
 
 其中，@math|a_1, \cdots, a_n|是target language中的字符串。
 
-LC语义如下，其中 @math|r, r_f, r_1, \cdots r_n| 是我们target language中的值：
+LC语义如下，其中 @math|r, r_f, r_1, \cdots r_n| 是我们target language中的值 (这样的值如果是函数，则是一个数学上的纯函数)：
 
 <hr/>
 
@@ -387,11 +395,11 @@ LC语义如下，其中 @math|r, r_f, r_1, \cdots r_n| 是我们target language�
 Func的语义解释中，函数@math|r_f|的定义是由 "@math|\longrightarrow|" 导出的：
 
 <p align="center">
-在当前状态@math|S^{*}|下定义一个纯函数@math|r_f|，对于任意一个输入参数@math|r|以及一个调用者状态@math|S|，纯函数@math|r_f(S, r)|的返回值是@math|(r', S^{*})|，其中@math|r'|来自
+在当前状态@math|S^{*}|下定义一个纯函数@math|r_f|，对于任意一个输入参数@math|r|以及一个调用者状态@math|S|，纯函数@math|r_f(S, r)|的返回值是@math|(r', S')|，其中@math|r'|来自以下公式的推演：
 </p>
 
 <p align="center">
-@math|(a \mapsto r_1)S^{*}, X \longrightarrow r', S'|
+@math|(a \mapsto r_1)S, X \longrightarrow r', S'|
 </p>
 
 问题：上述语义下，函数支持“闭包”吗？
@@ -409,7 +417,7 @@ LC = Call(func: LC, args: LC)
    | StringVal(value: str)
 @end code
 
-习题：尝试给出@code|BoolVal, NumberVal|和@code|StringVal|的语义？
+*习题* 尝试给出@code|BoolVal, NumberVal|和@code|StringVal|的语义？
 
 只做语法结构的扩展，LC仍然没有用处。因为我们甚至不能将数字做加法，不能将字符串做拼接。
 
@@ -458,11 +466,11 @@ def eval_lc(S: dict[str, typing.Any], syntactic_structure: LC) -> tuple[typing.A
 
 ## LC的语法解析
 
-欢迎来到编译器最傻宝的部分，语法解析。
+欢迎来到编译器最平凡的部分，语法解析 (parsing)。
 
-语法解析对应的具体技术是parser，parser generator和parser combinator等。有许多人喜欢在这上面捣鼓，但在这一主题 (尤其是性能相关的讨论) 上花时间基本是浪费生命，多说一秒都亏麻了。
+语法解析对应的具体技术有parser generator和parser combinator等。有许多人喜欢在这上面捣鼓，但在这一主题 (尤其是性能相关的讨论) 上花时间基本是浪费生命，多说一秒都亏麻了。
 
-Parser需要更好的报错，需要更强的表达力，但对极限性能的需求通常相当虚拟。使用ANTLR4 (一个相当实用的parser生成器框架)，按照lua规范实现一个lua解析器，这样的解析器中会存在相当多的歧义，多少会导致性能问题。但在实践中，上面这样“低质量”的lua解析器一秒钟能解析接近10万行来自real world的工业代码，这个性能完全足够让IDE分析工具在你每一次落键的瞬间重新解析、分析当前文件并更新补全信息。
+解析器需要更好的报错和更强的表达力，但对极限性能的需求通常相当虚拟。使用ANTLR4 (一个相当实用的parser生成器框架)，按照lua规范实现一个lua解析器，这样的解析器中会存在相当多的歧义，多少会导致性能问题。但在实践中，上面这样“低质量”的lua解析器一秒钟能解析接近10万行来自real world的工业代码，这个性能完全足够让IDE分析工具在你每一次落键的瞬间重新解析、分析当前文件并更新补全信息。
 
 因此，大胆地去使用那些表现力足够强、报错足够好的解析器生成器！Tree-sitter，ANTLR4, Python Lark等等等。但要小心那些LL(1)/LR(1)的解析器，如果你不算parser专家，或者不想浪费生命去纠结为什么你的文法不工作。
 
@@ -507,8 +515,8 @@ func   : "func" "(" CNAME ")" "{" lc "}"
 
 @begin code --lang antlr
 // 一个好的使用semantic action的例子
-lc_atom : CNAME { Var(token_to_string($1)) }
-        | "true" { BoolVal(True) }
+lc_atom : CNAME   { Var(token_to_string($1)) }
+        | "true"  { BoolVal(True) }
         | "false" { BoolVal(False) }
         | ...
 @end code
@@ -532,9 +540,9 @@ lc_atom : CNAME { Var(token_to_string($1)) }
           | NUMBER    -> NumberVal(eval($1.value))
           | "true"    -> BoolVal(True)
           | "false"   -> BoolVal(False)
-          | "func" "(" CNAME ")" "{" lc "}" -> Func($3.value, $6)
           | ESCAPED_STRING -> StringVal(eval($1.value))
-          | "(" lc ")" -> $2
+          | "(" lc ")"     -> $2
+          | "func" "(" CNAME ")" "{" lc "}" -> Func($3.value, $6)
     %import common.WS               // 这是空白符token
     %import common.ESCAPED_STRING   // 这是双引号字符串token
     %import common.CNAME            // 这是C标志服token
@@ -542,7 +550,7 @@ lc_atom : CNAME { Var(token_to_string($1)) }
     %ignore WS                      // 忽略所有空白符
    @end code
 
-4. `pip install lark-action`, 安装我写的`lark-action`包
+4. `pip install lark-action`, 安装`lark-action`包
 
 5. 在文件夹`intp_exercise/`下运行：
     @begin code --lang bash
@@ -551,14 +559,21 @@ lc_atom : CNAME { Var(token_to_string($1)) }
 
 6. 新建文件`lc_run.py`, 内容如下：
    @begin code --lang Python
-    from lc import parser
-    from lc_ast import eval_lc
-    S = {add: lambda x: lambda y: x + y}
-    def run_code(source_code):
+    # lc_run.py
+        from lc import parser
+        from lc_ast import eval_lc
+
+        def add(ctx, x):
+            def addx(ctx, y):
+                return y, ctx
+            return addx, ctx
+        S = { 'add': add }
+
+        def run_code(source_code):
             r, _ = eval_lc(S, parser.parse(source_code))
             print("执行结果为:", r)
-    run_code("add 1 2") # 3
-    run_code("(func (x) {add 2 x})(3)") # 5
+        run_code("add 1 2") # 3
+        run_code("(func (x) {add 2 x})(3)") # 5
    @end code
 
 7. 执行`python lc_run.py`.
@@ -570,12 +585,82 @@ lc_atom : CNAME { Var(token_to_string($1)) }
 
 Bonus：尝试实现一个REPL (Read-Eval-Print-Loop)。
 
-## 继续扩展LC语言：赋值语句，语句块
+## 更丰富的语言及语言支持
 
-(under construction)
+虽然我们已经完成一个有模有样的解释器，但它目前仍很不实用。
+
+该如何赋值呢？我们甚至不能使用@code|x = 1|这样的代码。
+
+此外，函数体也只能支持“一句话”，而不能支持多行，就像下面这样：
+
+@begin code
+func (x)
+{
+    add x x
+}
+@end code
+
+要支持这些操作，我们引入两种新的语法结构：
+
+- 赋值
+
+    - 语法结构：@code|LC += Block(body: list<LC>)|
+
+    - 语义：
+    @begin math
+    \dfrac{ S, X \longrightarrow r, S' }{
+        S, \text{Assign}(a, X) \longrightarrow r, (a \mapsto r) S'
+    }
+    @end math
+
+- 语句块
+
+    - 语法结构：@code|Assign(name: str, value: LC)|
+
+    - 语义：
+    @begin math
+    \dfrac{ S_0, X_1 \longrightarrow r_1, S_1 \quad S_1, X_2 \longrightarrow r_2, S_2  \;\cdots\;  S_{n-1}, X_n \longrightarrow r_n, S_n
+    }{
+        S_0, \text{Block}(X_1 X_2 \cdots X_n) \longrightarrow r_n, S_n
+    }
+    @end math
 
 
+*习题* 尝试在lc1.lark中为Assign和Block加入合适的语法规则，以支持下面的代码：
 
-## 命令行支持
+@begin code
+func (x)
+{
+    x = add x x;
+    x = add x 1;
+    x
+}
+@end code
+
+
+*习题* 尝试实现以下语言扩展，让我们的语言看起来更“工业界”：
+
+1. 命名函数：目前实现的LC解释器，函数均为匿名
+2. if语句
+3. while语句
+4. return语句
+5. 多参数函数
+6. break, continue
+
+此外，还可以实现相应的REPL以及文件输入执行功能。
+
+本页面已帮助我的一名实习生掌握了基本的编译、解释技术，项目链接如下，可作为参考实现：
+
+<p style="text-align: center;">
+    https://github.com/April-ZhouQian/interpret
+</p>
+
+在后续章节，我们将基于上述参考实现，实现相应语言的字节码编译器。
+
+## 编译
+
+如果运行前面解释器的参考实现，可以发现，性能比Python还要低好几个数量级。
+此外，由于
+
 
 @end md
