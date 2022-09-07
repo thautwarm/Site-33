@@ -73,6 +73,7 @@ setInterval(() =>{
     @end comment
     @include|private/ty-mlang.op|
     @include|private/python-test.op|
+    @include|compiler/interpreter.op|
 @end IF
 
 Recently updated programming ideas:

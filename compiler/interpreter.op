@@ -466,9 +466,7 @@ def eval_lc(S: dict[str, typing.Any], syntactic_structure: LC) -> tuple[typing.A
 
 ## LC的语法解析
 
-欢迎来到编译器最平凡的部分，语法解析 (parsing)。
-
-语法解析对应的具体技术有parser generator和parser combinator等。有许多人喜欢在这上面捣鼓，但在这一主题 (尤其是性能相关的讨论) 上花时间基本是浪费生命，多说一秒都亏麻了。
+欢迎来到编译器最平凡的部分，语法解析 (parsing)。语法解析对应的具体技术有parser generator和parser combinator等。
 
 解析器需要更好的报错和更强的表达力，但对极限性能的需求通常相当虚拟。使用ANTLR4 (一个相当实用的parser生成器框架)，按照lua规范实现一个lua解析器，这样的解析器中会存在相当多的歧义，多少会导致性能问题。但在实践中，上面这样“低质量”的lua解析器一秒钟能解析接近10万行来自real world的工业代码，这个性能完全足够让IDE分析工具在你每一次落键的瞬间重新解析、分析当前文件并更新补全信息。
 
@@ -604,7 +602,7 @@ func (x)
 
 - 赋值
 
-    - 语法结构：@code|LC += Block(body: list<LC>)|
+    - 语法结构：@code|Block(body: list<LC>)|
 
     - 语义：
     @begin math
@@ -640,7 +638,7 @@ func (x)
 
 *习题* 尝试实现以下语言扩展，让我们的语言看起来更“工业界”：
 
-1. 命名函数：目前实现的LC解释器，函数均为匿名
+1. 具名函数：目前实现的LC解释器，函数均为匿名
 2. if语句
 3. while语句
 4. return语句
@@ -660,7 +658,48 @@ func (x)
 ## 编译
 
 如果运行前面解释器的参考实现，可以发现，性能比Python还要低好几个数量级。
-此外，由于
 
+@begin code
+LC = Call(func: LC, args: LC)
+   | Var(varname: str)
+   | Func(argname: str, body: LC)
+   | BoolVal(value: bool)
+   | NumberVal(value: number)
+   | StringVal(value: str)
+@end code
+
+描述语义时，我们使用了 @math|S, X \longrightarrow r, S'|的表述，编译可以视为对这个过程的一个拆解。
+
+@begin img compiler-arch
+    src : ./compiler.png
+    width: 800px
+@end img
+
+<p align="center">
+@img|compiler-arch|
+</p>
+
+
+我们考虑上图的如下流程：
+
+1. 语法结构到字节码。将其用@math|X \overset{\text{compile}}{\longrightarrow} I_1 I_2 \cdots I_n|的形式描述。
+2. 字节码到运行时值，即虚拟机解释。将其用@math|S, I \overset{\text{VM}}{\longrightarrow} r, S |的形式描述。
+
+我们会先介绍 @math|\overset{\text{VM}}{\longrightarrow}|，但初学者可能因此丢失语境。对此，我们先介绍一个简单例子以方便读者建立直觉。
+
+@begin code
+x = add(x, 1)
+@end code
+
+@begin code
+LOAD_VAR add
+LOAD_VAR x
+LOAD_CONST 1
+LOAD_CONST 2
+CALL_FUNCTION 2
+STORE_VAR x
+@end code
+
+(TODO)
 
 @end md
