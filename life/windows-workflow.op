@@ -16,7 +16,7 @@
     NeedTranslation
 @end ptag-set
 
-@begin md
+@begin md code-friendly
 
 # Windows上的Linux工作流搭建
 
