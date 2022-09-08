@@ -1,0 +1,6 @@
+markdown2
+javascript
+Pygments
+beautifulsoup4
+wisepy2
+PyYAML

@@ -64,6 +64,7 @@ setInterval(() =>{
     @include|design/julia-redef-struct.op|
     @include|design/naming-convention-for-c-ident-based-langs.op|
     @include|compiler/interpreter.op|
+    @include|life/windows-workflow.op|
 @end IF
 
 @begin IF "not IS_PERSONAL"
