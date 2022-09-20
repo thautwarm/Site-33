@@ -71,10 +71,10 @@ setInterval(() =>{
     @begin comment
         @include|private/interpreter.op|
         @include|private/jnumpy.op|
+        @include|private/python-test.op|
+        @include|compiler/interpreter.op|
     @end comment
     @include|private/ty-mlang.op|
-    @include|private/python-test.op|
-    @include|compiler/interpreter.op|
 @end IF
 
 Recently updated programming ideas:

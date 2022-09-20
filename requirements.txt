@@ -4,3 +4,4 @@ Pygments
 beautifulsoup4
 wisepy2
 PyYAML
+livereload
