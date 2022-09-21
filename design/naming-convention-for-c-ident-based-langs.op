@@ -13,7 +13,7 @@
 
 @center-all| |
 
-@begin md tables code-friendly
+@begin md tables
 
 @begin code --lang python
 @end code

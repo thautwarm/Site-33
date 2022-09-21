@@ -9,7 +9,13 @@ Index Page
 
 @center-all|1000|
 
-<hr>
+<style>
+    a {
+        text-decoration: none;
+        color: blue;
+    }
+</style>
+<hr/>
 
 @begin img ast-tree
     src: ./interpreter-ast-tree.png
@@ -20,7 +26,7 @@ Index Page
 sp = lambda n: '&nbsp;' * n
 @end py
 
-@begin md tables code-friendly
+@begin md tables
 
 # 编程语言解释器的理解、设计和实现
 
@@ -284,7 +290,7 @@ f(i_1, i_2),\; f \in \{+, -, *, /\}\;\;  \text{分别表示表示计算两个实
 @begin math
 \dfrac{X \rightsquigarrow i_1 \;\; Y \rightsquigarrow i_2 }{\text{Add}(X, Y) \rightsquigarrow +(i_1, i_2) } \qquad \dfrac{ }{ \text{Number}(i) \rightsquigarrow i}
 @end math
-@py|sp(2)| @footnote||Staging error: 这里，@math|\rightsquigarrow|两侧出现的@math|i|实际上是不同的。他们身处不同的语言中，就像文本中的1和C++里为1的值截然不同。 ||
+@py|sp(0)| @footnote||Staging error: 这里，@math|\rightsquigarrow|两侧出现的@math|i|实际上是不同的。他们身处不同的语言中，就像文本中的1和C++里为1的值截然不同。 ||
 </p>
 
 @end md
@@ -341,7 +347,7 @@ int main()
 @end md
 
 
-@begin md tables code-friendly
+@begin md tables
 
 ## 一个最简单的解释器
 
@@ -558,20 +564,22 @@ lc_atom : CNAME   { Var(token_to_string($1)) }
 6. 新建文件`lc_run.py`, 内容如下：
    @begin code --lang Python
     # lc_run.py
-        from lc import parser
-        from lc_ast import eval_lc
+    from lc import parser
+    from lc_ast import eval_lc
 
-        def add(ctx, x):
-            def addx(ctx, y):
-                return y, ctx
-            return addx, ctx
-        S = { 'add': add }
+    def add(ctx, x):
+        def addx(ctx, y):
+            return y, ctx
+        return addx, ctx
 
-        def run_code(source_code):
-            r, _ = eval_lc(S, parser.parse(source_code))
-            print("执行结果为:", r)
-        run_code("add 1 2") # 3
-        run_code("(func (x) {add 2 x})(3)") # 5
+    S = { 'add': add }
+
+    def run_code(source_code):
+        r, _ = eval_lc(S, parser.parse(source_code))
+        print("执行结果为:", r)
+
+    run_code("add 1 2") # 3
+    run_code("(func (x) {add 2 x})(3)") # 5
    @end code
 
 7. 执行`python lc_run.py`.

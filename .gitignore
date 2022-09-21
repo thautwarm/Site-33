@@ -1,4 +1,6 @@
 __pycache__/
 private/
+company/
 bugs/
 Digraph.gv*
+out/

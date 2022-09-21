@@ -6,8 +6,10 @@ g = ga.Graph(attr.Rankdir("BT"), directed=True)
 class fontname(attr.Attr):
     pass
 
+font = fontname("Source Han Serif")
+
 language_features = [
-    g.new(attr.Shape.box, attr.Label('varargin'), fontname("Source Han Serif")),
+    g.new(attr.Shape.box, attr.Label('varargin'), font),
     g.new(attr.Shape.box, attr.Label('nargout'), fontname("Source Han Serif")),
     g.new(attr.Shape.box, attr.Label('...'), fontname("Source Han Serif")),
 ]

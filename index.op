@@ -14,7 +14,7 @@ from pathlib import Path
 import os
 IS_PERSONAL = not os.environ.get("PRIVATE")
 DEBUG = bool(os.environ.get("DEBUG"))
-Runtime.search_path.append(str(Path('./local-scripts').absolute()))
+Runtime.search_path.insert(0, str(Path('./local-scripts').absolute()))
 DATE_FORMAT = '%Y-%m-%d'
 
 def parse_date(s):
@@ -75,6 +75,7 @@ setInterval(() =>{
         @include|compiler/interpreter.op|
     @end comment
     @include|private/ty-mlang.op|
+    @include|company/future-from-julia-split.op|
 @end IF
 
 Recently updated programming ideas:

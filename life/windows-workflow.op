@@ -16,7 +16,7 @@
     NeedTranslation
 @end ptag-set
 
-@begin md code-friendly
+@begin md
 
 # Windows上的Linux工作流搭建
 
@@ -172,7 +172,7 @@ WSL的问题可以细分为以下几点：
             <p>
             @begin code
                     if [ -f "${HOME}/.bashrc" ] ; then
-                    source "${HOME}/.bashrc"
+                        source "${HOME}/.bashrc"
                     fi
             @end code
             </p>
