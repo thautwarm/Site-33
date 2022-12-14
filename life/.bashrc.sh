@@ -78,7 +78,7 @@ function prompt-command(){
         fi
         git rev-parse 2> /dev/null
         if [[ $? -eq 0 ]]; then
-            branch=$(git branch 2>/dev/null | grep '*' | sed 's/* \(.*\)/\1/')
+            branch=$(git branch 2>/dev/null | grep '*' | sed 's/* \(.*\)/&/')
             if [[ -n $(git status -s) ]]; then
                 untracked="${yellow}●${reset_color}"
             fi

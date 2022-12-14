@@ -398,7 +398,7 @@ LC语义如下，其中 @math|r, r_f, r_1, \cdots r_n| 是我们target language�
 
 因为我们已经指定target language且target language等于host language，语法结构是该语言中的一个数据结构，返回值和状态也都是该语言中的数据结构，因此语义 @math|S, X \longrightarrow r, S| 可视为该语言中的一个函数。
 
-Func的语义解释中，函数@math|r_f|的定义是由 "@math|\longrightarrow|" 导出的：
+Func的语义解释中，函数@math|r_f|的定义是由 @math|\longrightarrow| 导出的：
 
 <p align="center">
 在当前状态@math|S^{*}|下定义一个纯函数@math|r_f|，对于任意一个输入参数@math|r|以及一个调用者状态@math|S|，纯函数@math|r_f(S, r)|的返回值是@math|(r', S')|，其中@math|r'|来自以下公式的推演：
@@ -562,25 +562,9 @@ lc_atom : CNAME   { Var(token_to_string($1)) }
     @end code
 
 6. 新建文件`lc_run.py`, 内容如下：
-   @begin code --lang Python
-    # lc_run.py
-    from lc import parser
-    from lc_ast import eval_lc
-
-    def add(ctx, x):
-        def addx(ctx, y):
-            return y, ctx
-        return addx, ctx
-
-    S = { 'add': add }
-
-    def run_code(source_code):
-        r, _ = eval_lc(S, parser.parse(source_code))
-        print("执行结果为:", r)
-
-    run_code("add 1 2") # 3
-    run_code("(func (x) {add 2 x})(3)") # 5
-   @end code
+    @begin code --lang Python
+        @indent||@raw-include|interpreter/lc_run.py| ||
+    @end code
 
 7. 执行`python lc_run.py`.
 
@@ -599,7 +583,7 @@ Bonus：尝试实现一个REPL (Read-Eval-Print-Loop)。
 
 此外，函数体也只能支持“一句话”，而不能支持多行，就像下面这样：
 
-@begin code
+@begin code --lang Go
 func (x)
 {
     add x x

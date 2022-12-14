@@ -119,13 +119,14 @@ WSL的问题可以细分为以下几点：
 
         @begin code --lang bash
                 [net.webrequest]::defaultwebproxy = new-object net.webproxy "http://127.0.0.1:<端口号>"
-                scoop config proxy 127.0.0.1 <端口号>
+                scoop config proxy 127.0.0.1:<端口号>
                 scoop install git
         @end code
 
 3. 安装vscode:
 
     @begin code
+            scoop bucket add extras
             scoop install vscode
             # 右键打开vscode （执行后重启生效）：
             C:\Users\<用户名>\scoop\apps\vscode\current\install-associations.reg
@@ -167,36 +168,35 @@ WSL的问题可以细分为以下几点：
 
     8. 新建`~/.bash_profile`，用vscode打开，填入以下内容
 
-        <details>
-            <summary>点击展开.bash_profile 文件内容</summary>
-            <p>
-            @begin code
-                    if [ -f "${HOME}/.bashrc" ] ; then
-                        source "${HOME}/.bashrc"
-                    fi
+        @plain|<details>|
+                <summary>点击展开.bash_profile 文件内容</summary>
+                <p>
+            @begin code --lang Bash
+                @indent||@raw-include|.bash_profile| ||
             @end code
-            </p>
-        </details>
+                </p>
+        @plain|</details>|
 
     9. 新建`~/.bash-colors.sh`和`~/.bashrc`，填入以下内容 （推荐走完配置流程后再自行配置）。
 
-	@plain|<details>|
-            <summary>点击展开.bash-colors.sh 文件内容</summary>
-            <p>
-		@begin code --lang Bash
-		# .bash-colors.sh
-	    	@indent||@raw-include|.bash-colors.sh| ||
-		@end code
-	    </p>
-	@plain|</details>|
         @plain|<details>|
-            <summary>点击展开.bashrc 文件内容</summary>
-            <p>
-            @begin code
-            # ~/.bashrc
-	    @indent||@raw-include|.bashrc.sh| ||
-            @end code
-            </p>
+                <summary>点击展开.bash-colors.sh 文件内容</summary>
+                <p>
+                @begin code --lang Bash
+                # .bash-colors.sh
+                @indent||@raw-include|.bash-colors.sh| ||
+                @end code
+                </p>
+        @plain|</details>|
+
+        @plain|<details>|
+                <summary>点击展开.bashrc 文件内容</summary>
+                <p>
+                @begin code --lang Bash
+                # ~/.bashrc
+                @indent||@raw-include|.bashrc.sh| ||
+                @end code
+                </p>
         @plain|</details>|
 
     10. 安装Python和一些工具，修复一些Window问题。
@@ -249,25 +249,26 @@ Git设置：
 常用软件及镜像配置：
 
 @begin code
-# .net, unity
-scoop install dotnet-sdk
 
-# java
-scoop bucket add java
-scoop install openjdk （重启terminal之后java可以访问）
+    # .net, unity
+    scoop install dotnet-sdk
 
-# LaTeX
-scoop install miktex
-pacman -S make # latexmk需要make
+    # java
+    scoop bucket add java
+    scoop install openjdk （重启terminal之后java可以访问）
 
-# pip
-pip config set global.index-url https://mirrors.bfsu.edu.cn/pypi/web/simple # 使用北京外国语大学镜像
+    # LaTeX
+    scoop install miktex
+    pacman -S make # latexmk需要make
 
-# conda
-# 将~/.condarc设置为北京外国语大学镜像：
-channels:
-  - https://mirrors.bfsu.edu.cn/anaconda/cloud/conda-forge/
-# 如果是非商业/教育版用户、可以直接使用anaconda的商业源，配置方法见：https://mirrors.bfsu.edu.cn/help/anaconda/
+    # pip
+    pip config set global.index-url https://mirrors.bfsu.edu.cn/pypi/web/simple # 使用北京外国语大学镜像
+
+    # conda
+    # 将~/.condarc设置为北京外国语大学镜像：
+    channels:
+        - https://mirrors.bfsu.edu.cn/anaconda/cloud/conda-forge/
+    # 如果是非商业/教育版用户、可以直接使用anaconda的商业源，配置方法见：https://mirrors.bfsu.edu.cn/help/anaconda/
 
 @end code
 

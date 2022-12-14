@@ -4,3 +4,4 @@ company/
 bugs/
 Digraph.gv*
 out/
+.gitignore
