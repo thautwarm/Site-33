@@ -4,7 +4,7 @@ Index Page
 @end ptag-filter-index
 
 @begin ptag-set
-    PL()
+    Topic(PL, Professional)
     Time('2022-12-26')
 @end ptag-set
 

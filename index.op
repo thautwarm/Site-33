@@ -82,7 +82,7 @@ setInterval(() =>{
 Recently updated programming ideas:
 
 @begin ptag-filter-index
-    Time(~x) and P[parse_date(x) - datetime.now() < timedelta(days=365)]
+    Time(~x) and P[datetime.now() - parse_date(x) < timedelta(days=50)]
 @end ptag-filter-index
 
 
@@ -91,3 +91,7 @@ PL articles:
 @begin ptag-filter-index
     Topic(PL, ~level) and P[level == 'Professional']
 @end ptag-filter-index
+
+All articles:
+
+@blog-docs| |
