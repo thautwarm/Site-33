@@ -16,13 +16,13 @@ Index Page
 
 ## Introduction
 
-In this article we talks about a technique that provides random data generation for arbitrary data types. Whether you're working on testing code, creating mock data for demos or prototypes, or just want to quickly generate some sample data for whatever reason, this technique can come in handy.
+In this article, we'd talk about a technique that provides random data generation for arbitrary data types. Whether you're working on testing code, creating mock data for demos or prototypes, or just want to quickly generate some sample data for whatever reason, this technique can come in handy.
 
-Such technique does not have a special name, and we'll call it "datagen combinators" or "datagenc" in this article.
+Such a technique does not have a special name, and we'll call it "datagen combinators" or "datagenc" in this article.
 
-The idea of "datagenc" is simple and well known to functional programming guys. By observing and abstracting approaches of data generation and representing the generation process via generalised algebraic data types, we succeed in creating random data that conforms to the structure and constraints specified. Such process is also type-safe, which means certain bugs are get rid of at compile time.
+The idea of "datagenc" is simple and well-known to functional programming guys. By observing and abstracting approaches of data generation and representing the generation process via generalised algebraic data types, we succeed in creating random data that conforms to the structure and constraints specified. Such a process is also type-safe, which means certain bugs are got rid of at compile time.
 
-The special part of this article is that we also discuss about the further improvement to the application of "datagenc" for dynamic programming languages such as Julia and Python.
+The special part of this article is that we also discuss the further improvement to the application of "datagenc" for dynamic programming languages such as Julia and Python.
 
 ## Mechanism
 
@@ -44,7 +44,7 @@ We can contrive a simple generator of integers`:
 
 Such simple generators can be also made for other non-composite types, such as @code|string|, @code|float|, @code|bool|, etc.
 
-The first interest part comes when we consider the composite types. Giving a composite type as below:
+The first interesting part comes when we consider the composite types. Giving a composite type as below:
 
 @begin code --lang OCaml
     type ('a, 'b) either = Left of 'a | Right of 'b
@@ -82,7 +82,7 @@ let right a = Right a
 let either_g (ga: 'a generator) (gb: 'b generator) = or_g [map_g left ga; map_g left gb]
 @end code
 
-Above analysis, i.e., deconstructing the generation process of @code|either| into "primitive" generation processes, unveils more common patterns in data generation: :code|map| and :code|or.
+The above analysis, i.e., deconstructing the generation process of @code|either| into "primitive" generation processes, unveils more common patterns in data generation such as @code|map| and @code|or.
 
 Another pattern is repeatedly generating a datum of a certain type. For example, if we want to generate a list of integers, we can repeatedly generate integers and then combine them into a list. This pattern is also common in data generation, and can be represented by the following function:
 
@@ -95,7 +95,7 @@ Another pattern is repeatedly generating a datum of a certain type. For example,
     - : int list = [8; 9; 4]
 @end code
 
-Besides, you might also want to use use predicate functions to assure the generation conforms to some requirements. For example, if we want to generate a list of integers, we may want to make sure that the list is not empty, or the integer elements are not prim numbers. We can use the following function to achieve this:
+Besides, you might also want to use predicate functions to assure the generation conforms to some requirements. For example, if we want to generate a list of integers, we may want to make sure that the list is not empty, or the integer elements are not prim numbers. We can use the following function to achieve this:
 
 @begin code --lang OCaml
 let guard_g (predicate: 'a -> bool) (g: 'a generator) : 'a generator =
@@ -111,7 +111,7 @@ let _ = guard_g iseven int_g
 
 Using @code|map|, @code|or|, @code|repeat|, @code|guard| and existing "primitive" generators, we can automatically construct a generator for most composite types via code generation with respect to the type definition.
 
-By generalising above patterns, we present the following code, which is adequate for generating data for arbitrary types:
+By generalising the above patterns, we present the following code, which is adequate for generating data for arbitrary types:
 
 @begin code --lang OCaml
 type _ spec =
@@ -138,7 +138,7 @@ let create_generator =
 
 ## Pattern-based Data Generation
 
-The basics of "datagenc" described above has been well integrated in famous frameworks such as QuickCheck in Haskell or Hypothesis in Python.
+The basics of "datagenc" described above have been well integrated into famous frameworks such as QuickCheck in Haskell or Hypothesis in Python.
 
 In Haskell, things are automatic as static typing is used to reason about the required generator.
 
@@ -171,9 +171,9 @@ def test_reversing_twice_gives_same_list(xs):
 
 @end code
 
-Even if the framework is mature from an industrial perspective, such generation process can be still improved by introducing pattern-based data generation.
+Even if the framework is mature from an industrial perspective, the generation process can be still improved by introducing pattern-based data generation.
 
-Pattern-based generation uses the same mechanism as that in "datagenc" before, but performs a translation from pattern-matching like syntax to data generator specifications (like @code|spec| defined at the above OCaml prototyping code).
+Pattern-based generation uses the same mechanism as that in "datagenc", but performs a translation from pattern matching like syntax to data generator specifications (like @code|spec| defined in the above OCaml prototyping code).
 
 This was initially [implemented](https://github.com/thautwarm/MLStyle.jl/blob/main/matrix-benchmark/sampler.jl) in MLStyle.jl (a pattern matching library for Julia by me) for generating random data using pattern matching syntax.
 

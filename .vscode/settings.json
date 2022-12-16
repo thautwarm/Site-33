@@ -1,0 +1,9 @@
+{
+    "grammarly.selectors": [
+        {
+            "language": "plaintext",
+            "scheme": "file",
+            "pattern": "pl/datagen.op"
+        }
+    ]
+}
