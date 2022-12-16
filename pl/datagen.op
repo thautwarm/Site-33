@@ -223,7 +223,7 @@ end
 
 ## Miscellaneous
 
-The "datagenc" technique described in this article can save you a lot of time and effort compared by getting rid of manually creating data yourself and, ensuring that your data is representative and accurate.
+The "datagenc" technique described in this article can save you a lot of time and effort by getting rid of manually creating data yourself and, ensuring that your data is representative and accurate.
 
 An interesting open problem is how to generate data for dynamic programming languages in a "visual" approach. Pattern-based data generation is a good start (see some uses at [bench-datagen.jl](https://github.com/thautwarm/MLStyle.jl/blob/4773f8900bd534924d27d0082685ad79478c4301/matrix-benchmark/bench-datatype.jl#L25)), and may deserve better engineering for implementations in Python, Julia and other dynamic programming languages.
 
