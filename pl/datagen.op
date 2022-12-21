@@ -82,7 +82,7 @@ let right a = Right a
 let either_g (ga: 'a generator) (gb: 'b generator) = or_g [map_g left ga; map_g left gb]
 @end code
 
-The above analysis, i.e., deconstructing the generation process of @code|either| into "primitive" generation processes, unveils more common patterns in data generation such as @code|map| and @code|or.
+The above analysis, i.e., deconstructing the generation process of @code|either| into "primitive" generation processes, unveils more common patterns in data generation such as @code|map| and @code|or|.
 
 Another pattern is repeatedly generating a datum of a certain type. For example, if we want to generate a list of integers, we can repeatedly generate integers and then combine them into a list. This pattern is also common in data generation, and can be represented by the following function:
 
