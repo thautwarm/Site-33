@@ -1,0 +1,267 @@
+<style>
+body {
+    word-wrap: break-word;
+    max-width: 1200px;
+    margin: 10%;
+}
+pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.hll { background-color: #a8aaaa }
+.c { color: #a0a1a7 } /* Comment */
+.err { color: #e92d46 } /* Error */
+.k { color: #0098dd } /* Keyword */
+.l { color: #c5a332 } /* Literal */
+.n { color: #383a42 } /* Name */
+.o { color: #7a82da } /* Operator */
+.p { color: #275fe4 } /* Punctuation */
+.ch { color: #a0a1a7 } /* Comment.Hashbang */
+.cm { color: #a0a1a7 } /* Comment.Multiline */
+.cp { color: #a0a1a7 } /* Comment.Preproc */
+.cpf { color: #a0a1a7 } /* Comment.PreprocFile */
+.c1 { color: #a0a1a7 } /* Comment.Single */
+.cs { color: #a0a1a7 } /* Comment.Special */
+.gd { color: #e92d46 } /* Generic.Deleted */
+.ge { font-style: italic } /* Generic.Emph */
+.gh { color: #383a42; font-weight: bold } /* Generic.Heading */
+.gi { color: #23974a } /* Generic.Inserted */
+.gp { color: #a0a1a7; font-weight: bold } /* Generic.Prompt */
+.gs { font-weight: bold } /* Generic.Strong */
+.gu { color: #00b5b0; font-weight: bold } /* Generic.Subheading */
+.kc { color: #823ff1 } /* Keyword.Constant */
+.kd { color: #d52753 } /* Keyword.Declaration */
+.kn { color: #d52753 } /* Keyword.Namespace */
+.kp { color: #0098dd } /* Keyword.Pseudo */
+.kr { color: #0098dd } /* Keyword.Reserved */
+.kt { color: #d52753 } /* Keyword.Type */
+.ld { color: #c5a332 } /* Literal.Date */
+.m { color: #ce33c0 } /* Literal.Number */
+.s { color: #c5a332 } /* Literal.String */
+.na { color: #a05a48 } /* Name.Attribute */
+.nb { color: #823ff1 } /* Name.Builtin */
+.nc { color: #d52753 } /* Name.Class */
+.no { color: #823ff1 } /* Name.Constant */
+.nd { color: #0098dd } /* Name.Decorator */
+.ni { color: #383a42 } /* Name.Entity */
+.ne { color: #e92d46 } /* Name.Exception */
+.nf { color: #23974a } /* Name.Function */
+.nl { color: #383a42 } /* Name.Label */
+.nn { color: #d52753 } /* Name.Namespace */
+.nx { color: #383a42 } /* Name.Other */
+.py { color: #383a42 } /* Name.Property */
+.nt { color: #00b5b0 } /* Name.Tag */
+.nv { color: #e92d46 } /* Name.Variable */
+.ow { color: #7a82da } /* Operator.Word */
+.pm { color: #275fe4 } /* Punctuation.Marker */
+.w { color: #383a42 } /* Text.Whitespace */
+.mb { color: #ce33c0 } /* Literal.Number.Bin */
+.mf { color: #ce33c0 } /* Literal.Number.Float */
+.mh { color: #ce33c0 } /* Literal.Number.Hex */
+.mi { color: #ce33c0 } /* Literal.Number.Integer */
+.mo { color: #ce33c0 } /* Literal.Number.Oct */
+.sa { color: #c5a332 } /* Literal.String.Affix */
+.sb { color: #c5a332 } /* Literal.String.Backtick */
+.sc { color: #383a42 } /* Literal.String.Char */
+.dl { color: #c5a332 } /* Literal.String.Delimiter */
+.sd { color: #a0a1a7 } /* Literal.String.Doc */
+.s2 { color: #c5a332 } /* Literal.String.Double */
+.se { color: #f92672 } /* Literal.String.Escape */
+.sh { color: #c5a332 } /* Literal.String.Heredoc */
+.si { color: #00b5b0 } /* Literal.String.Interpol */
+.sx { color: #c5a332 } /* Literal.String.Other */
+.sr { color: #c5a332 } /* Literal.String.Regex */
+.s1 { color: #c5a332 } /* Literal.String.Single */
+.ss { color: #c5a332 } /* Literal.String.Symbol */
+.bp { color: #823ff1 } /* Name.Builtin.Pseudo */
+.fm { color: #23974a } /* Name.Function.Magic */
+.vc { color: #e92d46 } /* Name.Variable.Class */
+.vg { color: #e92d46 } /* Name.Variable.Global */
+.vi { color: #e92d46 } /* Name.Variable.Instance */
+.vm { color: #e92d46 } /* Name.Variable.Magic */
+.il { color: #ce33c0 } /* Literal.Number.Integer.Long */</style><title>Julia交互会话中的重定义问题</title>首页：
+<ul id="filtered-index_6"><li><a href="..\index.html">index.html</a></li></ul>
+目录:
+<div class="toc" refid="ccc_7"><ul><li><a href="#cccccccccccccccc_43">Julia交互会话中的重定义问题</a><ul><li><a href="#cccc_44">背景问题</a></li><li><a href="#cccc_45">解决方案</a></li><li><a href="#cc_46">实现</a></li></ul></li></ul></div>
+<h1><div id="cccccccccccccccc_43"></div>Julia交互会话中的重定义问题</h1>
+<h2><div id="cccc_44"></div>背景问题</h2>
+<p>使用Python比较多的用户如果接触Julia，除开启动延迟问题，一些重定义的操作也可能让人烦恼。</p>
+<div class="highlight"><pre><span></span><span class="k">struct</span> <span class="kt">S</span><span class="w"></span>
+<span class="w">    </span><span class="n">int_field</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="k">end</span><span class="w"></span>
+</pre></div>
+<p>以上语法定义一个结构体，这很酷：它的内存布局和在C里写一个结构体是一样的，内存开销不到一个Python整数的<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mrow><mn>1</mn></mrow><mrow><mn>4</mn></mrow></mfrac></mstyle></mrow></math>.</p>
+<p>但是用户不关心，用户关心这个：</p>
+<div class="highlight"><pre><span></span><span class="gp">julia&gt;</span><span class="w"> </span><span class="k">struct</span> <span class="kt">S</span><span class="w"></span>
+<span class="w">           </span><span class="n">int_field</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">       </span><span class="k">end</span><span class="w"></span>
+<span class="go"># 定义一个结构体</span>
+<p><span class="gp">julia&gt;</span><span class="w"> </span><span class="k">struct</span> <span class="kt">S</span><span class="w"></span>
+<span class="w">           </span><span class="n">int_field</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>
+<span class="w">       </span><span class="k">end</span><span class="w"></span>
+<span class="go"># 定义相同，正常工作</span></p>
+<p><span class="gp">julia&gt;</span><span class="w"> </span><span class="k">struct</span> <span class="kt">S</span><span class="w"></span>
+<span class="w">           </span><span class="n">int_field</span><span class="o">::</span><span class="kt">Int64</span><span class="w"></span>
+<span class="w">       </span><span class="k">end</span><span class="w"></span>
+<span class="gr">ERROR: invalid redefinition of type S</span>
+</p></pre></div>
+<p>之所以发生这个情况，是因为Julia没办法“卸载”一个结构体。</p>
+<p>这有两方面原因：</p>
+<ol>
+<li>
+<p>与Python相比，Julia中的变量名、尤其是定义类型时自动绑定的const变量名是不能重定义的。</p>
+<p>其之所以不能重定义的底层原因是，const变量名并非像Python那样只是字符串到堆对象的绑定，而是到LLVM编译结果中某个稳定位置的符号链接。虽然存在重定向的机会，但Julia没做。</p>
+</li>
+<li>
+<p>Julia之所以不愿意花精力支持重绑定const变量名，是因为他们认为这会对用户造成误导。</p>
+<p>他们担心的情况确实可能出现，因为和Python不同的是，Julia中的类型大规模地用于“重载”（多重派发），重名类型相比Python会产生更多误导。</p>
+</li>
+</ol>
+<p>考虑下面的情况：</p>
+<div class="highlight"><pre><span></span><span class="gp">julia&gt;</span><span class="w"> </span><span class="k">struct</span> <span class="kt">S</span><span class="w"></span>
+<span class="w">        </span><span class="n">v1</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"></span>
+<span class="w">        </span><span class="k">end</span><span class="w"></span>
+<p><span class="gp">julia&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">S</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"></span></p>
+<p><span class="gp">julia&gt;</span><span class="w"> </span><span class="n">f</span><span class="p">(</span><span class="n">s</span><span class="o">::</span><span class="kt">S</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"></span></p>
+<p><span class="gp">julia&gt;</span><span class="w"> </span><span class="k">struct</span> <span class="kt">S</span><span class="w"></span>
+<span class="w">        </span><span class="n">v2</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="kt">Float64</span><span class="w"></span>
+<span class="w">        </span><span class="k">end</span><span class="w"></span></p>
+<p><span class="gp">julia&gt;</span><span class="w"> </span><span class="n">f</span><span class="p">(</span><span class="n">s</span><span class="o">::</span><span class="kt">S</span><span class="p">,</span><span class="w"> </span><span class="o">::</span><span class="kt">Int</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="w"></span></p>
+<p><span class="gp">julia&gt;</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">S</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span><span class="w"></span>
+<span class="gp">julia&gt;</span><span class="w"> </span><span class="n">f</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="w"></span>
+<span class="gr">ERROR: MethodError: no method matching f(::S)</span>
+<span class="gr">Closest candidates are:</span>
+<span class="gr">f(::S, ::Int64) at ...</span>
+<span class="gr">f(::S,) at ...</span>
+</p></pre></div>
+<div class="highlight"><pre><span></span>
+</pre></div>
+<p>可以看到，如果允许重定义，将会发生<code><span></span><span class="n">f</span><span class="p">(</span><span class="o">::</span><span class="kt">S</span><span class="p">)</span><span class="w"></span>
+</code>缺失重载，但提示<code><span></span><span class="n">f</span><span class="p">(</span><span class="o">::</span><span class="kt">S</span><span class="p">)</span><span class="w"></span>
+</code>存在。</p>
+<p>在使用交互环境时，用户的需求是进行实验迭代。在这个过程中设计快速变动，结构体形状也不例外。
+实际上不止是结构体的重定义，真正的问题是，Julia中const变量的绑定基本都不能改变 (例外是存在的，例如模块名是const绑定，但修改只出现warning)。</p>
+<div class="highlight"><pre><span></span><span class="gp">julia&gt;</span><span class="w"> </span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">3</span><span class="w"></span>
+<span class="go">f (generic function with 2 methods)</span>
+<p><span class="gp">julia&gt;</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
+<span class="gr">ERROR: invalid redefinition of constant f</span>
+</p></pre></div>
+<p>在这里，我们不得不做一个取舍，即舍弃更好的报错，转而支持灵活的重定义。这个决定是否正确要看场景，在我所关心的场景中，要求上层用户向无法满足需求的语言进行妥协——这是毫无道理的。</p>
+<h2><div id="cccc_45"></div>解决方案</h2>
+<p>处于可维护性的考虑，在库代码层面进行类型、常量的重定义是错误的。</p>
+<p>但在我所关心的场景中，交互会话应该支持重定义——以方便用户进行实验。</p>
+<p>目前，结构体乃至通用的const绑定的重定义，并没有很好的实现：</p>
+<p>要么使用了非const绑定对类型进行别名绑定，这将导致函数中的<code>isa</code>检查退化为动态派发，性能下降数百倍；</p>
+<p>要么是利用了泛型参数，将字段变成泛型参量，这将隐式地导致一些类型转换问题，并且不支持用户定义泛型；</p>
+<div class="highlight"><pre><span></span>
+</pre></div>
+<p>再要么就是利用type alias，用 <code><span></span><span class="w"> </span><span class="kt">Tuple</span><span class="p">{</span><span class="kt">Tag</span><span class="p">,</span><span class="w"> </span><span class="o">...</span><span class="p">}</span><span class="w"> </span>
+</code> 或者<code><span></span><span class="kt">Ref</span><span class="p">{</span><span class="kt">Tuple</span><span class="p">{</span><span class="kt">Tag</span><span class="p">,</span><span class="w"> </span><span class="o">...</span><span class="p">}}</span><span class="w"></span>
+</code>伪装结构体，这几乎是完全工作的，但Julia的Tuple自动协变:</p>
+<div class="highlight"><pre><span></span><span class="kt">Tuple</span><span class="p">{</span><span class="kt">Union</span><span class="p">{</span><span class="kt">Int</span><span class="p">,</span><span class="w"> </span><span class="kt">String</span><span class="p">},</span><span class="w"> </span><span class="kt">Int</span><span class="p">}</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kt">Union</span><span class="p">{</span><span class="kt">Tuple</span><span class="p">{</span><span class="kt">Int</span><span class="p">,</span><span class="w"> </span><span class="kt">Int</span><span class="p">},</span><span class="w"> </span><span class="kt">Tuple</span><span class="p">{</span><span class="kt">String</span><span class="p">,</span><span class="w"> </span><span class="kt">Int</span><span class="p">}}</span><span class="w"></span>
+</pre></div>
+<p>这可能导致结构体的字段出现意想不到的协变性质，因此无法确认此种方式是否可靠。</p>
+<p>一个比较好的方式可能是下面这样，重点是对有限的情况做保证，而其他情况保持与原生Julia行为一致：</p>
+<ol>
+<li>
+<p>将Main模块设置为动态变化的，而REPL始终使用最新的Main模块。</p>
+</li>
+<li>
+<p>捕获有限情况的重定义错误。一旦捕获到可以处理的重定义错误，闯进一个新的Main模块，将旧的Main模块中所有变量转移到新的Main模块，除开发生冲突的const绑定。</p>
+</li>
+</ol>
+<p>这种方法乍一看很危险，因为一些宏展开可能会使用访问当前模块，并一直持有旧的Main。</p>
+<p>但其实，这并不会出现问题：即使这些宏可能期待<code>Main</code>中新定义的方法会扩展他们的行为，但由于将变量从旧模块迁移到新模块可以使用<code>import</code>语义，因此方法的扩展是正常工作的。</p>
+<p>当然，不可避免的，和原生Julia不兼容的情况是存在的。有一些宏变换可能会基于模块的引用相等性进行工作。例如PyCall的<code>@py_str</code>会使用当前模块，唯一决定一个执行Python代码的命名空间。</p>
+<p>但这种情况相对比较少，使用模块的引用相等性本身也是不推荐的，遇到这种情况更好的做法是先偷着乐一乐，然后写PR改进上游的实现，例如将PyCall的<code>@py_str</code>修改，通过访问模块中一个固定的变量获取Python作用域，若不存在则定义——这种方式就与前述的重定义方案兼容了。</p>
+<p><del>明天给代码实现，35行以内。</del></p>
+<h2><div id="cc_46"></div>实现</h2>
+<p>效果如下:</p>
+<div class="highlight"><pre><span></span><span class="go">redef&gt; struct S end</span>
+<p><span class="go">redef&gt; f(::S) = 1</span>
+<span class="go">f (generic function with 1 method)</span></p>
+<p><span class="go">redef&gt; s1 = S()</span>
+<span class="go">S()</span></p>
+<p><span class="go">redef&gt; f(s1)</span>
+<span class="go">1</span></p>
+<p><span class="go">redef&gt; struct S</span>
+<span class="go">         a :: Int</span>
+<span class="go">       end</span></p>
+<p><span class="go">redef&gt; s2 = S(2)</span>
+<span class="go">Main.__Main_0.S(2)</span></p>
+<p><span class="go">redef&gt; f(::S) = 2</span>
+<span class="go">f (generic function with 2 methods)</span></p>
+<p><span class="go">redef&gt; f(s1)</span>
+<span class="go">1</span></p>
+<p><span class="go">redef&gt; f(s2)</span>
+<span class="go">2</span>
+</p></pre></div>
+<p>对于实现，首先，在<code>~/.julia/config/startup.jl</code>中增加下列行：</p>
+<div class="highlight"><pre><span></span><span class="n">include</span><span class="p">(</span><span class="s">"redef.jl"</span><span class="p">)</span><span class="w"></span>
+<span class="n">atreplinit</span><span class="p">()</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="n">repl</span><span class="w"></span>
+<span class="w">  </span><span class="k">try</span><span class="w"></span>
+<span class="w">      </span><span class="nd">@async</span><span class="w"> </span><span class="k">begin</span><span class="w"></span>
+<span class="w">        </span><span class="n">Redef</span><span class="o">.</span><span class="n">start</span><span class="p">()</span><span class="w"></span>
+<span class="w">      </span><span class="k">end</span><span class="w"></span>
+<span class="w">  </span><span class="k">catch</span><span class="w"> </span><span class="n">e</span><span class="w"></span>
+<span class="w">    </span><span class="n">throw</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="w"></span>
+<span class="w">  </span><span class="k">end</span><span class="w"></span>
+<span class="k">end</span><span class="w"></span>
+</pre></div>
+<p>然后创建<code>~/.julia/config/redef.jl</code>，填入以下内容：</p>
+<div class="highlight"><pre><span></span><span class="k">module</span><span class="w"> </span><span class="n">Redef</span><span class="w"></span>
+<span class="k">using</span><span class="w"> </span><span class="n">ReplMaker</span><span class="w"></span>
+<span class="k">const</span><span class="w"> </span><span class="n">pat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sa">r</span><span class="sr">"invalid redefinition of constant ([</span><span class="err">\</span><span class="sr">w|</span><span class="err">\</span><span class="sr">W]+)"</span><span class="w"></span>
+<span class="k">const</span><span class="w"> </span><span class="n">cntRef</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">Ref</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="w"></span>
+<span class="k">const</span><span class="w"> </span><span class="n">curMod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">Ref</span><span class="p">{</span><span class="kt">Module</span><span class="p">}()</span><span class="w"></span>
+<p><span class="k">function</span><span class="w"> </span><span class="n"><strong>init</strong></span><span class="p">()</span><span class="w"></span>
+<span class="w">    </span><span class="n">cntRef</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
+<span class="w">    </span><span class="n">curMod</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Main</span><span class="w"></span>
+<span class="k">end</span><span class="w"></span></p>
+<p><span class="k">function</span><span class="w"> </span><span class="n">run</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="n">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curMod</span><span class="p">[]</span><span class="w"></span>
+<span class="w">    </span><span class="k">try</span><span class="w"></span>
+<span class="w">        </span><span class="n">Base</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">ex</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="k">catch</span><span class="w"> </span><span class="n">e</span><span class="w"></span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="k">isa</span><span class="w"> </span><span class="kt">ErrorException</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">rm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">match</span><span class="p">(</span><span class="n">pat</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="o">.</span><span class="n">msg</span><span class="p">))</span><span class="w"> </span><span class="o">!==</span><span class="w"> </span><span class="nb">nothing</span><span class="w"></span>
+<span class="w">            </span><span class="n">new_mod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">Module</span><span class="p">(</span><span class="kt">Symbol</span><span class="p">(</span><span class="s">"_<em>Main</em>"</span><span class="p">,</span><span class="w"> </span><span class="n">cntRef</span><span class="p">[]),</span><span class="w"> </span><span class="nb">true</span><span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="n">cntRef</span><span class="p">[]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
+<span class="w">            </span><span class="n">curMod</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">new_mod</span><span class="w"></span>
+<span class="w">            </span><span class="n">interested_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">Symbol</span><span class="p">(</span><span class="n">rm</span><span class="o">.</span><span class="n">captures</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="w"></span>
+<span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="n">each</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">names</span><span class="p">(</span><span class="n">m</span><span class="p">;</span><span class="w"> </span><span class="n">all</span><span class="o">=</span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="n">imported</span><span class="o">=</span><span class="nb">true</span><span class="p">)</span><span class="w"></span>
+<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="n">each</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="ss">:eval</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">interested_name</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="n">each</span><span class="w"></span>
+<span class="w">                    </span><span class="k">continue</span><span class="w"></span>
+<span class="w">                </span><span class="k">end</span><span class="w"></span>
+<span class="w">                </span><span class="n">full_module_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">Symbol</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="p">(</span><span class="n">fullname</span><span class="p">(</span><span class="n">m</span><span class="p">)),</span><span class="w"> </span><span class="s">"."</span><span class="p">))</span><span class="w"></span>
+<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="n">isconst</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">each</span><span class="p">)</span><span class="w"></span>
+<span class="w">                    </span><span class="n">Base</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">new_mod</span><span class="p">,</span><span class="w"> </span><span class="o">:</span><span class="p">(</span><span class="k">import</span><span class="w"> </span><span class="o">$</span><span class="n">full_module_name</span><span class="o">:</span><span class="w"> </span><span class="o">$</span><span class="n">each</span><span class="p">))</span><span class="w"></span>
+<span class="w">                </span><span class="k">else</span><span class="w"></span>
+<span class="w">                    </span><span class="n">Base</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">new_mod</span><span class="p">,</span><span class="w"> </span><span class="o">:</span><span class="p">(</span><span class="o">$</span><span class="n">each</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">$</span><span class="n">m</span><span class="o">.$</span><span class="n">each</span><span class="p">))</span><span class="w"></span>
+<span class="w">                </span><span class="k">end</span><span class="w"></span>
+<span class="w">            </span><span class="k">end</span><span class="w"></span>
+<span class="w">            </span><span class="n">Base</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">new_mod</span><span class="p">,</span><span class="w"> </span><span class="n">ex</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="k">else</span><span class="w"></span>
+<span class="w">            </span><span class="n">rethrow</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="k">end</span><span class="w"></span>
+<span class="w">    </span><span class="k">end</span><span class="w"></span>
+<span class="k">end</span><span class="w"></span></p>
+<p><span class="k">function</span><span class="w"> </span><span class="n">redirect_parse</span><span class="p">(</span><span class="n">s</span><span class="o">::</span><span class="kt">AbstractString</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="n">ex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Meta</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="o">:</span><span class="p">(</span><span class="o">$</span><span class="n">run</span><span class="p">(</span><span class="o">$</span><span class="p">(</span><span class="kt">QuoteNode</span><span class="p">(</span><span class="n">ex</span><span class="p">))))</span><span class="w"></span>
+<span class="k">end</span><span class="w"></span></p>
+<p><span class="nd">@inline</span><span class="w"> </span><span class="n">start</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">initrepl</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="n">redirect_parse</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">prompt_text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"redef&gt; "</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">prompt_color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ss">:magenta</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">mode_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ss">:redef_julia</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">valid_input_checker</span><span class="o">=</span><span class="n">ReplMaker</span><span class="o">.</span><span class="n">complete_julia</span><span class="w"></span>
+<span class="p">)</span><span class="w"></span>
+<span class="k">end</span><span class="w"> </span><span class="c"># end module</span><span class="w"></span>
+</p></pre></div>
+
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+        <script type="text/javascript" id="MathJax-script" async
+            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/mml-chtml.js">
+        </script>
+        

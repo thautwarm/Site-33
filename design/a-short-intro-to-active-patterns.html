@@ -1,0 +1,144 @@
+<style>
+body {
+    word-wrap: break-word;
+    max-width: 1200px;
+    margin: 10%;
+}
+pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.hll { background-color: #a8aaaa }
+.c { color: #a0a1a7 } /* Comment */
+.err { color: #e92d46 } /* Error */
+.k { color: #0098dd } /* Keyword */
+.l { color: #c5a332 } /* Literal */
+.n { color: #383a42 } /* Name */
+.o { color: #7a82da } /* Operator */
+.p { color: #275fe4 } /* Punctuation */
+.ch { color: #a0a1a7 } /* Comment.Hashbang */
+.cm { color: #a0a1a7 } /* Comment.Multiline */
+.cp { color: #a0a1a7 } /* Comment.Preproc */
+.cpf { color: #a0a1a7 } /* Comment.PreprocFile */
+.c1 { color: #a0a1a7 } /* Comment.Single */
+.cs { color: #a0a1a7 } /* Comment.Special */
+.gd { color: #e92d46 } /* Generic.Deleted */
+.ge { font-style: italic } /* Generic.Emph */
+.gh { color: #383a42; font-weight: bold } /* Generic.Heading */
+.gi { color: #23974a } /* Generic.Inserted */
+.gp { color: #a0a1a7; font-weight: bold } /* Generic.Prompt */
+.gs { font-weight: bold } /* Generic.Strong */
+.gu { color: #00b5b0; font-weight: bold } /* Generic.Subheading */
+.kc { color: #823ff1 } /* Keyword.Constant */
+.kd { color: #d52753 } /* Keyword.Declaration */
+.kn { color: #d52753 } /* Keyword.Namespace */
+.kp { color: #0098dd } /* Keyword.Pseudo */
+.kr { color: #0098dd } /* Keyword.Reserved */
+.kt { color: #d52753 } /* Keyword.Type */
+.ld { color: #c5a332 } /* Literal.Date */
+.m { color: #ce33c0 } /* Literal.Number */
+.s { color: #c5a332 } /* Literal.String */
+.na { color: #a05a48 } /* Name.Attribute */
+.nb { color: #823ff1 } /* Name.Builtin */
+.nc { color: #d52753 } /* Name.Class */
+.no { color: #823ff1 } /* Name.Constant */
+.nd { color: #0098dd } /* Name.Decorator */
+.ni { color: #383a42 } /* Name.Entity */
+.ne { color: #e92d46 } /* Name.Exception */
+.nf { color: #23974a } /* Name.Function */
+.nl { color: #383a42 } /* Name.Label */
+.nn { color: #d52753 } /* Name.Namespace */
+.nx { color: #383a42 } /* Name.Other */
+.py { color: #383a42 } /* Name.Property */
+.nt { color: #00b5b0 } /* Name.Tag */
+.nv { color: #e92d46 } /* Name.Variable */
+.ow { color: #7a82da } /* Operator.Word */
+.pm { color: #275fe4 } /* Punctuation.Marker */
+.w { color: #383a42 } /* Text.Whitespace */
+.mb { color: #ce33c0 } /* Literal.Number.Bin */
+.mf { color: #ce33c0 } /* Literal.Number.Float */
+.mh { color: #ce33c0 } /* Literal.Number.Hex */
+.mi { color: #ce33c0 } /* Literal.Number.Integer */
+.mo { color: #ce33c0 } /* Literal.Number.Oct */
+.sa { color: #c5a332 } /* Literal.String.Affix */
+.sb { color: #c5a332 } /* Literal.String.Backtick */
+.sc { color: #383a42 } /* Literal.String.Char */
+.dl { color: #c5a332 } /* Literal.String.Delimiter */
+.sd { color: #a0a1a7 } /* Literal.String.Doc */
+.s2 { color: #c5a332 } /* Literal.String.Double */
+.se { color: #f92672 } /* Literal.String.Escape */
+.sh { color: #c5a332 } /* Literal.String.Heredoc */
+.si { color: #00b5b0 } /* Literal.String.Interpol */
+.sx { color: #c5a332 } /* Literal.String.Other */
+.sr { color: #c5a332 } /* Literal.String.Regex */
+.s1 { color: #c5a332 } /* Literal.String.Single */
+.ss { color: #c5a332 } /* Literal.String.Symbol */
+.bp { color: #823ff1 } /* Name.Builtin.Pseudo */
+.fm { color: #23974a } /* Name.Function.Magic */
+.vc { color: #e92d46 } /* Name.Variable.Class */
+.vg { color: #e92d46 } /* Name.Variable.Global */
+.vi { color: #e92d46 } /* Name.Variable.Instance */
+.vm { color: #e92d46 } /* Name.Variable.Magic */
+.il { color: #ce33c0 } /* Literal.Number.Integer.Long */</style><title>A Short Introduction to Active Patterns</title>Index Page
+<ul id="filtered-index_3"><li><a href="..\index.html">index.html</a></li></ul>
+TOC
+<div class="toc" refid="ccc_4"><ul><li><a href="#c0x20ccccc0x20cccccccccccc0x20cc0x20cccccc0x20cccccccc_48">A Short Introduction to Active Patterns</a><ul></ul></li></ul></div>
+<h1><div id="c0x20ccccc0x20cccccccccccc0x20cc0x20cccccc0x20cccccccc_48"></div>A Short Introduction to Active Patterns</h1>
+<p>The progress of adopting pattern matching in mainstream industrial programming languages is accelerating. Python and Ruby have already supported such an impressive feature, which leads to quite a different atmosphere in the world of programming languages.</p>
+<p>However, their rejection of <strong>active patterns</strong> is disappointing. Active patterns, or view patterns, is a mechanism to pattern match data structure using custom, specific perspectives. For instance, the notation of list deconstruction is so convenient that it becomes a mark of functional programming languages. A list is partitioned into two parts, the first few elements and the tail of the list. The following OCaml/F# program shows how list deconstruction eases sequence processing.</p>
+<div class="highlight"><pre><span></span><span class="k">let</span><span class="w"> </span><span class="nv">rec</span><span class="w"> </span><span class="n">string_unescape</span><span class="w"> </span><span class="o">(</span><span class="n">chars</span><span class="o">:</span><span class="w"> </span><span class="kt">list</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">list</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"></span>
+<span class="w">    </span><span class="k">match</span><span class="w"> </span><span class="n">chars</span><span class="w"> </span><span class="k">with</span><span class="w"></span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="sc">'"'</span><span class="o">::</span><span class="bp">[]</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="bp">[]</span><span class="w"></span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="sc">'"'</span><span class="o">::_</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="c">(* invalid string literal *)</span><span class="w"></span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="sc">'\\'</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="sc">'"'</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">tail</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="sc">'"'</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">string_unescape</span><span class="w"> </span><span class="n">tail</span><span class="w"></span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="sc">'\\'</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="sc">'n'</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">tail</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="sc">'\n'</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">string_unescape</span><span class="w"> </span><span class="n">tail</span><span class="w"></span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="o">...</span><span class="w"></span>
+</pre></div>
+<p>It is also observed that such convenient notation does not only work for lists. Arrays, which is not a recursive data structure, can also enjoy such convenience. Subarrays, or array views, which is a data structure constructed in <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>O</mi><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo></mrow></math> time,  can be leveraged to support list-like array deconstruction, if active patterns are supported. List-like array deconstruction allows us to implement <code>string_unescape</code> that accepts an array.</p>
+<div class="highlight"><pre><span></span><span class="k">type</span><span class="w"> </span><span class="nc">array_view</span><span class="o">&lt;</span><span class="k">'</span><span class="n">a</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="n">source</span><span class="o">:</span><span class="w"> </span><span class="n">array</span><span class="o">&lt;</span><span class="k">'</span><span class="n">a</span><span class="o">&gt;;</span><span class="w"> </span><span class="n">offset</span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="w"> </span><span class="o">}</span><span class="w"></span>
+<p><span class="k">let</span><span class="w"> </span><span class="nv">rec</span><span class="w"> </span><span class="n">string_unescape</span><span class="w"> </span><span class="o">(</span><span class="n">chars</span><span class="o">:</span><span class="w"> </span><span class="n">array_view</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">list</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"></span>
+<span class="w">    </span><span class="k">match</span><span class="w"> </span><span class="n">chars</span><span class="w"> </span><span class="k">with</span><span class="w"></span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">ArrCons</span><span class="o">(</span><span class="sc">'"'</span><span class="o">,</span><span class="w"> </span><span class="n">ArrNil</span><span class="o">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="bp">[]</span><span class="w"></span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">ArrCons</span><span class="o">(</span><span class="sc">'"'</span><span class="o">,</span><span class="w"> </span><span class="o">_)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="c">(* invalid string literal *)</span><span class="w"></span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">ArrCons</span><span class="o">(</span><span class="sc">'\'</span><span class="o">,</span><span class="w"> </span><span class="n">ArrCons</span><span class="o">(</span><span class="sc">'"'</span><span class="o">,</span><span class="w"> </span><span class="n">tail</span><span class="o">))</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="sc">'"'</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">string_unescape</span><span class="w"> </span><span class="n">tail</span><span class="w"></span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">ArrCons</span><span class="o">(</span><span class="sc">'\'</span><span class="o">,</span><span class="w"> </span><span class="n">ArrCons</span><span class="o">(</span><span class="sc">'n'</span><span class="o">,</span><span class="w"> </span><span class="n">tail</span><span class="o">))</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="sc">'\n'</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">string_unescape</span><span class="w"> </span><span class="n">tail</span><span class="w"></span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="o">...</span><span class="w"></span>
+</p></pre></div>
+<p>As can be seen from the above code, we use 2 patterns <code>ArrCons</code> and <code>ArrNil</code>. These patterns are very similar to that in the list deconstruction. However, they do not indicate the shape of an <code>array_view&lt;'a&gt;</code>, instead, they deconstruct an <code>array_view&lt;'a&gt;</code> using a custom, specific perspective; they are active patterns.</p>
+<p>Active patterns are supported in Haskell and F#. We can define patterns for an existing data type to fit our task-specific use. There is a valid F# implementation for the aforementioned <code>ArrCons</code> and <code>ArrNil</code>.</p>
+<div class="highlight"><pre><span></span><span class="k">let</span><span class="w"> </span><span class="o">(|</span><span class="n">ArrCons</span><span class="o">|</span><span class="n">ArrNil</span><span class="o">|)</span><span class="w"> </span><span class="o">({</span><span class="n">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">source</span><span class="o">;</span><span class="w"> </span><span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="o">}:</span><span class="w"> </span><span class="n">array_view</span><span class="o">&lt;</span><span class="k">'</span><span class="n">a</span><span class="o">&gt;)</span><span class="w"> </span><span class="o">=</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">offset</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="nn">Array</span><span class="p">.</span><span class="n">length</span><span class="w"> </span><span class="n">source</span><span class="w"></span>
+<span class="w">    </span><span class="k">then</span><span class="w"> </span><span class="n">ArrNil</span><span class="w"></span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="n">ArrCons</span><span class="o">(</span><span class="n">source</span><span class="o">.[</span><span class="n">offset</span><span class="o">],</span><span class="w"> </span><span class="o">{</span><span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="o">;</span><span class="w"> </span><span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="o">})</span><span class="w"></span>
+</pre></div>
+<p>Active patterns allow customizable pattern matching, considerably improving the readability. However, this might not be the truth for people who see it the first time. To make it easier for newcomers to read, we give a program equivalent to the above, to clarify the behaviour of active patterns.</p>
+<div class="highlight"><pre><span></span><span class="k">type</span><span class="w"> </span><span class="nc">array_decons</span><span class="w"> </span><span class="o">=</span><span class="w"></span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">ArrCons</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="k">'</span><span class="n">a</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">array_view</span><span class="o">&lt;</span><span class="k">'</span><span class="n">a</span><span class="o">&gt;</span><span class="w"></span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">ArrNil</span><span class="w"></span>
+<p><span class="k">let</span><span class="w"> </span><span class="nv">array_decons</span><span class="o">:</span><span class="w"> </span><span class="n">array_view</span><span class="o">&lt;</span><span class="k">'</span><span class="n">a</span><span class="o">&gt;</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">array_decons</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">fun</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">offset</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="nn">Array</span><span class="p">.</span><span class="n">length</span><span class="w"> </span><span class="n">source</span><span class="w"></span>
+<span class="w">    </span><span class="k">then</span><span class="w"> </span><span class="n">ArrNil</span><span class="w"></span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="n">ArrCons</span><span class="o">(</span><span class="n">source</span><span class="o">.[</span><span class="n">offset</span><span class="o">],</span><span class="w"> </span><span class="o">{</span><span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="o">;</span><span class="w"> </span><span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="o">})</span><span class="w"></span></p>
+<p><span class="k">let</span><span class="w"> </span><span class="nv">rec</span><span class="w"> </span><span class="n">string_unescape</span><span class="w"> </span><span class="o">(</span><span class="n">chars</span><span class="o">:</span><span class="w"> </span><span class="n">array_view</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">list</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"></span>
+<span class="w">    </span><span class="k">match</span><span class="w"> </span><span class="n">array_decons</span><span class="w"> </span><span class="n">chars</span><span class="w"> </span><span class="k">with</span><span class="w"></span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">ArrCons</span><span class="o">(</span><span class="sc">'"'</span><span class="o">,</span><span class="w"> </span><span class="n">ArrNil</span><span class="o">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="bp">[]</span><span class="w"></span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="o">...</span><span class="w"></span>
+</p></pre></div>
+<p>Such code unveils that using active patterns is no more than applying a transformation to match targets. A naive implementation of active patterns is suggested as well.</p>
+<div class="highlight"><pre><span></span><span class="k">let</span><span class="w"> </span><span class="o">(|</span><span class="n">Positive</span><span class="o">|</span><span class="n">NotPositive</span><span class="o">|)</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w">  </span><span class="mi">0</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="n">Positive</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="n">NotPositive</span><span class="w"></span>
+<span class="k">let</span><span class="w"> </span><span class="o">(|</span><span class="n">Zero</span><span class="o">|</span><span class="n">NotZero</span><span class="o">|)</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="n">Zero</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="n">NotZero</span><span class="w"></span>
+<p><span class="k">match</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">with</span><span class="w"></span>
+<span class="o">|</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w">       </span><span class="c">(* natural pattern of int <em>)</em></span><span class="w"></span>
+<span class="o">|</span><span class="w"> </span><span class="n">Positive</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="c">( patterns: Positive/NotPositive <em>)</em></span><span class="w"></span>
+<span class="o">|</span><span class="w"> </span><span class="n">NotZero</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="mi">2</span><span class="w">  </span><span class="c">( patterns: Zero/NotZero *)</span><span class="w"></span>
+<span class="o">|</span><span class="w"> </span><span class="o">_</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="mi">3</span><span class="w"></span>
+<span class="c1">// 3</span><span class="w"></span>
+</p></pre></div>
+<p>However, in practice, the implementation of active patterns can avoid redundant allocations (by laziness or analysis). Different active patterns defined for the same data type can be used simultaneously, which makes active patterns a good approach to non-invasive extensions to pattern matching.</p>
+
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+        <script type="text/javascript" id="MathJax-script" async
+            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/mml-chtml.js">
+        </script>
+        

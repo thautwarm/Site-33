@@ -1,0 +1,251 @@
+<style>
+body {
+    word-wrap: break-word;
+    max-width: 1200px;
+    margin: 10%;
+}
+pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.hll { background-color: #a8aaaa }
+.c { color: #a0a1a7 } /* Comment */
+.err { color: #e92d46 } /* Error */
+.k { color: #0098dd } /* Keyword */
+.l { color: #c5a332 } /* Literal */
+.n { color: #383a42 } /* Name */
+.o { color: #7a82da } /* Operator */
+.p { color: #275fe4 } /* Punctuation */
+.ch { color: #a0a1a7 } /* Comment.Hashbang */
+.cm { color: #a0a1a7 } /* Comment.Multiline */
+.cp { color: #a0a1a7 } /* Comment.Preproc */
+.cpf { color: #a0a1a7 } /* Comment.PreprocFile */
+.c1 { color: #a0a1a7 } /* Comment.Single */
+.cs { color: #a0a1a7 } /* Comment.Special */
+.gd { color: #e92d46 } /* Generic.Deleted */
+.ge { font-style: italic } /* Generic.Emph */
+.gh { color: #383a42; font-weight: bold } /* Generic.Heading */
+.gi { color: #23974a } /* Generic.Inserted */
+.gp { color: #a0a1a7; font-weight: bold } /* Generic.Prompt */
+.gs { font-weight: bold } /* Generic.Strong */
+.gu { color: #00b5b0; font-weight: bold } /* Generic.Subheading */
+.kc { color: #823ff1 } /* Keyword.Constant */
+.kd { color: #d52753 } /* Keyword.Declaration */
+.kn { color: #d52753 } /* Keyword.Namespace */
+.kp { color: #0098dd } /* Keyword.Pseudo */
+.kr { color: #0098dd } /* Keyword.Reserved */
+.kt { color: #d52753 } /* Keyword.Type */
+.ld { color: #c5a332 } /* Literal.Date */
+.m { color: #ce33c0 } /* Literal.Number */
+.s { color: #c5a332 } /* Literal.String */
+.na { color: #a05a48 } /* Name.Attribute */
+.nb { color: #823ff1 } /* Name.Builtin */
+.nc { color: #d52753 } /* Name.Class */
+.no { color: #823ff1 } /* Name.Constant */
+.nd { color: #0098dd } /* Name.Decorator */
+.ni { color: #383a42 } /* Name.Entity */
+.ne { color: #e92d46 } /* Name.Exception */
+.nf { color: #23974a } /* Name.Function */
+.nl { color: #383a42 } /* Name.Label */
+.nn { color: #d52753 } /* Name.Namespace */
+.nx { color: #383a42 } /* Name.Other */
+.py { color: #383a42 } /* Name.Property */
+.nt { color: #00b5b0 } /* Name.Tag */
+.nv { color: #e92d46 } /* Name.Variable */
+.ow { color: #7a82da } /* Operator.Word */
+.pm { color: #275fe4 } /* Punctuation.Marker */
+.w { color: #383a42 } /* Text.Whitespace */
+.mb { color: #ce33c0 } /* Literal.Number.Bin */
+.mf { color: #ce33c0 } /* Literal.Number.Float */
+.mh { color: #ce33c0 } /* Literal.Number.Hex */
+.mi { color: #ce33c0 } /* Literal.Number.Integer */
+.mo { color: #ce33c0 } /* Literal.Number.Oct */
+.sa { color: #c5a332 } /* Literal.String.Affix */
+.sb { color: #c5a332 } /* Literal.String.Backtick */
+.sc { color: #383a42 } /* Literal.String.Char */
+.dl { color: #c5a332 } /* Literal.String.Delimiter */
+.sd { color: #a0a1a7 } /* Literal.String.Doc */
+.s2 { color: #c5a332 } /* Literal.String.Double */
+.se { color: #f92672 } /* Literal.String.Escape */
+.sh { color: #c5a332 } /* Literal.String.Heredoc */
+.si { color: #00b5b0 } /* Literal.String.Interpol */
+.sx { color: #c5a332 } /* Literal.String.Other */
+.sr { color: #c5a332 } /* Literal.String.Regex */
+.s1 { color: #c5a332 } /* Literal.String.Single */
+.ss { color: #c5a332 } /* Literal.String.Symbol */
+.bp { color: #823ff1 } /* Name.Builtin.Pseudo */
+.fm { color: #23974a } /* Name.Function.Magic */
+.vc { color: #e92d46 } /* Name.Variable.Class */
+.vg { color: #e92d46 } /* Name.Variable.Global */
+.vi { color: #e92d46 } /* Name.Variable.Instance */
+.vm { color: #e92d46 } /* Name.Variable.Magic */
+.il { color: #ce33c0 } /* Literal.Number.Integer.Long */</style>Index Page
+<ul id="filtered-index_15"><li><a href="..\index.html">index.html</a></li></ul>
+<h1>Random Test Data Generation for Arbitrary Types</h1>
+<h2>Introduction</h2>
+<p>In this article, we'd talk about a technique that provides random data generation for arbitrary data types. Whether you're working on testing code, creating mock data for demos or prototypes, or just want to quickly generate some sample data for whatever reason, this technique can come in handy.</p>
+<p>Such a technique does not have a special name, and we'll call it "datagen combinators" or "datagenc" in this article.</p>
+<p>The idea of "datagenc" is simple and well-known to functional programming guys. By observing and abstracting approaches of data generation and representing the generation process via generalised algebraic data types, we succeed in creating random data that conforms to the structure and constraints specified. Such a process is also type-safe, which means certain bugs are got rid of at compile time.</p>
+<p>The special part of this article is that we also discuss the further improvement to the application of "datagenc" for dynamic programming languages such as Julia and Python.</p>
+<h2>Mechanism</h2>
+<p>Suppose we want to generate runtime data for purposes such as testing, we'll need a "generator":</p>
+<p>Using OCaml, what we want can be given as follows:</p>
+<div class="highlight"><pre><span></span><span class="k">type</span> <span class="k">'</span><span class="n">a</span> <span class="n">generator</span> <span class="o">=</span> <span class="kt">unit</span> <span class="o">-&gt;</span> <span class="k">'</span><span class="n">a</span>
+<span class="k">let</span> <span class="n">gen</span> <span class="o">(</span><span class="n">g</span><span class="o">:</span> <span class="k">'</span><span class="n">a</span> <span class="n">generator</span><span class="o">)</span> <span class="o">=</span> <span class="n">g</span> <span class="bp">()</span>
+</pre></div>
+<p>We can contrive a simple generator of integers`:</p>
+<div class="highlight"><pre><span></span><span class="k">let</span> <span class="n">int_g</span> <span class="o">=</span> <span class="k">fun</span> <span class="bp">()</span> <span class="o">-&gt;</span> <span class="nn">Random</span><span class="p">.</span><span class="n">int</span> <span class="mi">16</span>
+<span class="k">let</span> <span class="o">_</span> <span class="o">=</span> <span class="n">gen</span> <span class="n">int_g</span><span class="o">;;</span>
+<span class="o">-</span> <span class="o">:</span> <span class="kt">int</span> <span class="o">=</span> <span class="mi">3</span>
+</pre></div>
+<p>Such simple generators can be also made for other non-composite types, such as <code><span></span><span class="kt">string</span>
+</code>, <code><span></span><span class="kt">float</span>
+</code>, <code><span></span><span class="kt">bool</span>
+</code>, etc.</p>
+<p>The first interesting part comes when we consider the composite types. Giving a composite type as below:</p>
+<div class="highlight"><pre><span></span><span class="k">type</span> <span class="o">(</span><span class="k">'</span><span class="n">a</span><span class="o">,</span> <span class="k">'</span><span class="n">b</span><span class="o">)</span> <span class="n">either</span> <span class="o">=</span> <span class="nc">Left</span> <span class="k">of</span> <span class="k">'</span><span class="n">a</span> <span class="o">|</span> <span class="nc">Right</span> <span class="k">of</span> <span class="k">'</span><span class="n">b</span>
+<span class="k">let</span> <span class="n">either_g</span> <span class="o">=</span> <span class="o">?</span>
+</pre></div>
+<p>If we want to generate an <code>either</code> datum, we should provide information about its type arguments (<code><span></span><span class="k">'</span><span class="n">a</span><span class="o">,</span> <span class="k">'</span><span class="n">b</span>
+</code>). If you are familiar with solving problems with recursions, you may have immediately noticed that the generation of <code><span></span><span class="n">either_g</span>
+</code> can be also constructed by composting two generators, one for each type argument. In other words, we can generate an <code><span></span><span class="n">either</span>
+</code> datum by generating a datum of type <code><span></span><span class="k">'</span><span class="n">a</span>
+</code> and a datum of type <code><span></span><span class="k">'</span><span class="n">b</span>
+</code>, and then combine them into an <code><span></span><span class="n">either</span>
+</code> datum.</p>
+<div class="highlight"><pre><span></span><span class="k">let</span> <span class="n">either_g</span> <span class="o">=</span> <span class="k">fun</span> <span class="o">(</span><span class="n">g1</span><span class="o">:</span> <span class="k">'</span><span class="n">a</span> <span class="n">generator</span><span class="o">)</span> <span class="o">(</span><span class="n">g2</span><span class="o">:</span> <span class="k">'</span><span class="n">b</span> <span class="n">generator</span><span class="o">)</span> <span class="o">-&gt;</span>
+    <span class="k">match</span> <span class="nn">Random</span><span class="p">.</span><span class="n">int</span> <span class="mi">2</span> <span class="k">with</span>
+    <span class="o">|</span> <span class="mi">0</span> <span class="o">-&gt;</span> <span class="nc">Left</span> <span class="o">(</span><span class="n">gen</span> <span class="n">g1</span><span class="o">)</span>
+    <span class="o">|</span> <span class="mi">1</span> <span class="o">-&gt;</span> <span class="nc">Right</span> <span class="o">(</span><span class="n">gen</span> <span class="n">g2</span><span class="o">)</span>
+    <span class="o">|</span> <span class="o">_</span> <span class="o">-&gt;</span> <span class="n">failwith</span> <span class="s2">"impossible"</span>
+</pre></div>
+<p>It shows that constructing a generator for a composite type such as <code><span></span><span class="n">either</span>
+</code> can be represented by compositing the generator of its components.</p>
+<p align="center">
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mtext mathvariant="italic">Gen</mtext><mo stretchy="false">(</mo><mo stretchy="false">(</mo><msub><mi>t</mi><mn>1</mn></msub><mo>,</mo><mo>⋯</mo><mo>,</mo><msub><mi>t</mi><mi>n</mi></msub><mo stretchy="false">)</mo><mo stretchy="false">)</mo><mo>=</mo><mo stretchy="false">(</mo><mtext mathvariant="italic">Gen</mtext><mo stretchy="false">(</mo><msub><mi>t</mi><mn>1</mn></msub><mo stretchy="false">)</mo><mo>,</mo><mo>⋯</mo><mo>,</mo><mtext mathvariant="italic">Gen</mtext><mo stretchy="false">(</mo><msub><mi>t</mi><mi>n</mi></msub><mo stretchy="false">)</mo><mo stretchy="false">)</mo></mrow></math></p>
+<p>The above case also shows that if the composite type is a sum type, we can also split the data generation process into the union of its constructors' data generation processes.</p>
+<div class="highlight"><pre><span></span><span class="k">let</span> <span class="n">or_g</span> <span class="o">(</span><span class="n">gs</span><span class="o">:</span> <span class="k">'</span><span class="n">a</span> <span class="n">generator</span> <span class="kt">list</span><span class="o">)</span> <span class="o">=</span>
+    <span class="k">let</span> <span class="n">i</span> <span class="o">=</span> <span class="nn">Random</span><span class="p">.</span><span class="n">int</span> <span class="o">(</span><span class="nn">List</span><span class="p">.</span><span class="n">length</span> <span class="n">gs</span><span class="o">)</span> <span class="k">in</span> <span class="nn">List</span><span class="p">.</span><span class="n">nth</span> <span class="n">gs</span> <span class="n">i</span>
+<p><span class="k">let</span> <span class="n">map_g</span> <span class="o">(</span><span class="n">f</span><span class="o">:</span> <span class="k">'</span><span class="n">a</span> <span class="o">-&gt;</span> <span class="k">'</span><span class="n">b</span><span class="o">)</span> <span class="o">(</span><span class="n">ga</span><span class="o">:</span> <span class="k">'</span><span class="n">a</span> <span class="n">generator</span><span class="o">)</span> <span class="o">=</span> <span class="k">fun</span> <span class="bp">()</span> <span class="o">-&gt;</span> <span class="n">f</span> <span class="o">(</span><span class="n">gen</span> <span class="n">ga</span><span class="o">)</span>
+<span class="k">let</span> <span class="n">left</span> <span class="n">a</span> <span class="o">=</span> <span class="nc">Left</span> <span class="n">a</span>
+<span class="k">let</span> <span class="n">right</span> <span class="n">a</span> <span class="o">=</span> <span class="nc">Right</span> <span class="n">a</span></p>
+<p><span class="k">let</span> <span class="n">either_g</span> <span class="o">(</span><span class="n">ga</span><span class="o">:</span> <span class="k">'</span><span class="n">a</span> <span class="n">generator</span><span class="o">)</span> <span class="o">(</span><span class="n">gb</span><span class="o">:</span> <span class="k">'</span><span class="n">b</span> <span class="n">generator</span><span class="o">)</span> <span class="o">=</span> <span class="n">or_g</span> <span class="o">[</span><span class="n">map_g</span> <span class="n">left</span> <span class="n">ga</span><span class="o">;</span> <span class="n">map_g</span> <span class="n">left</span> <span class="n">gb</span><span class="o">]</span>
+</p></pre></div>
+<p>The above analysis, i.e., deconstructing the generation process of <code><span></span><span class="n">either</span>
+</code> into "primitive" generation processes, unveils more common patterns in data generation such as <code><span></span><span class="n">map</span>
+</code> and <code><span></span><span class="ow">or</span>
+</code>.</p>
+<p>Another pattern is repeatedly generating a datum of a certain type. For example, if we want to generate a list of integers, we can repeatedly generate integers and then combine them into a list. This pattern is also common in data generation, and can be represented by the following function:</p>
+<div class="highlight"><pre><span></span><span class="k">let</span> <span class="k">rec</span> <span class="n">repeat_g</span> <span class="o">(</span><span class="n">n</span><span class="o">:</span> <span class="kt">int</span><span class="o">)</span> <span class="o">(</span><span class="n">g</span><span class="o">:</span> <span class="k">'</span><span class="n">a</span> <span class="n">generator</span><span class="o">)</span> <span class="o">:</span> <span class="k">'</span><span class="n">a</span> <span class="kt">list</span> <span class="n">generator</span> <span class="o">=</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">then</span> <span class="k">fun</span> <span class="bp">()</span> <span class="o">-&gt;</span> <span class="bp">[]</span>
+    <span class="k">else</span> <span class="k">fun</span> <span class="bp">()</span> <span class="o">-&gt;</span> <span class="o">(</span><span class="n">gen</span> <span class="n">g</span><span class="o">)</span> <span class="o">::</span> <span class="o">(</span><span class="n">gen</span> <span class="o">(</span><span class="n">repeat_g</span> <span class="o">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="o">)</span> <span class="n">g</span><span class="o">))</span>
+<p><span class="k">let</span> <span class="o">_</span> <span class="o">=</span> <span class="n">gen</span> <span class="o">(</span><span class="n">repeat_g</span> <span class="mi">3</span> <span class="n">int_g</span><span class="o">);;</span>
+<span class="o">-</span> <span class="o">:</span> <span class="kt">int</span> <span class="kt">list</span> <span class="o">=</span> <span class="o">[</span><span class="mi">8</span><span class="o">;</span> <span class="mi">9</span><span class="o">;</span> <span class="mi">4</span><span class="o">]</span>
+</p></pre></div>
+<p>Besides, you might also want to use predicate functions to assure the generation conforms to some requirements. For example, if we want to generate a list of integers, we may want to make sure that the list is not empty, or the integer elements are not prim numbers. We can use the following function to achieve this:</p>
+<div class="highlight"><pre><span></span><span class="k">let</span> <span class="n">guard_g</span> <span class="o">(</span><span class="n">predicate</span><span class="o">:</span> <span class="k">'</span><span class="n">a</span> <span class="o">-&gt;</span> <span class="kt">bool</span><span class="o">)</span> <span class="o">(</span><span class="n">g</span><span class="o">:</span> <span class="k">'</span><span class="n">a</span> <span class="n">generator</span><span class="o">)</span> <span class="o">:</span> <span class="k">'</span><span class="n">a</span> <span class="n">generator</span> <span class="o">=</span>
+    <span class="k">let</span> <span class="k">rec</span> <span class="n">aux</span> <span class="bp">()</span> <span class="o">=</span>
+        <span class="k">let</span> <span class="n">x</span> <span class="o">=</span> <span class="n">gen</span> <span class="n">g</span> <span class="k">in</span>
+        <span class="k">if</span> <span class="n">predicate</span> <span class="n">x</span> <span class="k">then</span> <span class="n">x</span> <span class="k">else</span> <span class="n">aux</span> <span class="bp">()</span>
+    <span class="k">in</span> <span class="n">aux</span>
+<p><span class="k">let</span> <span class="n">iseven</span> <span class="n">x</span> <span class="o">=</span> <span class="o">(</span><span class="n">x</span> <span class="ow">mod</span> <span class="mi">2</span> <span class="o">=</span> <span class="mi">0</span><span class="o">)</span>
+<span class="k">let</span> <span class="o">_</span> <span class="o">=</span> <span class="n">guard_g</span> <span class="n">iseven</span> <span class="n">int_g</span>
+<span class="o">-</span> <span class="o">:</span> <span class="kt">int</span> <span class="o">=</span> <span class="mi">4</span>
+</p></pre></div>
+<p>Using <code><span></span><span class="n">map</span>
+</code>, <code><span></span><span class="ow">or</span>
+</code>, <code><span></span><span class="n">repeat</span>
+</code>, <code><span></span><span class="n">guard</span>
+</code> and existing "primitive" generators, we can automatically construct a generator for most composite types via code generation with respect to the type definition.</p>
+<p>By generalising the above patterns, we present the following code, which is adequate for generating data for arbitrary types:</p>
+<div class="highlight"><pre><span></span><span class="k">type</span> <span class="o">_</span> <span class="n">spec</span> <span class="o">=</span>
+    <span class="o">|</span> <span class="nc">Gen</span>    <span class="o">:</span> <span class="k">'</span><span class="n">t</span> <span class="n">generator</span> <span class="o">-&gt;</span> <span class="k">'</span><span class="n">t</span> <span class="n">spec</span>
+    <span class="o">|</span> <span class="nc">Rep</span>    <span class="o">:</span> <span class="kt">int</span> <span class="o">*</span> <span class="k">'</span><span class="n">t</span> <span class="n">spec</span> <span class="o">-&gt;</span> <span class="k">'</span><span class="n">t</span> <span class="kt">list</span> <span class="n">spec</span>
+    <span class="o">|</span> <span class="nc">Map</span>    <span class="o">:</span> <span class="o">(</span><span class="k">'</span><span class="n">a</span> <span class="o">-&gt;</span> <span class="k">'</span><span class="n">b</span><span class="o">)</span> <span class="o">*</span> <span class="k">'</span><span class="n">a</span> <span class="n">spec</span> <span class="o">-&gt;</span> <span class="k">'</span><span class="n">b</span> <span class="n">spec</span>
+    <span class="o">|</span> <span class="nc">App</span>    <span class="o">:</span> <span class="o">(</span><span class="k">'</span><span class="n">a</span> <span class="o">-&gt;</span> <span class="k">'</span><span class="n">t</span><span class="o">)</span> <span class="n">spec</span> <span class="o">*</span> <span class="k">'</span><span class="n">a</span> <span class="n">spec</span> <span class="o">-&gt;</span> <span class="k">'</span><span class="n">t</span> <span class="n">spec</span>
+    <span class="o">|</span> <span class="nc">Guard</span>  <span class="o">:</span> <span class="o">(</span><span class="k">'</span><span class="n">a</span> <span class="o">-&gt;</span> <span class="kt">bool</span><span class="o">)</span> <span class="o">*</span> <span class="k">'</span><span class="n">a</span> <span class="n">spec</span> <span class="o">-&gt;</span> <span class="k">'</span><span class="n">a</span> <span class="n">spec</span>
+    <span class="o">|</span> <span class="nc">Or</span>     <span class="o">:</span> <span class="k">'</span><span class="n">a</span> <span class="n">spec</span> <span class="kt">list</span> <span class="o">-&gt;</span> <span class="k">'</span><span class="n">a</span> <span class="n">spec</span>
+<span class="c">(* `create_generator` creates `'a generator` from `'a spec` *)</span>
+<span class="k">let</span> <span class="n">create_generator</span> <span class="o">=</span>
+    <span class="k">let</span> <span class="k">rec</span> <span class="o">(!)</span> <span class="o">:</span> <span class="k">type</span> <span class="n">a</span><span class="o">.</span> <span class="n">a</span> <span class="n">spec</span> <span class="o">-&gt;</span> <span class="n">a</span> <span class="n">generator</span> <span class="o">=</span>
+        <span class="k">function</span>
+        <span class="o">|</span> <span class="nc">Gen</span> <span class="n">g</span>          <span class="o">-&gt;</span> <span class="n">g</span>
+        <span class="o">|</span> <span class="nc">Rep</span> <span class="o">(</span><span class="n">n</span><span class="o">,</span> <span class="n">spec</span><span class="o">)</span>  <span class="o">-&gt;</span> <span class="n">repeat_g</span> <span class="n">n</span> <span class="o">!</span><span class="n">spec</span>
+        <span class="o">|</span> <span class="nc">Map</span><span class="o">(</span><span class="n">f</span><span class="o">,</span> <span class="n">m</span><span class="o">)</span>      <span class="o">-&gt;</span> <span class="n">map_g</span> <span class="n">f</span> <span class="o">!</span><span class="n">m</span>
+        <span class="o">|</span> <span class="nc">App</span><span class="o">(</span><span class="n">s1</span><span class="o">,</span> <span class="n">s2</span><span class="o">)</span>    <span class="o">-&gt;</span> <span class="k">let</span> <span class="n">a1</span> <span class="o">=</span> <span class="o">!</span><span class="n">s1</span> <span class="k">in</span> <span class="k">let</span> <span class="n">a2</span> <span class="o">=</span> <span class="o">!</span><span class="n">s2</span> <span class="k">in</span> <span class="k">fun</span> <span class="bp">()</span> <span class="o">-&gt;</span> <span class="o">(</span><span class="n">gen</span> <span class="n">a1</span><span class="o">)</span> <span class="o">(</span><span class="n">gen</span> <span class="n">a2</span><span class="o">)</span>
+        <span class="o">|</span> <span class="nc">Guard</span> <span class="o">(</span><span class="n">p</span><span class="o">,</span> <span class="n">s</span><span class="o">)</span>   <span class="o">-&gt;</span> <span class="n">guard_g</span> <span class="n">p</span> <span class="o">!</span><span class="n">s</span>
+        <span class="o">|</span> <span class="nc">Or</span> <span class="n">ts</span>          <span class="o">-&gt;</span> <span class="n">or_g</span> <span class="o">(</span><span class="nn">List</span><span class="p">.</span><span class="n">map</span> <span class="o">(!)</span> <span class="n">ts</span><span class="o">)</span>
+    <span class="k">in</span> <span class="o">(!)</span>
+</pre></div>
+<h2>Pattern-based Data Generation</h2>
+<p>The basics of "datagenc" described above have been well integrated into famous frameworks such as QuickCheck in Haskell or Hypothesis in Python.</p>
+<p>In Haskell, things are automatic as static typing is used to reason about the required generator.</p>
+<div class="highlight"><pre><span></span><span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span><span class="w"></span>
+<span class="c1">-- suppose we already have</span><span class="w"></span>
+<span class="nf">split</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Char</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">String</span><span class="p">]</span><span class="w"></span>
+<span class="nf">unsplit</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Char</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">String</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">String</span><span class="w"></span>
+<p><span class="c1">-- we don't need manually specify what data generators are needed.</span><span class="w"></span>
+<span class="nf">invariant</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">unsplit</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="p">(</span><span class="n">split</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">xs</span><span class="w"></span></p>
+<p><span class="c1">-- check!</span><span class="w"></span>
+<span class="nf">main</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">quickCheck</span><span class="w"> </span><span class="n">invariant</span><span class="w"></span>
+</p></pre></div>
+<p>In Python, generators are manually specified, which is a little bit verbose.</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">hypothesis</span> <span class="kn">import</span> <span class="n">given</span><span class="p">,</span> <span class="n">strategies</span> <span class="k">as</span> <span class="n">st</span>
+<p><span class="nd">@given</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">lists</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">integers</span><span class="p">()))</span>
+<span class="k">def</span> <span class="nf">test_reversing_twice_gives_same_list</span><span class="p">(</span><span class="n">xs</span><span class="p">):</span>
+<span class="c1"># This will generate lists of arbitrary length (usually between 0 and</span>
+<span class="c1"># 100 elements) whose elements are integers.</span>
+<span class="n">ys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">xs</span><span class="p">)</span>
+<span class="n">ys</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+<span class="n">ys</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+<span class="k">assert</span> <span class="n">xs</span> <span class="o">==</span> <span class="n">ys</span>
+</p></pre></div>
+<p>Even if the framework is mature from an industrial perspective, the generation process can be still improved by introducing pattern-based data generation.</p>
+<p>Pattern-based generation uses the same mechanism as that in "datagenc", but performs a translation from pattern matching like syntax to data generator specifications (like <code><span></span><span class="n">spec</span>
+</code> defined in the above OCaml prototyping code).</p>
+<p>This was initially <a href="https://github.com/thautwarm/MLStyle.jl/blob/main/matrix-benchmark/sampler.jl">implemented</a> in MLStyle.jl (a pattern matching library for Julia by me) for generating random data using pattern matching syntax.</p>
+<div class="highlight"><pre><span></span><span class="go"># generating primitives</span>
+<span class="gp">julia&gt;</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nd">@spec</span><span class="w"> </span><span class="p">(</span><span class="o">::</span><span class="kt">Int</span><span class="p">)</span><span class="w"></span>
+<span class="gp">julia&gt;</span><span class="w"> </span><span class="n">generate</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="w"></span>
+<span class="go">10</span>
+<p><span class="go"># generating tuples</span>
+<span class="gp">julia&gt;</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nd">@spec</span><span class="w"> </span><span class="p">(</span><span class="o">::</span><span class="kt">Int</span><span class="p">,</span><span class="w"> </span><span class="o">::</span><span class="kt">String</span><span class="p">)</span><span class="w"></span>
+<span class="gp">julia&gt;</span><span class="w"> </span><span class="n">generate</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="w"></span>
+<span class="go">(10, "2as9p2")</span></p>
+<p><span class="go"># generating like constructing</span>
+<span class="gp">julia&gt;</span><span class="w"> </span><span class="k">struct</span> <span class="kt">Data1</span><span class="w"></span>
+<span class="w">          </span><span class="n">f</span><span class="o">::</span><span class="kt">Int</span><span class="w"></span>
+<span class="w">       </span><span class="k">end</span><span class="w"></span>
+<span class="gp">julia&gt;</span><span class="w"> </span><span class="k">struct</span> <span class="kt">Data2</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
+<span class="w">          </span><span class="n">f1</span><span class="o">::</span><span class="kt">String</span><span class="w"></span>
+<span class="w">          </span><span class="n">f2</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">          </span><span class="n">f3</span><span class="o">::</span><span class="kt">Data1</span><span class="w"></span>
+<span class="w">       </span><span class="k">end</span><span class="w"></span>
+<span class="gp">julia&gt;</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nd">@spec</span><span class="w"> </span><span class="n">Data2</span><span class="p">(</span><span class="o">::</span><span class="kt">String</span><span class="p">,</span><span class="w"> </span><span class="o">::</span><span class="kt">Int</span><span class="p">,</span><span class="w"> </span><span class="n">Data1</span><span class="p">(</span><span class="o">::</span><span class="kt">Int</span><span class="p">))</span><span class="w"></span>
+<span class="gp">julia&gt;</span><span class="w"> </span><span class="n">generate</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="w"></span>
+<span class="go">Data2{Int64}("Vnsz625lAvOo:hrB?utg]Zz72Q\L\f=_1ko5XXWws[g@", 6597270699655146706, Data1(-7688086717226739915))</span>
+</p></pre></div>
+<p>The possibility of implementing pattern-based data generation comes from the observation of the similar structures between syntax trees and data generation specifications:</p>
+<div class="highlight"><pre><span></span><span class="nd">@data</span><span class="w"> </span><span class="kt">Spec</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"> </span><span class="k">begin</span><span class="w"></span>
+<span class="w">    </span><span class="kt">S_or</span><span class="p">{</span><span class="kt">A</span><span class="p">,</span><span class="w"> </span><span class="kt">B</span><span class="p">}</span><span class="w">  </span><span class="o">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Spec</span><span class="p">{</span><span class="kt">A</span><span class="p">},</span><span class="w"> </span><span class="kt">Spec</span><span class="p">{</span><span class="kt">B</span><span class="p">})</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="kt">Spec</span><span class="p">{</span><span class="kt">Union</span><span class="p">{</span><span class="kt">A</span><span class="p">,</span><span class="w"> </span><span class="kt">B</span><span class="p">}}</span><span class="w"></span>
+<span class="w">    </span><span class="c"># ...</span><span class="w"></span>
+<span class="k">end</span><span class="w"></span>
+<p><span class="k">function</span><span class="w"> </span><span class="n">ast2spec</span><span class="p">(</span><span class="n">ast</span><span class="p">)</span><span class="o">::</span><span class="kt">Spec</span><span class="w"></span>
+<span class="w">    </span><span class="nd">@switch</span><span class="w"> </span><span class="n">ast</span><span class="w"> </span><span class="k">begin</span><span class="w"></span>
+<span class="w">        </span><span class="c"># Julia can pattern match its ASTs in a homoiconic approach</span><span class="w"></span>
+<span class="w">        </span><span class="nd">@case</span><span class="w"> </span><span class="o">:</span><span class="p">(</span><span class="o">$</span><span class="n">a</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">$</span><span class="n">b</span><span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">OrSpec</span><span class="p">(</span><span class="n">ast2spec</span><span class="p">(</span><span class="n">a</span><span class="p">),</span><span class="w"> </span><span class="n">ast2spec</span><span class="p">(</span><span class="n">b</span><span class="p">))</span><span class="w"></span>
+<span class="w">        </span><span class="c"># ...</span><span class="w"></span>
+<span class="w">    </span><span class="k">end</span><span class="w"></span>
+<span class="k">end</span><span class="w"></span>
+</p></pre></div>
+<h2>Miscellaneous</h2>
+<p>The "datagenc" technique described in this article can save you a lot of time and effort by getting rid of manually creating data yourself and, ensuring that your data is representative and accurate.</p>
+<p>An interesting open problem is how to generate data for dynamic programming languages in a "visual" approach. Pattern-based data generation is a good start (see some uses at <a href="https://github.com/thautwarm/MLStyle.jl/blob/4773f8900bd534924d27d0082685ad79478c4301/matrix-benchmark/bench-datatype.jl#L25">bench-datagen.jl</a>), and may deserve better engineering for implementations in Python, Julia and other dynamic programming languages.</p>
+
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+        <script type="text/javascript" id="MathJax-script" async
+            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/mml-chtml.js">
+        </script>
+        

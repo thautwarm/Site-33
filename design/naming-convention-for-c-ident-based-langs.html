@@ -1,0 +1,174 @@
+<style>
+body {
+    word-wrap: break-word;
+    max-width: 1200px;
+    margin: 10%;
+}
+pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.hll { background-color: #a8aaaa }
+.c { color: #a0a1a7 } /* Comment */
+.err { color: #e92d46 } /* Error */
+.k { color: #0098dd } /* Keyword */
+.l { color: #c5a332 } /* Literal */
+.n { color: #383a42 } /* Name */
+.o { color: #7a82da } /* Operator */
+.p { color: #275fe4 } /* Punctuation */
+.ch { color: #a0a1a7 } /* Comment.Hashbang */
+.cm { color: #a0a1a7 } /* Comment.Multiline */
+.cp { color: #a0a1a7 } /* Comment.Preproc */
+.cpf { color: #a0a1a7 } /* Comment.PreprocFile */
+.c1 { color: #a0a1a7 } /* Comment.Single */
+.cs { color: #a0a1a7 } /* Comment.Special */
+.gd { color: #e92d46 } /* Generic.Deleted */
+.ge { font-style: italic } /* Generic.Emph */
+.gh { color: #383a42; font-weight: bold } /* Generic.Heading */
+.gi { color: #23974a } /* Generic.Inserted */
+.gp { color: #a0a1a7; font-weight: bold } /* Generic.Prompt */
+.gs { font-weight: bold } /* Generic.Strong */
+.gu { color: #00b5b0; font-weight: bold } /* Generic.Subheading */
+.kc { color: #823ff1 } /* Keyword.Constant */
+.kd { color: #d52753 } /* Keyword.Declaration */
+.kn { color: #d52753 } /* Keyword.Namespace */
+.kp { color: #0098dd } /* Keyword.Pseudo */
+.kr { color: #0098dd } /* Keyword.Reserved */
+.kt { color: #d52753 } /* Keyword.Type */
+.ld { color: #c5a332 } /* Literal.Date */
+.m { color: #ce33c0 } /* Literal.Number */
+.s { color: #c5a332 } /* Literal.String */
+.na { color: #a05a48 } /* Name.Attribute */
+.nb { color: #823ff1 } /* Name.Builtin */
+.nc { color: #d52753 } /* Name.Class */
+.no { color: #823ff1 } /* Name.Constant */
+.nd { color: #0098dd } /* Name.Decorator */
+.ni { color: #383a42 } /* Name.Entity */
+.ne { color: #e92d46 } /* Name.Exception */
+.nf { color: #23974a } /* Name.Function */
+.nl { color: #383a42 } /* Name.Label */
+.nn { color: #d52753 } /* Name.Namespace */
+.nx { color: #383a42 } /* Name.Other */
+.py { color: #383a42 } /* Name.Property */
+.nt { color: #00b5b0 } /* Name.Tag */
+.nv { color: #e92d46 } /* Name.Variable */
+.ow { color: #7a82da } /* Operator.Word */
+.pm { color: #275fe4 } /* Punctuation.Marker */
+.w { color: #383a42 } /* Text.Whitespace */
+.mb { color: #ce33c0 } /* Literal.Number.Bin */
+.mf { color: #ce33c0 } /* Literal.Number.Float */
+.mh { color: #ce33c0 } /* Literal.Number.Hex */
+.mi { color: #ce33c0 } /* Literal.Number.Integer */
+.mo { color: #ce33c0 } /* Literal.Number.Oct */
+.sa { color: #c5a332 } /* Literal.String.Affix */
+.sb { color: #c5a332 } /* Literal.String.Backtick */
+.sc { color: #383a42 } /* Literal.String.Char */
+.dl { color: #c5a332 } /* Literal.String.Delimiter */
+.sd { color: #a0a1a7 } /* Literal.String.Doc */
+.s2 { color: #c5a332 } /* Literal.String.Double */
+.se { color: #f92672 } /* Literal.String.Escape */
+.sh { color: #c5a332 } /* Literal.String.Heredoc */
+.si { color: #00b5b0 } /* Literal.String.Interpol */
+.sx { color: #c5a332 } /* Literal.String.Other */
+.sr { color: #c5a332 } /* Literal.String.Regex */
+.s1 { color: #c5a332 } /* Literal.String.Single */
+.ss { color: #c5a332 } /* Literal.String.Symbol */
+.bp { color: #823ff1 } /* Name.Builtin.Pseudo */
+.fm { color: #23974a } /* Name.Function.Magic */
+.vc { color: #e92d46 } /* Name.Variable.Class */
+.vg { color: #e92d46 } /* Name.Variable.Global */
+.vi { color: #e92d46 } /* Name.Variable.Instance */
+.vm { color: #e92d46 } /* Name.Variable.Magic */
+.il { color: #ce33c0 } /* Literal.Number.Integer.Long */</style><title>适用于"C标志符语言"的编程命名规范</title>首页：
+<ul id="filtered-index_8"><li><a href="..\index.html">index.html</a></li></ul>
+目录:
+<div class="toc" refid="ccc_9"><ul><li><a href="#ccc0x22cccccc0x22ccccccc_40">适用于"C标志符语言"的编程命名规范</a><ul><li><a href="#cccc_41">函数命名</a></li><li><a href="#cccc_42">通用命名</a></li></ul></li></ul></div>
+<div class="highlight"><pre><span></span>
+</pre></div>
+<h1><div id="ccc0x22cccccc0x22ccccccc_40"></div>适用于"C标志符语言"的编程命名规范</h1>
+<h2><div id="cccc_41"></div>函数命名</h2>
+<h3>根据副作用的类型对函数进行命名</h3>
+<ol>
+<li>
+<p>实际上有副作用,但对外部不可见<a href="#封装副作用"><sup><small><small>封装副作用</small></small></sup></a>, 或严格无副作用<a href="#语言层副作用"><sup><small><small>语言层副作用</small></small></sup></a>:</p>
+<p>变量结尾不是下划线, 例如 <code>xx</code>.</p>
+<div class="highlight"><pre><span></span><span class="n">z</span> <span class="o">=</span> <span class="n">math_func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">key</span> <span class="o">=</span> <span class="n">cache_data_by_identity</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+</pre></div>
+</li>
+<li>
+<p>对外部可见的副作用: 变量结尾为单下划线 <code><span></span><span class="n">xx_</span>
+</code></p>
+<div class="highlight"><pre><span></span><span class="n">torch</span><span class="o">.</span><span class="n">zero_</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span>
+<span class="n">randomize_</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</li>
+</ol>
+<p>术语简写:</p>
+<table>
+<thead>
+<tr>
+<th align="center">原始形式</th>
+<th align="center">缩写</th>
+<th align="left">特殊说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">element</td>
+<td align="center">elt</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="center">element type</td>
+<td align="center">elt_t, elty</td>
+<td align="left">组词时使用<code>elty</code></td>
+</tr>
+<tr>
+<td align="center">type</td>
+<td align="center">ty, typ, t</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="center">state</td>
+<td align="center">st, sta, s</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="center">current</td>
+<td align="center">cur, curr</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="center">previous</td>
+<td align="center">pre, prev</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="center">symbol</td>
+<td align="center">sym</td>
+<td align="left"></td>
+</tr>
+</tbody>
+</table>
+<h2><div id="cccc_42"></div>通用命名</h2>
+<p>命名法规则</p>
+<ol>
+<li>
+<p>关注点(focus)+双下划线+视角(perspective), 例:</p>
+<ul>
+<li>
+<p>宿主语言创建目标语言(target language)的符号(symbol).</p>
+<p>例如关注点是<code>sym</code>和函数名(<code>func_name</code>), 目标语言是python, 命名如下</p>
+<div class="highlight"><pre><span></span><span class="n">sym_func_py</span> <span class="o">=</span> <span class="n">crate_py_sym</span><span class="p">()</span>
+</pre></div>
+</li>
+</ul>
+</li>
+</ol>
+<p>(待更新)</p>
+
+<hr/>
+<h2>脚注</h2>
+<ol><li id="封装副作用">封装副作用:<p></p><p>副作用对外部不可见, 但内部可能维护副作用状态</p></li><li id="语言层副作用">语言层副作用:<p></p><p>不介入语言层之下如操作系统,调用函数无法观察到任何状态变化</p></li></ol>

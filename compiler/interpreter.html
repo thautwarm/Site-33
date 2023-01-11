@@ -1,0 +1,578 @@
+<title>编程语言解释器的理解、设计和实现</title><style>
+body {
+    word-wrap: break-word;
+    max-width: 1200px;
+    margin: 10%;
+}
+pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.hll { background-color: #a8aaaa }
+.c { color: #a0a1a7 } /* Comment */
+.err { color: #e92d46 } /* Error */
+.k { color: #0098dd } /* Keyword */
+.l { color: #c5a332 } /* Literal */
+.n { color: #383a42 } /* Name */
+.o { color: #7a82da } /* Operator */
+.p { color: #275fe4 } /* Punctuation */
+.ch { color: #a0a1a7 } /* Comment.Hashbang */
+.cm { color: #a0a1a7 } /* Comment.Multiline */
+.cp { color: #a0a1a7 } /* Comment.Preproc */
+.cpf { color: #a0a1a7 } /* Comment.PreprocFile */
+.c1 { color: #a0a1a7 } /* Comment.Single */
+.cs { color: #a0a1a7 } /* Comment.Special */
+.gd { color: #e92d46 } /* Generic.Deleted */
+.ge { font-style: italic } /* Generic.Emph */
+.gh { color: #383a42; font-weight: bold } /* Generic.Heading */
+.gi { color: #23974a } /* Generic.Inserted */
+.gp { color: #a0a1a7; font-weight: bold } /* Generic.Prompt */
+.gs { font-weight: bold } /* Generic.Strong */
+.gu { color: #00b5b0; font-weight: bold } /* Generic.Subheading */
+.kc { color: #823ff1 } /* Keyword.Constant */
+.kd { color: #d52753 } /* Keyword.Declaration */
+.kn { color: #d52753 } /* Keyword.Namespace */
+.kp { color: #0098dd } /* Keyword.Pseudo */
+.kr { color: #0098dd } /* Keyword.Reserved */
+.kt { color: #d52753 } /* Keyword.Type */
+.ld { color: #c5a332 } /* Literal.Date */
+.m { color: #ce33c0 } /* Literal.Number */
+.s { color: #c5a332 } /* Literal.String */
+.na { color: #a05a48 } /* Name.Attribute */
+.nb { color: #823ff1 } /* Name.Builtin */
+.nc { color: #d52753 } /* Name.Class */
+.no { color: #823ff1 } /* Name.Constant */
+.nd { color: #0098dd } /* Name.Decorator */
+.ni { color: #383a42 } /* Name.Entity */
+.ne { color: #e92d46 } /* Name.Exception */
+.nf { color: #23974a } /* Name.Function */
+.nl { color: #383a42 } /* Name.Label */
+.nn { color: #d52753 } /* Name.Namespace */
+.nx { color: #383a42 } /* Name.Other */
+.py { color: #383a42 } /* Name.Property */
+.nt { color: #00b5b0 } /* Name.Tag */
+.nv { color: #e92d46 } /* Name.Variable */
+.ow { color: #7a82da } /* Operator.Word */
+.pm { color: #275fe4 } /* Punctuation.Marker */
+.w { color: #383a42 } /* Text.Whitespace */
+.mb { color: #ce33c0 } /* Literal.Number.Bin */
+.mf { color: #ce33c0 } /* Literal.Number.Float */
+.mh { color: #ce33c0 } /* Literal.Number.Hex */
+.mi { color: #ce33c0 } /* Literal.Number.Integer */
+.mo { color: #ce33c0 } /* Literal.Number.Oct */
+.sa { color: #c5a332 } /* Literal.String.Affix */
+.sb { color: #c5a332 } /* Literal.String.Backtick */
+.sc { color: #383a42 } /* Literal.String.Char */
+.dl { color: #c5a332 } /* Literal.String.Delimiter */
+.sd { color: #a0a1a7 } /* Literal.String.Doc */
+.s2 { color: #c5a332 } /* Literal.String.Double */
+.se { color: #f92672 } /* Literal.String.Escape */
+.sh { color: #c5a332 } /* Literal.String.Heredoc */
+.si { color: #00b5b0 } /* Literal.String.Interpol */
+.sx { color: #c5a332 } /* Literal.String.Other */
+.sr { color: #c5a332 } /* Literal.String.Regex */
+.s1 { color: #c5a332 } /* Literal.String.Single */
+.ss { color: #c5a332 } /* Literal.String.Symbol */
+.bp { color: #823ff1 } /* Name.Builtin.Pseudo */
+.fm { color: #23974a } /* Name.Function.Magic */
+.vc { color: #e92d46 } /* Name.Variable.Class */
+.vg { color: #e92d46 } /* Name.Variable.Global */
+.vi { color: #e92d46 } /* Name.Variable.Instance */
+.vm { color: #e92d46 } /* Name.Variable.Magic */
+.il { color: #ce33c0 } /* Literal.Number.Integer.Long */</style>Index Page
+<ul id="filtered-index_10"><li><a href="..\index.html">index.html</a></li></ul>
+<style>
+    a {
+        text-decoration: none;
+        color: blue;
+    }
+</style>
+<hr/>
+<h1><div id="cccccccccc0x3001ccccc_25"></div>编程语言解释器的理解、设计和实现</h1>
+<div class="toc" refid="ccc_11"><ul><li><a href="#cccccccccc0x3001ccccc_25">编程语言解释器的理解、设计和实现</a><ul><li><a href="#ccccc_26">语法和语义</a><ul><li><a href="#ccccc_27">什么是语法</a></li><li><a href="#cccccc_28">语法和BNF</a></li><li><a href="#ccccccccccc_29">抽象语法树和具体语法树</a></li><li><a href="#ccccccc0xff1accccc_30">重要的语法结构：抽象语法树</a></li><li><a href="#ccccc_31">什么是语义</a></li><li><a href="#cccccc_32">语义和相继式</a></li><li><a href="#cccccc_33">带状态的语义</a></li></ul></li><li><a href="#ccccccccc_34">一个最简单的解释器</a><ul><li><a href="#cccccccccc_35">LC的语法结构和语义</a></li><li><a href="#cccc0x3001cccccccccc_36">LC扩展、原语函数和解释器实现</a></li></ul></li><li><a href="#ccccccc_37">LC的语法解析</a><ul></ul></li><li><a href="#ccccccccccc_38">更丰富的语言及语言支持</a><ul></ul></li><li><a href="#cc_39">编译</a><ul></ul></li></ul></li></ul></div>
+<p>如果你在本页面遭遇问题，请用以下方式联系我：</p>
+<ol>
+<li>向 <a href="https://github.com/thautwarm/Site-33/issues">https://github.com/thautwarm/Site-33/issues</a> 提交issue。</li>
+</ol>
+<p>如果希望我立刻回应，向邮箱 <a href="mailto:thaut@logic.cs.tsukuba.ac.jp">thaut@logic.cs.tsukuba.ac.jp</a> 发送邮件。</p>
+<ol start="2">
+<li>（不建议）如果你希望私下和我讨论问题，并不希望其他人看到相关讨论，例如希望我帮忙检查习题，则向 <a href="mailto:twshere@outlook.com">twshere@outlook.com</a> 发送邮件。</li>
+</ol>
+<h2><div id="ccccc_26"></div>语法和语义</h2>
+<div class="highlight"><pre><span></span>
+</pre></div>
+<h3><div id="ccccc_27"></div>什么是语法</h3>
+<p>语法 (syntax) 是指代码文本的规范，只有符合语法的代码才可能被编译器/解释器处理。</p>
+<p>例如，<code><span></span><span class="nx">a</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
+</code> 是C语言的赋值语法，而 <code><span></span><span class="nx">a</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
+</code> 在C语言中不合法。</p>
+<p>其中，一个重要的概念是<strong>语法结构</strong>，它通常以语法树 (syntax tree) 的形式展现:</p>
+<br/>
+<p align="center">
+<image src="./interpreter-ast-tree.png" width="800px"/>
+</p>
+<br/>
+<h3><div id="cccccc_28"></div>语法和BNF</h3>
+<p>语法规则通常使用BNF文法定义。下面是四则运算的语法规则：</p>
+<table width="100%">
+<tr>
+<td>
+<div class="highlight"><pre><span></span><span class="nl">e</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="nv">addsub</span><span class="w"></span>
+
+<span class="nv">addsub</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="nv">addsub</span><span class="w"> </span><span class="s1">'+'</span><span class="w"> </span><span class="nv">muldiv</span><span class="w"></span>
+<span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="nv">addsub</span><span class="w"> </span><span class="s1">'-'</span><span class="w"> </span><span class="nv">muldiv</span><span class="w"></span>
+<span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="nv">muldiv</span><span class="w"></span>
+
+<span class="nv">muldiv</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="nv">muldiv</span><span class="w"> </span><span class="s1">'*'</span><span class="w"> </span><span class="nv">atom</span><span class="w"></span>
+<span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="nv">muldiv</span><span class="w"> </span><span class="s1">'/'</span><span class="w"> </span><span class="nv">atom</span><span class="w"></span>
+<span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="nv">atom</span><span class="w"></span>
+
+<span class="nv">atom</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s1">'('</span><span class="w"> </span><span class="nv">e</span><span class="w"> </span><span class="s1">')'</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="no">NUMBER</span><span class="w"></span>
+</pre></div>
+</td>
+<td>
+<div class="highlight"><pre><span></span>
+</pre></div>
+<p>问题:</p>
+<ol>
+<li>
+<p>"<code><span></span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
+</code>"是否是合法的四则运算语言文本？</p>
+</li>
+<li>
+<p>"<code><span></span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
+</code>"是否是合法的四则运算语言文本？</p>
+</li>
+<li>
+<p>"1.2"是否是合法的四则运算语言文本？</p>
+</li>
+<li>
+<p>如果"1 + 1.2"对应<strong>语法树</strong>是<code><span></span><span class="n">Add</span><span class="p">(</span><span class="n">Int</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span><span class="w"> </span><span class="n">Float</span><span class="p">(</span><span class="mf">1.2</span><span class="p">))</span><span class="w"></span>
+</code>，</p>
+<p>问："<code><span></span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">1.2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="w"></span>
+</code>"的语法树是？</p>
+</li>
+</ol>
+</td>
+</tr>
+</table>
+<h3><div id="ccccccccccc_29"></div>抽象语法树和具体语法树</h3>
+<p>根据BNF文法，我们将语言的文本解析为语法树——文本在语法规则下的结构化表示。</p>
+<p>常用的语法树有两种：</p>
+<ol>
+<li>具体语法树 (CST)： 除开结构化语法外，事无巨细地记录源代码信息。<em>CST可以无损地转回源代码</em>。</li>
+<li>抽象语法树：只考虑后续工作需要的语法结构，抛弃不需要的信息，如空白符，分隔符，缩进等。</li>
+</ol>
+<p>举例子，给定一个语句 <code><span></span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
+</code>, 通常类似于</p>
+<table>
+<tr>
+<td><p><strong>具体语法树</strong>:</p>
+</td>
+<td></td>
+<td><p><strong>抽象语法树</strong>:</p>
+</td>
+</tr>
+<tr>
+<td>
+<div class="highlight"><pre><span></span><span class="n">Statement</span><span class="p">(</span>
+    <span class="n">kind</span> <span class="o">=</span> <span class="s2">"assign"</span><span class="p">,</span>
+    <span class="n">children</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">Variable</span><span class="p">(</span><span class="s2">"a"</span><span class="p">),</span>
+        <span class="n">Token</span><span class="p">(</span><span class="s2">"="</span><span class="p">),</span>
+        <span class="n">IntLiteral</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span>
+        <span class="n">Token</span><span class="p">(</span><span class="s2">";"</span><span class="p">)</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</td>
+<td>
+                              
+</td>
+<td>
+<div class="highlight"><pre><span></span><span class="n">Assignment</span><span class="p">(</span>
+    <span class="n">target</span><span class="o">=</span><span class="n">Variable</span><span class="p">(</span><span class="s2">"a"</span><span class="p">),</span>
+    <span class="n">value</span><span class="o">=</span><span class="n">IntLiteral</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</td>
+</tr></table>
+
+
+
+上述的语法树仍然只是简化的形式（略去了行列号等），但可以看到抽象语法树的信息比具体语法树更少也更加紧凑。
+
+
+在包括编译、解释和各式代码分析的大部分任务中，只会用到抽象语法树，而具体语法树没有用处。这也意味着语言的具体语法通常不影响语言的运行。
+
+一门编程语言可以拥有多种具体语法，只要他们的语法结构和语义相同，他们之间的差异仍然是表面的，例如 <code><span></span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+</code> 和 <code><span></span><span class="n">call</span> <span class="n">f</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span>
+</code> 。
+
+<h3><div id="ccccccc0xff1accccc_30"></div>重要的语法结构：抽象语法树</h3>
+<p>抽象语法树是编译器/解释器工作的基础（通常是编译器/解释器的输入）。</p>
+<p>抽象语法树一般表示为代数数据类型 (ADT, Algebraic Data Type)，语法树常常被分为多个种类(sort)，绝大多数编程语言有以下的sort划分：</p>
+<ul>
+<li>
+<p>表达式: 例如整数字面量表达式，函数调用表达式，二元运算表达式等。</p>
+</li>
+<li>
+<p>语句：例如赋值语句，if语句等。</p>
+</li>
+<li>
+<p>定义：例如数据类型定义，函数定义等。</p>
+</li>
+</ul>
+<p>由上可见，每一个sort都可能继续划分。每一个sort可能有一到多个构造器 (constructor)。例如, 表达式sort有整数字面量、函数调用表达式和二元运算表达式这些constructor：</p>
+<div class="highlight"><pre><span></span><span class="n">Expr</span> <span class="o">=</span> <span class="n">IntLiteral</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span>
+     <span class="o">|</span> <span class="n">FunctionCall</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">Expr</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="nb">list</span><span class="o">&lt;</span><span class="n">Expr</span><span class="o">&gt;</span><span class="p">)</span>
+     <span class="o">|</span> <span class="n">BinaryExpr</span><span class="p">(</span><span class="n">left</span><span class="p">:</span> <span class="n">Expr</span><span class="p">,</span> <span class="n">op</span><span class="p">:</span> <span class="n">BinaryOperator</span><span class="p">,</span> <span class="n">right</span><span class="p">:</span> <span class="n">Expr</span><span class="p">)</span>
+     <span class="o">|</span> <span class="o">...</span>
+</pre></div>
+<p>上面定义sort的语言叫抽象语法定义语言(ASDL, Abstract Syntax Definition Language)。</p>
+<p>我们会频繁使用ASDL、BNF这些语言来提高沟通效率。</p>
+<p>以下是四则运算的语法树：</p>
+<div class="highlight"><pre><span></span><span class="n">ArithExpr</span> <span class="o">=</span> <span class="n">Add</span><span class="p">(</span><span class="n">left</span><span class="p">:</span> <span class="n">ArithExpr</span><span class="p">,</span> <span class="n">right</span><span class="p">:</span> <span class="n">ArithExpr</span><span class="p">)</span>
+          <span class="o">|</span> <span class="n">Sub</span><span class="p">(</span><span class="n">left</span><span class="p">:</span> <span class="n">ArithExpr</span><span class="p">,</span> <span class="n">right</span><span class="p">:</span> <span class="n">ArithExpr</span><span class="p">)</span>
+          <span class="o">|</span> <span class="n">Mul</span><span class="p">(</span><span class="n">left</span><span class="p">:</span> <span class="n">ArithExpr</span><span class="p">,</span> <span class="n">right</span><span class="p">:</span> <span class="n">ArithExpr</span><span class="p">)</span>
+          <span class="o">|</span> <span class="n">Div</span><span class="p">(</span><span class="n">left</span><span class="p">:</span> <span class="n">ArithExpr</span><span class="p">,</span> <span class="n">right</span><span class="p">:</span> <span class="n">ArithExpr</span><span class="p">)</span>
+          <span class="o">|</span> <span class="n">Number</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">number</span><span class="p">)</span>
+</pre></div>
+<h3><div id="ccccc_31"></div>什么是语义</h3>
+<p>语义是对语法结构的解释。</p>
+<p>解释方式是多样的。打印语法树是其中一种解释。一般来说，我们关注的解释方式是代码执行 (evaluation) 。</p>
+<p>可以用如下框架表示evaluation的语义：</p>
+<p align="center">
+语法结构<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>X</mi></mrow></math>的执行结果是 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>r</mi></mrow></math> <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>⟺</mi></mrow></math> <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>X</mi><mo>⇝</mo><mi>r</mi></mrow></math>.
+</p>
+<p>这里的 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>X</mi></mrow></math> 是一个语法结构，如果对应编程概念，它是host language (实现编译器、解释器所使用的语言) 中的一颗语法树<a href="#X的严格定义"><sup><small><small>X的严格定义</small></small></sup></a> ；</p>
+<p>这里的 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>r</mi></mrow></math> 是一个值，如果对应编程概念，它是target language中的一个值。和上面的<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>X</mi></mrow></math>一样，用编程语言比喻这里的值并不精准。<a href="#r的严格定义"><sup><small><small>r的严格定义</small></small></sup></a></p>
+<p>上面这个框架用来表达四则运算语言的语义绰绰有余：</p>
+<p align="center">
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mtext>Add(Number(2), Number(2.0))</mtext><mo>⇝</mo><mn>4.0</mn></mrow></math>
+</p>
+<p>在下文中，我们说语法结构时，都特指抽象语法树。除非表述无法推广到任意语法结构。</p>
+<h3><div id="cccccc_32"></div>语义和相继式</h3>
+<p>合法的语法结构是不能枚举的，我们不可能写下：</p>
+<p align="center">
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mtext>Add</mtext><mo stretchy="false">(</mo><mn>1</mn><mo>,</mo><mtext>Add</mtext><mo stretchy="false">(</mo><mn>1</mn><mo>,</mo><mtext>Add</mtext><mo stretchy="false">(</mo><mo>⋯</mo><mo>,</mo><mtext>Add</mtext><mo stretchy="false">(</mo><mtext>Number</mtext><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo><mo>,</mo><mtext>Number</mtext><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo><mo stretchy="false">)</mo><mo stretchy="false">)</mo><mo stretchy="false">)</mo><mo>⇝</mo><mn>2992</mn></mrow></math>
+</p>
+<p>注意到语法结构的定义是递归的，我们也可以定义出一套递归的、有限的规则，为<strong>合法语法结构的全体</strong>描述语义。为了做到这一点，我们介绍相继式：</p>
+<p align="center">
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mrow><msub><mi>c</mi><mn>1</mn></msub><mspace width="0.278em"></mspace><mspace width="0.278em"></mspace><msub><mi>c</mi><mn>2</mn></msub><mspace width="0.278em"></mspace><mspace width="0.278em"></mspace><msub><mi>c</mi><mn>3</mn></msub></mrow><mrow><msub><mi>c</mi><mn>4</mn></msub></mrow></mfrac></mstyle><mi>⟺</mi></mrow></math> 在条件<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><msub><mi>c</mi><mn>1</mn></msub><msub><mi>c</mi><mn>2</mn></msub><msub><mi>c</mi><mn>3</mn></msub></mrow></math>都成立的情况下，<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><msub><mi>c</mi><mn>4</mn></msub></mrow></math>成立。
+</p>
+<br/>
+<p>我们定义一些元符号 (可以大致理解为宿主语言中的变量)：</p>
+<p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>i</mi><mo>,</mo><msub><mi>i</mi><mn>1</mn></msub><mo>,</mo><msub><mi>i</mi><mn>2</mn></msub><mo>⋯</mo><msub><mi>i</mi><mi>n</mi></msub><mo>∈</mo><mtext>实数</mtext><mspace linebreak="newline"></mspace><mi>X</mi><mo>,</mo><mi>Y</mi><mo>∈</mo><mtext>四则运算语言的语法结构全集</mtext><mspace linebreak="newline"></mspace><mi>f</mi><mo stretchy="false">(</mo><msub><mi>i</mi><mn>1</mn></msub><mo>,</mo><msub><mi>i</mi><mn>2</mn></msub><mo stretchy="false">)</mo><mo>,</mo><mspace width="0.278em"></mspace><mi>f</mi><mo>∈</mo><mo stretchy="false">{</mo><mo>+</mo><mo>,</mo><mo>−</mo><mo>,</mo><mo>*</mo><mo>,</mo><mo>/</mo><mo stretchy="false">}</mo><mspace width="0.278em"></mspace><mspace width="0.278em"></mspace><mtext>分别表示表示计算两个实数的加/减/乘/除</mtext><mspace linebreak="newline"></mspace></mrow></math>
+<br/></p>
+<p>借助这些元符号，我们定义四则运算语言的完整语义(乘法，除法，减法被省略)：</p>
+<p align="center">
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mrow><mi>X</mi><mo>⇝</mo><msub><mi>i</mi><mn>1</mn></msub><mspace width="0.278em"></mspace><mspace width="0.278em"></mspace><mi>Y</mi><mo>⇝</mo><msub><mi>i</mi><mn>2</mn></msub></mrow><mrow><mtext>Add</mtext><mo stretchy="false">(</mo><mi>X</mi><mo>,</mo><mi>Y</mi><mo stretchy="false">)</mo><mo>⇝</mo><mo>+</mo><mo stretchy="false">(</mo><msub><mi>i</mi><mn>1</mn></msub><mo>,</mo><msub><mi>i</mi><mn>2</mn></msub><mo stretchy="false">)</mo></mrow></mfrac></mstyle><mspace width="2em"></mspace><mstyle displaystyle="true" scriptlevel="0"><mfrac><mrow></mrow><mrow><mtext>Number</mtext><mo stretchy="false">(</mo><mi>i</mi><mo stretchy="false">)</mo><mo>⇝</mo><mi>i</mi></mrow></mfrac></mstyle></mrow></math> <a href="#Staging error"><sup><small><small>Staging error</small></small></sup></a>
+</p>
+<h3><div id="cccccc_33"></div>带状态的语义</h3>
+<p>在Java和C++语言中心，我们可以修改一个对象的字段。这是一个副作用，因为它们会引起某些函数对相同参数的调用返回不同的值。</p>
+<div class="highlight"><pre><span></span><span class="k">static</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">MyTypeRef</span><span class="w"> </span><span class="o">*</span><span class="n">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">};</span><span class="w"></span>
+<p><span class="kt">int</span><span class="w"> </span><span class="nf">some_func</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">factor</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">factor</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span></p>
+<p><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">result1</span><span class="p">,</span><span class="w"> </span><span class="n">result2</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">result1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">some_func</span><span class="p">(</span><span class="mf">2.0</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">val</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="c1">// 对象val的字段a被修改</span>
+<span class="w">    </span><span class="n">result2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">some_func</span><span class="p">(</span><span class="mf">2.0</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// result1 != result2, 副作用！</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</p></pre></div>
+<p>我们方才介绍的 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>X</mi><mo>⇝</mo><mi>r</mi></mrow></math> 不足以描述这个语义。我们原先只考虑了返回值，但一些语言中，语法结构涉及上面提到的副作用。</p>
+<p>副作用的本质是函数调用被隐式地增加了一个参数：全局状态参数。当我们写下<code><span></span><span class="n">f</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span><span class="w"></span>
+</code>的时候，我们实际上写下了<code><span></span><span class="n">f</span><span class="p">(</span><span class="n">GLOBAL_STATE</span><span class="p">,</span><span class="w"> </span><span class="n">arg</span><span class="p">)</span><span class="w"></span>
+</code>。</p>
+<p>因为程序的行为受全局状态影响，而语义应该完全决定程序行为，所以带有副作用的编程语言，其语义必须描述全局状态。在这种情况下，描述语义的框架通常是：</p>
+<p align="center">
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mo stretchy="false">(</mo><mi>S</mi><mo>,</mo><mi>X</mi><mo stretchy="false">)</mo><mi>⟶</mi><mo stretchy="false">(</mo><mi>r</mi><mo>,</mo><mi>S</mi><mo stretchy="false">)</mo></mrow></math>
+</p>
+<p>这是非常痛苦的。</p>
+<br/>
+<br/>
+<p>在本文之后的部分，我们的表述将会从理论上的“不精准”转变为“不正确”——这就是说，虽然我们仍使用<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mo stretchy="false">(</mo><mi>S</mi><mo>,</mo><mi>X</mi><mo stretchy="false">)</mo><mi>⟶</mi><mo stretchy="false">(</mo><mi>r</mi><mo>,</mo><mi>S</mi><mo stretchy="false">)</mo></mrow></math>来描述一部分状态，但我们将忽略一些特殊的、我们不关心的副作用，例如IO等。例如，当我们的语义处理打印语句时，我们认为这里出现了一个函数调用，它实际做了打印，但我们的语义将其视为一个空返回值的纯函数。</p>
+<p>所幸的是，这种“不正确”丝毫不影响我们精准地理解程序语言的语义，它是一种折衷。如果你真的需要“更正确”的框架描述来描述具有副作用的语言的语义，你可能需要接触Haskell的副作用观点，它巧妙地将副作用表示为状态初值<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><msub><mi>S</mi><mn>0</mn></msub></mrow></math>上发生的一系列变换： <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><msub><mi>S</mi><mi>n</mi></msub><mo>=</mo><msub><mtext mathvariant="italic">eff</mtext><mi>n</mi></msub><mo stretchy="false">(</mo><mo>⋯</mo><mo>,</mo><msub><mtext mathvariant="italic">eff</mtext><mn>2</mn></msub><mo stretchy="false">(</mo><msub><mtext mathvariant="italic">eff</mtext><mn>1</mn></msub><mo stretchy="false">(</mo><msub><mi>S</mi><mn>0</mn></msub><mo stretchy="false">)</mo><mo stretchy="false">)</mo><mo stretchy="false">)</mo></mrow></math>。</p>
+<p>既然已经“不正确”了，便不妨追求更加刺激的语境。我们直言：在本文以下部分，语法结构是host language中的数据结构，而状态<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>S</mi></mrow></math>以及返回值<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>r</mi></mrow></math>是target language中的数据结构。为了让表述更加方便，我们让host language等于target language，这样一来，前文中<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mtext>Number</mtext><mo stretchy="false">(</mo><mi>n</mi><mo stretchy="false">)</mo><mo>⇝</mo><mi>n</mi></mrow></math>的含义就非常明确。</p>
+<h2><div id="ccccccccc_34"></div>一个最简单的解释器</h2>
+<p>我们接下来讨论一个简单的语言，扩展的<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>Λ</mi></mrow></math>演算语言 (LC/Lambda Calculus)。</p>
+<h3><div id="cccccccccc_35"></div>LC的语法结构和语义</h3>
+<p>我们先用ASDL定义LC语法结构：</p>
+<div class="highlight"><pre><span></span><span class="n">LC</span> <span class="o">=</span> <span class="n">Call</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">LC</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">LC</span><span class="p">)</span>
+   <span class="o">|</span> <span class="n">Var</span><span class="p">(</span><span class="n">varname</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span>
+   <span class="o">|</span> <span class="n">Func</span><span class="p">(</span><span class="n">argname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="n">LC</span><span class="p">)</span>
+</pre></div>
+<p>可以看到LC的语法结构简单得不得了，只有三种结构，分别是函数调用、读取变量和定义匿名函数。</p>
+<p>LC的语义也很简单，只是我们不会像教材一样介绍LC的约归 (reduction) 规则，因为介绍这个基本上没有屁用。之前说过，我们有host language和target language (并且在本文中，两者是一个语言)，我们要立刻将LC用一个实际的语言表达，以建立直觉。</p>
+<p>让我们选择 Python = target language = host language。本文之后提到target language，若非特殊说明，都指Python。</p>
+<p>为了给出语义，我们还需要定义一些辅助物件。</p>
+<p>我们需要一个状态 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>S</mi></mrow></math>，它表示LC作用域，一个从字符串到target language值的映射，可以被理解为target language中的字典:</p>
+<p align="center">
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>S</mi><mo>=</mo><mo stretchy="false">(</mo><msub><mi>a</mi><mn>1</mn></msub><mo>↦</mo><msub><mi>r</mi><mn>1</mn></msub><mo stretchy="false">)</mo><mo stretchy="false">(</mo><msub><mi>a</mi><mn>2</mn></msub><mo>↦</mo><msub><mi>r</mi><mn>2</mn></msub><mo stretchy="false">)</mo><mo>⋯</mo><mo stretchy="false">(</mo><msub><mi>a</mi><mi>n</mi></msub><mo>↦</mo><msub><mi>r</mi><mi>n</mi></msub><mo stretchy="false">)</mo></mrow></math>
+</p>
+<p>其中，<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><msub><mi>a</mi><mn>1</mn></msub><mo>,</mo><mo>⋯</mo><mo>,</mo><msub><mi>a</mi><mi>n</mi></msub></mrow></math>是target language中的字符串。</p>
+<p>LC语义如下，其中 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>r</mi><mo>,</mo><msub><mi>r</mi><mi>f</mi></msub><mo>,</mo><msub><mi>r</mi><mn>1</mn></msub><mo>,</mo><mo>⋯</mo><msub><mi>r</mi><mi>n</mi></msub></mrow></math> 是我们target language中的值 (这样的值如果是函数，则是一个数学上的纯函数)：</p>
+<hr/>
+<p align="center">
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mrow></mrow><mrow><mo stretchy="false">(</mo><msub><mi>a</mi><mn>1</mn></msub><mo>↦</mo><msub><mi>v</mi><mn>1</mn></msub><mo stretchy="false">)</mo><mo>⋯</mo><mo stretchy="false">(</mo><msub><mi>a</mi><mi>n</mi></msub><mo>↦</mo><msub><mi>v</mi><mi>n</mi></msub><mo stretchy="false">)</mo><mo>,</mo><mtext>Var</mtext><mo stretchy="false">(</mo><msub><mi>a</mi><mi>k</mi></msub><mo stretchy="false">)</mo><mi>⟶</mi><msub><mi>v</mi><mi>k</mi></msub><mo>,</mo><mo stretchy="false">(</mo><msub><mi>a</mi><mn>1</mn></msub><mo>↦</mo><msub><mi>v</mi><mn>1</mn></msub><mo stretchy="false">)</mo><mo>⋯</mo><mo stretchy="false">(</mo><msub><mi>a</mi><mi>n</mi></msub><mo>↦</mo><msub><mi>v</mi><mi>n</mi></msub><mo stretchy="false">)</mo></mrow></mfrac></mstyle><mspace linebreak="newline"></mspace><mspace width="0.278em"></mspace><mspace width="0.278em"></mspace><mspace linebreak="newline"></mspace><mspace width="0.278em"></mspace><mspace width="0.278em"></mspace><mspace linebreak="newline"></mspace><mstyle displaystyle="true" scriptlevel="0"><mfrac><mrow><mi>S</mi><mo>,</mo><mi>F</mi><mi>⟶</mi><msub><mi>r</mi><mi>f</mi></msub><mo>,</mo><msup><mi>S</mi><mi>′</mi></msup><mspace width="1em"></mspace><msup><mi>S</mi><mi>′</mi></msup><mo>,</mo><mi>X</mi><mi>⟶</mi><msub><mi>r</mi><mn>1</mn></msub><mo>,</mo><msup><mi>S</mi><mi>″</mi></msup><mspace width="1em"></mspace><mo stretchy="false">(</mo><msub><mi>r</mi><mn>2</mn></msub><mo>,</mo><msup><msup><mi>S</mi><mi>″</mi></msup><mi>′</mi></msup><mo stretchy="false">)</mo><mo>=</mo><msub><mi>r</mi><mi>f</mi></msub><mo stretchy="false">(</mo><msup><mi>S</mi><mi>″</mi></msup><mo>,</mo><msub><mi>r</mi><mn>1</mn></msub><mo stretchy="false">)</mo></mrow><mrow><mi>S</mi><mo>,</mo><mtext>Call</mtext><mo stretchy="false">(</mo><mi>F</mi><mo>,</mo><mi>X</mi><mo stretchy="false">)</mo><mi>⟶</mi><msub><mi>r</mi><mn>2</mn></msub><mo>,</mo><msup><msup><mi>S</mi><mi>″</mi></msup><mi>′</mi></msup></mrow></mfrac></mstyle><mspace width="2em"></mspace><mstyle displaystyle="true" scriptlevel="0"><mfrac><mrow><mo>∀</mo><mi>S</mi><mo>∀</mo><mi>r</mi><mo stretchy="false">(</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mrow><mo stretchy="false">(</mo><mi>a</mi><mo>↦</mo><mi>r</mi><mo stretchy="false">)</mo><mi>S</mi><mo>,</mo><mi>X</mi><mi>⟶</mi><msup><mi>r</mi><mi>′</mi></msup><mo>,</mo><msup><mi>S</mi><mi>′</mi></msup></mrow><mrow><msub><mi>r</mi><mi>f</mi></msub><mo stretchy="false">(</mo><mi>S</mi><mo>,</mo><mi>r</mi><mo stretchy="false">)</mo><mo>=</mo><mo stretchy="false">(</mo><msup><mi>r</mi><mi>′</mi></msup><mo>,</mo><mi>S</mi><mo stretchy="false">)</mo></mrow></mfrac></mstyle><mo stretchy="false">)</mo></mrow><mrow><msup><mi>S</mi><mrow><mo>*</mo></mrow></msup><mo>,</mo><mtext>Func</mtext><mo stretchy="false">(</mo><mi>a</mi><mo>,</mo><mi>X</mi><mo stretchy="false">)</mo><mi>⟶</mi><msub><mi>r</mi><mi>f</mi></msub><mo>,</mo><msup><mi>S</mi><mrow><mo>*</mo></mrow></msup></mrow></mfrac></mstyle></mrow></math></p>
+<hr/>
+<p>对Func的语义稍作解释：</p>
+<p>因为我们已经指定target language且target language等于host language，语法结构是该语言中的一个数据结构，返回值和状态也都是该语言中的数据结构，因此语义 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>S</mi><mo>,</mo><mi>X</mi><mi>⟶</mi><mi>r</mi><mo>,</mo><mi>S</mi></mrow></math> 可视为该语言中的一个函数。</p>
+<p>Func的语义解释中，函数<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><msub><mi>r</mi><mi>f</mi></msub></mrow></math>的定义是由 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>⟶</mi></mrow></math> 导出的：</p>
+<p align="center">
+在当前状态<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><msup><mi>S</mi><mrow><mo>*</mo></mrow></msup></mrow></math>下定义一个纯函数<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><msub><mi>r</mi><mi>f</mi></msub></mrow></math>，对于任意一个输入参数<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>r</mi></mrow></math>以及一个调用者状态<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>S</mi></mrow></math>，纯函数<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><msub><mi>r</mi><mi>f</mi></msub><mo stretchy="false">(</mo><mi>S</mi><mo>,</mo><mi>r</mi><mo stretchy="false">)</mo></mrow></math>的返回值是<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mo stretchy="false">(</mo><msup><mi>r</mi><mi>′</mi></msup><mo>,</mo><msup><mi>S</mi><mi>′</mi></msup><mo stretchy="false">)</mo></mrow></math>，其中<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><msup><mi>r</mi><mi>′</mi></msup></mrow></math>来自以下公式的推演：
+</p>
+<p align="center">
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mo stretchy="false">(</mo><mi>a</mi><mo>↦</mo><msub><mi>r</mi><mn>1</mn></msub><mo stretchy="false">)</mo><mi>S</mi><mo>,</mo><mi>X</mi><mi>⟶</mi><msup><mi>r</mi><mi>′</mi></msup><mo>,</mo><msup><mi>S</mi><mi>′</mi></msup></mrow></math>
+</p>
+<p>问题：上述语义下，函数支持“闭包”吗？</p>
+<h3><div id="cccc0x3001cccccccccc_36"></div>LC扩展、原语函数和解释器实现</h3>
+<p>如果不扩展LC语言，它基本没用。这个局面在我们将语法结构做如下扩展时发生逆转。</p>
+<div class="highlight"><pre><span></span><span class="n">LC</span> <span class="o">=</span> <span class="n">Call</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">LC</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">LC</span><span class="p">)</span>
+   <span class="o">|</span> <span class="n">Var</span><span class="p">(</span><span class="n">varname</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span>
+   <span class="o">|</span> <span class="n">Func</span><span class="p">(</span><span class="n">argname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="n">LC</span><span class="p">)</span>
+   <span class="o">|</span> <span class="n">BoolVal</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span>
+   <span class="o">|</span> <span class="n">NumberVal</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">number</span><span class="p">)</span>
+   <span class="o">|</span> <span class="n">StringVal</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span>
+</pre></div>
+<p><em>习题</em> 尝试给出<code><span></span><span class="n">BoolVal</span><span class="p">,</span> <span class="n">NumberVal</span>
+</code>和<code><span></span><span class="n">StringVal</span>
+</code>的语义？</p>
+<p>只做语法结构的扩展，LC仍然没有用处。因为我们甚至不能将数字做加法，不能将字符串做拼接。</p>
+<p>其实，即使LC语言不做上述扩展，也有一套自己的办法实现自然数、整数乃至列表、字符串，以及加法减法函数等等。但因为这些模拟没有什么用，如果不对PL感兴趣，但凡看一秒你都亏麻了。</p>
+<p>实用的路线是引入原语函数 (intrinsic function) 的概念。著名的实用派函数式语言Idris，其编译产物可以视为一种AST，这个AST会预设一些特殊名字的函数的存在，例如，Idris语言没有定义函数<code><span></span><span class="n">op_str_concat</span>
+</code>，但任何字符串拼接操作最后都会调用到它。像<code><span></span><span class="n">op_str_concat</span>
+</code>这样的函数被称为原语函数，它被预设存在，以提供语言最基本的、不可划分的操作。</p>
+<p>对于练习来说，我们可以任意预设原语函数的存在，最关键的是掌握思路。</p>
+<p>现在，让我们根据前面给出的LC语义，在Python语言 (建议Python 3.10以上) 中实现扩展LC的解释器。</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+<p><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Call</span><span class="p">:</span>
+<span class="n">func</span><span class="p">:</span> <span class="n">LC</span>
+<span class="n">arg</span><span class="p">:</span> <span class="n">LC</span></p>
+<p><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Func</span><span class="p">:</span>
+<span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+<span class="n">body</span><span class="p">:</span> <span class="n">LC</span></p>
+<p><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Var</span><span class="p">:</span>
+<span class="n">name</span><span class="p">:</span> <span class="nb">str</span></p>
+<p><span class="c1"># 其他扩展的LC语法结构定义</span>
+<span class="o">...</span>  <span class="c1"># 自行实现LC的其他constructor</span></p>
+<p><span class="c1"># 定义sort</span>
+<span class="n">LC</span> <span class="o">=</span> <span class="n">Var</span> <span class="o">|</span> <span class="n">Func</span> <span class="o">|</span> <span class="n">Call</span> <span class="o">|</span> <span class="n">NumberVal</span> <span class="o">|</span> <span class="n">BoolVal</span> <span class="o">|</span> <span class="n">StringVal</span></p>
+<p><span class="k">def</span> <span class="nf">eval_lc</span><span class="p">(</span><span class="n">S</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span> <span class="n">syntactic_structure</span><span class="p">:</span> <span class="n">LC</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">S</span><span class="p">]:</span>
+<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">syntactic_structure</span><span class="p">,</span> <span class="n">Var</span><span class="p">):</span>
+<span class="k">return</span> <span class="n">S</span><span class="p">[</span><span class="n">syntactic_structure</span><span class="o">.</span><span class="n">name</span><span class="p">],</span> <span class="n">S</span>
+<span class="o">...</span>  <span class="c1"># 自行实现</span>
+</p></pre></div>
+<h2><div id="ccccccc_37"></div>LC的语法解析</h2>
+<p>欢迎来到编译器最平凡的部分，语法解析 (parsing)。语法解析对应的具体技术有parser generator和parser combinator等。</p>
+<p>解析器需要更好的报错和更强的表达力，但对极限性能的需求通常相当虚拟。使用ANTLR4 (一个相当实用的parser生成器框架)，按照lua规范实现一个lua解析器，这样的解析器中会存在相当多的歧义，多少会导致性能问题。但在实践中，上面这样“低质量”的lua解析器一秒钟能解析接近10万行来自real world的工业代码，这个性能完全足够让IDE分析工具在你每一次落键的瞬间重新解析、分析当前文件并更新补全信息。</p>
+<p>因此，大胆地去使用那些表现力足够强、报错足够好的解析器生成器！Tree-sitter，ANTLR4, Python Lark等等等。但要小心那些LL(1)/LR(1)的解析器，如果你不算parser专家，或者不想浪费生命去纠结为什么你的文法不工作。</p>
+<p>让我们使用Python的Lark。它的性能非常差，但是非常实用，被大量很重要的Python开源项目使用。</p>
+<p>解析器的工作是从源代码文本中提取语法结构——特指抽象语法树。</p>
+<p>下面是一个例子：</p>
+<div class="highlight"><pre><span></span><span class="nl">start</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="nv">lc</span><span class="w"></span>
+<p><span class="nv">lc</span><span class="w">    </span><span class="p">:</span><span class="w"> </span><span class="nv">call</span><span class="w"></span>
+<span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="nv">atom</span><span class="w"></span></p>
+<p><span class="nv">call</span><span class="w">   </span><span class="p">:</span><span class="w"> </span><span class="nv">call</span><span class="w"> </span><span class="nv">atom</span><span class="w"></span>
+<span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="nv">atom</span><span class="w"></span></p>
+<p><span class="nv">atom</span><span class="w">  </span><span class="p">:</span><span class="w"> </span><span class="no">CNAME</span><span class="w"></span>
+<span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="nv">func</span><span class="w"></span>
+<span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="nv">number</span><span class="w"></span>
+<span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="nv">boolean</span><span class="w"></span>
+<span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="nv">string</span><span class="w"></span>
+<span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="s2">"("</span><span class="w"> </span><span class="nv">lc</span><span class="w"> </span><span class="s2">")"</span><span class="w"></span></p>
+<p><span class="nv">string</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">ESCAPED_STRING</span><span class="w"></span>
+<span class="nv">number</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">NUMBER</span><span class="w"></span>
+<span class="nv">boolean</span><span class="p">:</span><span class="w"> </span><span class="s2">"true"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"false"</span><span class="w"></span>
+<span class="nv">var</span><span class="w">    </span><span class="p">:</span><span class="w"> </span><span class="no">CNAME</span><span class="w"></span>
+<span class="nv">func</span><span class="w">   </span><span class="p">:</span><span class="w"> </span><span class="s2">"func"</span><span class="w"> </span><span class="s2">"("</span><span class="w"> </span><span class="no">CNAME</span><span class="w"> </span><span class="s2">")"</span><span class="w"> </span><span class="s2">"{"</span><span class="w"> </span><span class="nv">lc</span><span class="w"> </span><span class="s2">"}"</span><span class="w"></span></p>
+<p><span class="err">%</span><span class="nv">import</span><span class="w"> </span><span class="nv">common</span><span class="o">.</span><span class="no">WS</span><span class="w">               </span><span class="c">// 这是空白符token</span><span class="w"></span>
+<span class="err">%</span><span class="nv">import</span><span class="w"> </span><span class="nv">common</span><span class="o">.</span><span class="no">ESCAPED_STRING</span><span class="w">   </span><span class="c">// 这是双引号字符串token</span><span class="w"></span>
+<span class="err">%</span><span class="nv">import</span><span class="w"> </span><span class="nv">common</span><span class="o">.</span><span class="no">CNAME</span><span class="w">            </span><span class="c">// 这是C标志服token</span><span class="w"></span>
+<span class="err">%</span><span class="nv">import</span><span class="w"> </span><span class="nv">common</span><span class="o">.</span><span class="no">NUMBER</span><span class="w">           </span><span class="c">// 这是数字token</span><span class="w"></span>
+<span class="err">%</span><span class="nv">ignore</span><span class="w"> </span><span class="no">WS</span><span class="w">                      </span><span class="c">// 忽略所有空白符</span><span class="w"></span>
+</p></pre></div>
+<p>这个文法被一行代码的Lark编译工具处理后，可以生成一个LC语言的解析器：<a href="https://lark-parser.readthedocs.io/en/latest/json_tutorial.html">json_parser全流程</a>。这个解析器输出的是具体语法树 (CST)，你可能需要手动转换CST到AST。</p>
+<p>出于可读性和可维护性的考虑，CST到AST的转换最好在文法中进行 (详见语法制导，或semantic actions)。<a href="https://peps.python.org/pep-0617/#intermediate-parse-tree">Python的发展生动地说明了这点</a>，虽然我们仍常常听到一些相反意见。对此，我的建议是努力地使用语法制导，但绝不在文法里处理引入除开构造AST以外的逻辑！</p>
+<div class="highlight"><pre><span></span><span class="c">// 一个好的使用semantic action的例子</span><span class="w"></span>
+<span class="nl">lc_atom</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">CNAME</span><span class="w">   </span><span class="p">{</span><span class="x"> Var(token_to_string(</span><span class="err">$</span><span class="x">1)) </span><span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="s2">"true"</span><span class="w">  </span><span class="p">{</span><span class="x"> BoolVal(True) </span><span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="s2">"false"</span><span class="w"> </span><span class="p">{</span><span class="x"> BoolVal(False) </span><span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="o">...</span><span class="w"></span>
+</pre></div>
+<p>现在，根据上面的背景介绍以及样例文法，使用Lark或者别的你觉得趁手的解析器生成工具，为LC语言生成一个解析器，并使用解析器得到我们需要的语法结构。</p>
+<p>如果你觉得这个工作很无聊或者不好办，你可以无情地使用使用下面的步骤获得一个parser：</p>
+<ol>
+<li>
+<p>创建一个项目文件夹 <code>intp_exercise</code>。</p>
+</li>
+<li>
+<p>新建<code>lc_ast.py</code>，将扩展LC语言的所有语法结构 (<code>Call</code>, <code>Var</code>, <code>Func</code>, <code>NumberVal</code>等) 以及前面<code>eval_lc</code>函数，放入<code>lc_ast.py</code>中。</p>
+</li>
+<li>
+<p>在文件夹中创建文件 <code>lc1.lark</code>，内容如下：</p>
+<div class="highlight"><pre><span></span><span class="err">%%</span><span class="w"></span>
+<span class="nl">from</span><span class="w"> </span><span class="err">lc_ast</span><span class="w"> </span><span class="err">import</span><span class="w"> </span><span class="err">*</span><span class="w"></span>
+<span class="err">%%</span><span class="w"></span>
+<span class="err">start</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="nv">lc</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="err">$1</span><span class="w"></span>
+<span class="nv">lc</span><span class="w">   </span><span class="p">:</span><span class="w"> </span><span class="nv">lc</span><span class="w"> </span><span class="nv">atom</span><span class="w">    </span><span class="o">-&gt;</span><span class="w"> </span><span class="no">Call</span><span class="o">(</span><span class="err">$1</span><span class="p">,</span><span class="w"> </span><span class="err">$2</span><span class="o">)</span><span class="w"></span>
+<span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="nv">atom</span><span class="w">       </span><span class="o">-&gt;</span><span class="w"> </span><span class="err">$1</span><span class="w"></span>
+<span class="nv">atom</span><span class="w">  </span><span class="p">:</span><span class="w"> </span><span class="no">CNAME</span><span class="w">     </span><span class="o">-&gt;</span><span class="w"> </span><span class="no">Var</span><span class="o">(</span><span class="err">$1</span><span class="o">.</span><span class="nv">value</span><span class="o">)</span><span class="w"></span>
+<span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="no">NUMBER</span><span class="w">    </span><span class="o">-&gt;</span><span class="w"> </span><span class="no">NumberVal</span><span class="o">(</span><span class="nv">eval</span><span class="o">(</span><span class="err">$1</span><span class="o">.</span><span class="nv">value</span><span class="o">))</span><span class="w"></span>
+<span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="s2">"true"</span><span class="w">    </span><span class="o">-&gt;</span><span class="w"> </span><span class="no">BoolVal</span><span class="o">(</span><span class="no">True</span><span class="o">)</span><span class="w"></span>
+<span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="s2">"false"</span><span class="w">   </span><span class="o">-&gt;</span><span class="w"> </span><span class="no">BoolVal</span><span class="o">(</span><span class="no">False</span><span class="o">)</span><span class="w"></span>
+<span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="no">ESCAPED_STRING</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="no">StringVal</span><span class="o">(</span><span class="nv">eval</span><span class="o">(</span><span class="err">$1</span><span class="o">.</span><span class="nv">value</span><span class="o">))</span><span class="w"></span>
+<span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="s2">"("</span><span class="w"> </span><span class="nv">lc</span><span class="w"> </span><span class="s2">")"</span><span class="w">     </span><span class="o">-&gt;</span><span class="w"> </span><span class="err">$2</span><span class="w"></span>
+<span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="s2">"func"</span><span class="w"> </span><span class="s2">"("</span><span class="w"> </span><span class="no">CNAME</span><span class="w"> </span><span class="s2">")"</span><span class="w"> </span><span class="s2">"{"</span><span class="w"> </span><span class="nv">lc</span><span class="w"> </span><span class="s2">"}"</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="no">Func</span><span class="o">(</span><span class="err">$3</span><span class="o">.</span><span class="nv">value</span><span class="p">,</span><span class="w"> </span><span class="err">$6</span><span class="o">)</span><span class="w"></span>
+<span class="err">%</span><span class="nv">import</span><span class="w"> </span><span class="nv">common</span><span class="o">.</span><span class="no">WS</span><span class="w">               </span><span class="c">// 这是空白符token</span><span class="w"></span>
+<span class="err">%</span><span class="nv">import</span><span class="w"> </span><span class="nv">common</span><span class="o">.</span><span class="no">ESCAPED_STRING</span><span class="w">   </span><span class="c">// 这是双引号字符串token</span><span class="w"></span>
+<span class="err">%</span><span class="nv">import</span><span class="w"> </span><span class="nv">common</span><span class="o">.</span><span class="no">CNAME</span><span class="w">            </span><span class="c">// 这是C标志服token</span><span class="w"></span>
+<span class="err">%</span><span class="nv">import</span><span class="w"> </span><span class="nv">common</span><span class="o">.</span><span class="no">NUMBER</span><span class="w">           </span><span class="c">// 这是数字token</span><span class="w"></span>
+<span class="err">%</span><span class="nv">ignore</span><span class="w"> </span><span class="no">WS</span><span class="w">                      </span><span class="c">// 忽略所有空白符</span><span class="w"></span>
+</pre></div>
+</li>
+<li>
+<p><code>pip install lark-action</code>, 安装<code>lark-action</code>包</p>
+</li>
+<li>
+<p>在文件夹<code>intp_exercise/</code>下运行：</p>
+<div class="highlight"><pre><span></span>python -m lark_action lc1.lark --package<span class="o">=</span><span class="s2">""</span> --module<span class="o">=</span><span class="s2">"lc"</span>
+</pre></div>
+</li>
+<li>
+<p>新建文件<code>lc_run.py</code>, 内容如下：</p>
+<div class="highlight"><pre><span></span><span class="c1"># lc_run.py</span>
+<p><span class="kn">from</span> <span class="nn">lc</span> <span class="kn">import</span> <span class="n">parser</span>
+<span class="kn">from</span> <span class="nn">lc_ast</span> <span class="kn">import</span> <span class="n">eval_lc</span></p>
+<p><span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">addx</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<span class="k">return</span> <span class="n">y</span><span class="p">,</span> <span class="n">ctx</span>
+<span class="k">return</span> <span class="n">addx</span><span class="p">,</span> <span class="n">ctx</span></p>
+<p><span class="n">S</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">'add'</span><span class="p">:</span> <span class="n">add</span> <span class="p">}</span></p>
+<p><span class="k">def</span> <span class="nf">run_code</span><span class="p">(</span><span class="n">source_code</span><span class="p">):</span>
+<span class="n">r</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">eval_lc</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">source_code</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"执行结果为:"</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span></p>
+<p><span class="n">run_code</span><span class="p">(</span><span class="s2">"add 1 2"</span><span class="p">)</span> <span class="c1"># 3</span>
+<span class="n">run_code</span><span class="p">(</span><span class="s2">"(func (x) {add 2 x})(3)"</span><span class="p">)</span> <span class="c1"># 5 </span>
+</p></pre></div>
+</li>
+<li>
+<p>执行<code>python lc_run.py</code>.</p>
+</li>
+</ol>
+<p>尝试修改具体语法，例如你可能更喜欢 <code>fn x -&gt; x</code> 而不是 <code>func (x) { x }</code>；只需保持最后的抽象语法树不变。</p>
+<p>看看效果。</p>
+<p>Bonus：尝试实现一个REPL (Read-Eval-Print-Loop)。</p>
+<h2><div id="ccccccccccc_38"></div>更丰富的语言及语言支持</h2>
+<p>虽然我们已经完成一个有模有样的解释器，但它目前仍很不实用。</p>
+<p>该如何赋值呢？我们甚至不能使用<code><span></span><span class="n">x</span> <span class="o">=</span> <span class="mi">1</span>
+</code>这样的代码。</p>
+<p>此外，函数体也只能支持“一句话”，而不能支持多行，就像下面这样：</p>
+<div class="highlight"><pre><span></span><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">x</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nx">add</span><span class="w"> </span><span class="nx">x</span><span class="w"> </span><span class="nx">x</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+<p>要支持这些操作，我们引入两种新的语法结构：</p>
+<ul>
+<li>
+<p>赋值</p>
+<ul>
+<li>
+<p>语法结构：<code><span></span><span class="nx">Block</span><span class="p">(</span><span class="nx">body</span><span class="p">:</span><span class="w"> </span><span class="nx">list</span><span class="p">&lt;</span><span class="nx">LC</span><span class="p">&gt;)</span><span class="w"></span>
+</code></p>
+</li>
+<li>
+<p>语义：
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mrow><mi>S</mi><mo>,</mo><mi>X</mi><mi>⟶</mi><mi>r</mi><mo>,</mo><msup><mi>S</mi><mi>′</mi></msup></mrow><mrow><mi>S</mi><mo>,</mo><mtext>Assign</mtext><mo stretchy="false">(</mo><mi>a</mi><mo>,</mo><mi>X</mi><mo stretchy="false">)</mo><mi>⟶</mi><mi>r</mi><mo>,</mo><mo stretchy="false">(</mo><mi>a</mi><mo>↦</mo><mi>r</mi><mo stretchy="false">)</mo><msup><mi>S</mi><mi>′</mi></msup></mrow></mfrac></mstyle></mrow></math></p>
+</li>
+</ul>
+</li>
+<li>
+<p>语句块</p>
+<ul>
+<li>
+<p>语法结构：<code><span></span><span class="nx">Assign</span><span class="p">(</span><span class="nx">name</span><span class="p">:</span><span class="w"> </span><span class="nx">str</span><span class="p">,</span><span class="w"> </span><span class="nx">value</span><span class="p">:</span><span class="w"> </span><span class="nx">LC</span><span class="p">)</span><span class="w"></span>
+</code></p>
+</li>
+<li>
+<p>语义：
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mrow><msub><mi>S</mi><mn>0</mn></msub><mo>,</mo><msub><mi>X</mi><mn>1</mn></msub><mi>⟶</mi><msub><mi>r</mi><mn>1</mn></msub><mo>,</mo><msub><mi>S</mi><mn>1</mn></msub><mspace width="1em"></mspace><msub><mi>S</mi><mn>1</mn></msub><mo>,</mo><msub><mi>X</mi><mn>2</mn></msub><mi>⟶</mi><msub><mi>r</mi><mn>2</mn></msub><mo>,</mo><msub><mi>S</mi><mn>2</mn></msub><mspace width="0.278em"></mspace><mo>⋯</mo><mspace width="0.278em"></mspace><msub><mi>S</mi><mrow><mi>n</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>,</mo><msub><mi>X</mi><mi>n</mi></msub><mi>⟶</mi><msub><mi>r</mi><mi>n</mi></msub><mo>,</mo><msub><mi>S</mi><mi>n</mi></msub></mrow><mrow><msub><mi>S</mi><mn>0</mn></msub><mo>,</mo><mtext>Block</mtext><mo stretchy="false">(</mo><msub><mi>X</mi><mn>1</mn></msub><msub><mi>X</mi><mn>2</mn></msub><mo>⋯</mo><msub><mi>X</mi><mi>n</mi></msub><mo stretchy="false">)</mo><mi>⟶</mi><msub><mi>r</mi><mi>n</mi></msub><mo>,</mo><msub><mi>S</mi><mi>n</mi></msub></mrow></mfrac></mstyle></mrow></math></p>
+</li>
+</ul>
+</li>
+</ul>
+<p><em>习题</em> 尝试在lc1.lark中为Assign和Block加入合适的语法规则，以支持下面的代码：</p>
+<div class="highlight"><pre><span></span><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">x</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nx">x</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">add</span><span class="w"> </span><span class="nx">x</span><span class="w"> </span><span class="nx">x</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="nx">x</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">add</span><span class="w"> </span><span class="nx">x</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="nx">x</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+<p><em>习题</em> 尝试实现以下语言扩展，让我们的语言看起来更“工业界”：</p>
+<ol>
+<li>具名函数：目前实现的LC解释器，函数均为匿名</li>
+<li>if语句</li>
+<li>while语句</li>
+<li>return语句</li>
+<li>多参数函数</li>
+<li>break, continue</li>
+</ol>
+<p>此外，还可以实现相应的REPL以及文件输入执行功能。</p>
+<p>本页面已帮助我的一名实习生掌握了基本的编译、解释技术，项目链接如下，可作为参考实现：</p>
+<p style="text-align: center;">
+    https://github.com/April-ZhouQian/interpret
+</p>
+<p>在后续章节，我们将基于上述参考实现，实现相应语言的字节码编译器。</p>
+<h2><div id="cc_39"></div>编译</h2>
+<p>如果运行前面解释器的参考实现，可以发现，性能比Python还要低好几个数量级。</p>
+<div class="highlight"><pre><span></span><span class="nx">LC</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">Call</span><span class="p">(</span><span class="kd">func</span><span class="p">:</span><span class="w"> </span><span class="nx">LC</span><span class="p">,</span><span class="w"> </span><span class="nx">args</span><span class="p">:</span><span class="w"> </span><span class="nx">LC</span><span class="p">)</span><span class="w"></span>
+<span class="w">   </span><span class="o">|</span><span class="w"> </span><span class="nx">Var</span><span class="p">(</span><span class="nx">varname</span><span class="p">:</span><span class="w"> </span><span class="nx">str</span><span class="p">)</span><span class="w"></span>
+<span class="w">   </span><span class="o">|</span><span class="w"> </span><span class="nx">Func</span><span class="p">(</span><span class="nx">argname</span><span class="p">:</span><span class="w"> </span><span class="nx">str</span><span class="p">,</span><span class="w"> </span><span class="nx">body</span><span class="p">:</span><span class="w"> </span><span class="nx">LC</span><span class="p">)</span><span class="w"></span>
+<span class="w">   </span><span class="o">|</span><span class="w"> </span><span class="nx">BoolVal</span><span class="p">(</span><span class="nx">value</span><span class="p">:</span><span class="w"> </span><span class="kt">bool</span><span class="p">)</span><span class="w"></span>
+<span class="w">   </span><span class="o">|</span><span class="w"> </span><span class="nx">NumberVal</span><span class="p">(</span><span class="nx">value</span><span class="p">:</span><span class="w"> </span><span class="nx">number</span><span class="p">)</span><span class="w"></span>
+<span class="w">   </span><span class="o">|</span><span class="w"> </span><span class="nx">StringVal</span><span class="p">(</span><span class="nx">value</span><span class="p">:</span><span class="w"> </span><span class="nx">str</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+<p>描述语义时，我们使用了 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>S</mi><mo>,</mo><mi>X</mi><mi>⟶</mi><mi>r</mi><mo>,</mo><msup><mi>S</mi><mi>′</mi></msup></mrow></math>的表述，编译可以视为对这个过程的一个拆解。</p>
+<p align="center">
+<image src="./compiler.png" width="800px"/>
+</p>
+<p>我们考虑上图的如下流程：</p>
+<ol>
+<li>语法结构到字节码。将其用<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>X</mi><mover><mrow><mi>⟶</mi></mrow><mrow><mtext>compile</mtext></mrow></mover><msub><mi>I</mi><mn>1</mn></msub><msub><mi>I</mi><mn>2</mn></msub><mo>⋯</mo><msub><mi>I</mi><mi>n</mi></msub></mrow></math>的形式描述。</li>
+<li>字节码到运行时值，即虚拟机解释。将其用<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>S</mi><mo>,</mo><mi>I</mi><mover><mrow><mi>⟶</mi></mrow><mrow><mtext>VM</mtext></mrow></mover><mi>r</mi><mo>,</mo><mi>S</mi></mrow></math>的形式描述。</li>
+</ol>
+<p>我们会先介绍 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mover><mrow><mi>⟶</mi></mrow><mrow><mtext>VM</mtext></mrow></mover></mrow></math>，但初学者可能因此丢失语境。对此，我们先介绍一个简单例子以方便读者建立直觉。</p>
+<div class="highlight"><pre><span></span><span class="nx">x</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">add</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+<div class="highlight"><pre><span></span><span class="nx">LOAD_VAR</span><span class="w"> </span><span class="nx">add</span><span class="w"></span>
+<span class="nx">LOAD_VAR</span><span class="w"> </span><span class="nx">x</span><span class="w"></span>
+<span class="nx">LOAD_CONST</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
+<span class="nx">LOAD_CONST</span><span class="w"> </span><span class="mi">2</span><span class="w"></span>
+<span class="nx">CALL_FUNCTION</span><span class="w"> </span><span class="mi">2</span><span class="w"></span>
+<span class="nx">STORE_VAR</span><span class="w"> </span><span class="nx">x</span><span class="w"></span>
+</pre></div>
+<p>(TODO)</p>
+
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+        <script type="text/javascript" id="MathJax-script" async
+            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/mml-chtml.js">
+        </script>
+        
+<hr/>
+<h2>脚注</h2>
+<ol><li id="(op-seman) TODO">(op-seman) TODO:<p></p><p>使用bar表示“向量化”的例子</p></li><li id="X的严格定义">X的严格定义:<p></p><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mo stretchy="false">|</mo><mi>X</mi><mo stretchy="false">|</mo><mo>⇝</mo><mi>r</mi></mrow></math> 中的 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>X</mi></mrow></math> 实际上不应该对应任何编程语言，它是一个形式化的表述，用来简洁、精准地表达一门语言的语法。实际上在学术界中，通常直接使用语言而不是语法结构，这可能是为了直观，却常常导致复杂的歧义/小圈子黑话。 <a href="#(op-seman) TODO"><sup><small><small>(op-seman) TODO</small></small></sup></a></p></li><li id="r的严格定义">r的严格定义:<p></p><p><code><span></span><span class="n">r</span>
+</code> 的取值范围，是用BNF定义的、非特定target language的数据结构。</p></li><li id="Staging error">Staging error:<p></p><p>这里，<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mo>⇝</mo></mrow></math>两侧出现的<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>i</mi></mrow></math>实际上是不同的。他们身处不同的语言中，就像文本中的1和C++里为1的值截然不同。</p></li></ol>
