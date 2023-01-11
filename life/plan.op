@@ -24,7 +24,7 @@ Index Page
 
 4. (10月) 利用Typed BNF的ANTLR4+TypeScript后端实现了兼容MATLAB的语言解析器。
 
-5. (3-12月) 熟练掌握了VSCode插件的编写，(4月) 实现了[UnityPython插件]https://github.com/thautwarm/vscode-unitypython)；(12月) 为公司实现类MATLAB语言的IDE插件，包括代码执行、工作空间保存及加载、MATLAB代码兼容性静态检测、根据文件系统自动更新删除函数定义等高级功能。
+5. (3-12月) 熟练掌握了VSCode插件的编写，(4月) 实现了[UnityPython插件](https://github.com/thautwarm/vscode-unitypython)；(12月) 为公司实现类MATLAB语言的IDE插件，包括代码执行、工作空间保存及加载、MATLAB代码兼容性静态检测、根据文件系统自动更新删除函数定义等高级功能。
 
 6. (8-9月) 优化了Julia生态中与Python互调用的底层机制: [JNumPy](https://github.com/Suzhou-Tongyuan/jnumpy)、[同元PyCall](https://github.com/Suzhou-Tongyuan/PyCall.jl)；与社区方案相比有如下先进之处：
 
