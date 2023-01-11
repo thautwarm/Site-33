@@ -36,6 +36,8 @@ Index Page
 
     4. JNumPy中的TyPython支持在Julia侧远比PyCall和PythonCall更细粒度的Python操作，依靠JNumPy可以简化Python C扩展的实现，并且没有性能损失（但目前仍存在启动加载的latency问题）
 
+7. 实现[OP语言](https://github.com/thautwarm/original-posting)，集成了Markdown、RST等标记语言，是能够进行行内代码高亮和元编程的标记语言。这个博客完全使用OP语言写成。
+
 ## 2023计划
 
 1. 设计和初步实现一个能组合多种语言优势的编程语言。主要集成Julia、Python以及PureScript (因为PS容易集成) 的生态。该语言只有抽象语法而不要求具体前端语法，拥有良好的静态检查支持以及LSP实现，能编译为exe (但不是独立的)，也能编译为动态链接库 (尝试达到同时也是Python模块)；尝试探索使用Node Editor编辑抽象语法而非使用具体语法；该项目原型能对公司内部的相关项目方向进行指导。
