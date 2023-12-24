@@ -59,10 +59,7 @@ setInterval(() =>{
 @set-index-format|format_doc_ref|
 
 @begin IF IS_PERSONAL
-    @include|design/a-short-intro-to-active-patterns.op|
-    @include|design/linear-time-lr-in-glr.op|
-    @include|design/julia-redef-struct.op|
-    @include|design/naming-convention-for-c-ident-based-langs.op|
+    @include-dir|design|
     @include|compiler/interpreter.op|
     @include-dir|life|
     @include-dir|pl|

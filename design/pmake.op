@@ -80,17 +80,34 @@ PMakefile 是相对冗长的，相比于GNU Make 和 CMake，它**不承诺简�
 
 ## 设计概述
 
-PMakefile 的设计目标是，将构建脚本的编写，转化为 Python 代码的编写。
+PMakefile 的设计目标是，将构建脚本的编写，转化为 Python 脚本的编写。
 
-其核心的设计点是，将构建目标的编写，转化为 Python 函数的编写，如下所示：
+结构上的设计灵感是，将构建目标的编写，转化为 Python 函数的编写，如下所示：
 
 ```python
 from pmakefile import * # type: ignore
 
+phony([
+    'dep1',
+    'dep2',
+    'target1',
+    ...
+])
+
+@recipe(...)
+def dep1():
+    ...
+
+@recipe(...)
+def dep2():
+    ...
+
 @recipe('dep1', 'dep2')
-def build():
+def target1():
     cmd1()
     cmd2()
 ```
+
+这里可以看到，PMakefile 还是沿用了很多 Makefile 的概念，比如 phony target 和 构建依赖等。这是一个比较尴尬的事情，之所以沿袭旧的概念，并不是说这些概念一定是最有效的，只是因为目标项目的整体工程量比较小，我出于复用旧有知识、旧有经验的考虑，才选择了这种设计。
 
 @end md
