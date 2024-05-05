@@ -1,0 +1,43 @@
+/* overrides --font-display to make it smaller */
+/* Path: source/_includes/css/overrides.css */
+
+:root {
+    --font-display: var(--font-bold) clamp(1.3rem, 3vw, 2.2rem)/1 var(--font-family-display);
+}
+
+
+/* 点击效果 */
+details {
+    border: solid 1px var(--color-line);
+    border-radius: 0.25em;
+    padding-left: .5em;
+    padding-right: .5em;
+    padding-top: .3em;
+    padding-bottom: .1em;
+}
+
+details[open] summary::before {
+    transform: rotate(90deg);
+}
+
+summary {
+    --marker-image: none;
+    outline: none;
+
+    padding-left: 0.3em;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    /* 移除默认的outline */
+
+    &::before {
+        content: '▶';
+        display: inline-block;
+        width: 1em;
+        font-size: 1em;
+        margin-right: 1em;
+        transform: rotate(0deg);
+        /* 初始状态为闭合 */
+        transition: transform 0.2s ease;
+    }
+}

@@ -1,0 +1,19 @@
+<nav class="menu-container">
+  {{> const page = search.page("url=/") }}
+
+  {{ if page }}
+    {{ if page.logo }}
+      <a class="menu-logo" href="{{ page.url }}"><img src="{{ page.logo }}" alt="{{ page.title || slug }}"></a>
+    {{ else }}
+      <a class="menu-highlight" href="{{ page.url }}">{{ page.title || slug }}</a>
+    {{ /if }}
+  {{ /if }}
+
+  <ul class="menu">
+  {{ for item of nav.menu().children?.sort((a, b) => a.data?.order - b.data?.order) }}
+    <li>
+      {{ include "templates/menu_item.vto" { item } }}
+    </li>
+  {{ /for }}
+  </ul>
+</nav>
