@@ -1,3 +1,2 @@
-# Simple Wiki
+# Site-33
 
-Create markdown files to add pages.
