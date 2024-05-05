@@ -34,4 +34,6 @@ site.remoteFile(
     "https://unpkg.com/@highlightjs/cdn-assets@11.9.0/styles/nnfx-light.min.css"
 )
 
+site.ignore("README.md", "CHANGELOG.md", "node_modules");
+
 export default site;
