@@ -1,5 +1,5 @@
 ---
-oldUrl: design/julia-redef-struct.html
+oldUrl: /Site-33/design/julia-redef-struct.html
 date: 2022-08-01
 ---
 

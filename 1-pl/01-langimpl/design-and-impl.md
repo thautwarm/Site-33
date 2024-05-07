@@ -1,6 +1,6 @@
 ---
 title: 编程语言的设计和实现
-oldUrl: /compiler/interpreter.html
+oldUrl: /Site-33/compiler/interpreter.html
 date: 2022-08-17
 ---
 
