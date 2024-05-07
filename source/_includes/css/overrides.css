@@ -16,6 +16,10 @@ details {
     padding-bottom: .1em;
 }
 
+details[open] p {
+    padding-left: 1em;
+}
+
 details[open] summary::before {
     transform: rotate(90deg);
 }
@@ -40,4 +44,52 @@ summary {
         /* 初始状态为闭合 */
         transition: transform 0.2s ease;
     }
+}
+
+.site33-tabs {
+    display: block;
+}
+
+input[type="radio"] {
+    display: none;
+}
+
+.site33-tabs label {
+    cursor: pointer;
+    padding: 10px 20px;
+    display: inline-block;
+    /* Change from block to inline-block */
+    margin-right: 2px;
+    /* Adjust margin for a better layout */
+    background: #ddd;
+    border: 1px solid #ccc;
+    border-radius: 5px 5px 0 0;
+}
+
+.site33-tabs label:hover {
+    background: #bbb;
+}
+
+.site33-tab-content {
+    display: none;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-top: none;
+    /* Hide top border to blend with tabs */
+    border-radius: 0 0 5px 5px;
+    background: #fff;
+}
+
+#site33-tab1:checked~#site33-content1,
+#site33-tab2:checked~#site33-content2,
+#site33-tab3:checked~#site33-content3 {
+    display: block;
+}
+
+#site33-tab1:checked+label,
+#site33-tab2:checked+label,
+#site33-tab3:checked+label {
+    background: #fff;
+    border-bottom: none;
+    /* Hide bottom border to blend with content */
 }

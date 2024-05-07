@@ -3,10 +3,12 @@ import katex from "lume/plugins/katex.ts";
 import wiki from "./source/wiki.ts";
 import favicon from "lume/plugins/favicon.ts";
 import redirects from "lume/plugins/redirects.ts";
+// import jsx from "lume/plugins/jsx_preact.ts";
 
 
 const site = lume({});
 site
+    // .use(jsx())
     .use(favicon({ input: './static/favicon.png' }))
     .use(redirects())
     .use(katex( {

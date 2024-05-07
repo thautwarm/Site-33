@@ -10,10 +10,19 @@
   {{ /if }}
 
   <ul class="menu">
-  {{ for item of nav.menu().children?.sort((a, b) => a.data?.order - b.data?.order) }}
-    <li>
-      {{ include "templates/menu_item.vto" { item } }}
-    </li>
-  {{ /for }}
+  {{ set it_menu = it && nav.menu(it.url) }}
+  {{ if it_menu }}
+    {{ for item of it_menu?.children?.sort((a, b) => a.data?.order - b.data?.order) ?? [] }}
+      <li>
+        {{ include "templates/menu_item.vto" { item, it } }}
+      </li>
+    {{ /for }}
+  {{ else}}
+    {{ for item of nav.menu().children?.sort((a, b) => a.data?.order - b.data?.order) }}
+      <li>
+        {{ include "templates/menu_item.vto" { item } }}
+      </li>
+    {{ /for }}
+  {{ /if }}
   </ul>
 </nav>

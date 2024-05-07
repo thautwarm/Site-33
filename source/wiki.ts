@@ -61,6 +61,7 @@ export default function () {
             "_includes/blog-layout.vto",
             "_includes/templates/menu_item.vto",
             "_includes/templates/menu.vto",
+            "_includes/blog-layout2.tsx",
             "styles.css",
         ];
 
