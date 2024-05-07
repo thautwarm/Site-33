@@ -53,6 +53,7 @@ export default function () {
 
         // Add remote files
         const files = [
+            "_includes/svg/copy.svg",
             "_includes/css/menu.css",
             "_includes/css/updates.css",
             "_includes/css/overrides.css",
@@ -68,5 +69,7 @@ export default function () {
         for (const file of files) {
             site.remoteFile(file, import.meta.resolve(`./${file}`));
         }
+
+        site.copy('_includes/svg/copy.svg', 'svg/copy.svg')
     };
 }

@@ -42,25 +42,18 @@ Deno fundamentally eases the sharing and reusing of build scripts and ruleset li
         <input type="radio" name="site33-tabs" id="site33-tab1" checked>
         <label for="site33-tab1">Windows</label>
         <input type="radio" name="site33-tabs" id="site33-tab2">
-        <label for="site33-tab2">Linux/macOS</label>
+        <label for="site33-tab2">Unix</label>
         <input type="radio" name="site33-tabs" id="site33-tab3">
         <label for="site33-tab3">GitHub Releases</label>
         <input type="radio" name="site33-tabs" id="site33-tab3">
-        <div class="site33-tab-content" id="site33-content1" style="height: 6em">
-
-            ```bash
-            irm https://deno.land/install.ps1 | iex
-            ```
+        <div class="site33-tab-content" id="site33-content1" style="min-height: 6em">
+            <p class="language-bash" id="content-windows-deno-install"> irm https://deno.land/install.ps1 | iex </p>
         </div>
-        <div class="site33-tab-content" id="site33-content2" style="height: 6em">
-
-            ```bash
-            curl -fsSL https://deno.land/install.sh | sh
-            ```
+        <div class="site33-tab-content" id="site33-content2" style="min-height: 6em">
+            <p id="content-unix-deno-install"> curl -fsSL https://deno.land/install.sh | sh </p>
         </div>
-        <div class="site33-tab-content" id="site33-content3" style="height: 6em">
-            The Deno releases can be found at [https://github.com/denoland/deno/releases](https://github.com/denoland/deno/releases).
-
+        <div class="site33-tab-content" id="site33-content3" style="min-height: 6em">
+            <p>The Deno releases can be found at <a id="content-gh-deno-install" href="https://github.com/denoland/deno/releases"> https://github.com/denoland/deno/releases </a>.</p>
         </div>
     </div>
 

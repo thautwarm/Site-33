@@ -93,3 +93,15 @@ input[type="radio"] {
     border-bottom: none;
     /* Hide bottom border to blend with content */
 }
+
+.site33-copy-icon {
+    cursor: pointer;
+    user-select: none; /* Prevent the icon from being selected */
+    float: right; /* Position the icon to the right */
+    margin-left: 10px;
+    margin-right: 5px;
+    font-size: 20px; /* Adjust size i   f necessary */
+    width: 32px;
+    height: 32px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
