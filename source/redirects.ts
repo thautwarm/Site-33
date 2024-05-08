@@ -36,14 +36,12 @@ export default function (userOptions?: Options) {
 
             pages.forEach((page) => {
                 const { url, oldUrl } = page.data;
-                const revisedUrl = joinUrl(site.options.location, url).pathname;
 
                 if (url && oldUrl) {
                     const oldUrls = Array.isArray(oldUrl) ? oldUrl : [oldUrl];
 
                     for (const old of oldUrls) {
-                        const revisedOld = joinUrl(site.options.location, old).pathname;
-                        const redirect = parseRedirection(revisedUrl, revisedOld, options.defaultStatus);
+                        const redirect = parseRedirection(url, old, options.defaultStatus);
                         if (redirect) {
                             redirects.push(redirect);
                         }
@@ -91,18 +89,20 @@ function parseRedirection(
 
 /** HTML redirect */
 function html(redirects: Redirect[], site: Site): void {
+
     for (const [url, to, statusCode] of redirects) {
+        const revisedTo = joinUrl(site.options.location, to).pathname;
         const timeout = (statusCode === 301 || statusCode === 308) ? 0 : 1;
         const content = `<!DOCTYPE html>
   <html lang="en">
   <head>
     <meta charset="utf-8">
     <title>Redirecting…</title>
-    <meta http-equiv="refresh" content="${timeout}; url=${to}">
+    <meta http-equiv="refresh" content="${timeout}; url=${revisedTo}">
   </head>
   <body>
     <h1>Redirecting…</h1>
-    <a href="${to}">Click here if you are not redirected.</a>
+    <a href="${revisedTo}">Click here if you are not redirected.</a>
   </body>
   </html>`;
         const page = Page.create({ url, content });
