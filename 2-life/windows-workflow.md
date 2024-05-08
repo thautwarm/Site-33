@@ -1,5 +1,5 @@
 ---
-oldUrl: /Site-33/life/windows-workflow.html
+oldUrl: /life/windows-workflow.html
 date: 2022-09-07
 ---
 

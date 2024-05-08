@@ -1,5 +1,5 @@
 ---
-oldUrl: /Site-33/pl/datagen.html
+oldUrl: /pl/datagen.html
 date: 2022-12-16
 ---
 

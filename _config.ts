@@ -1,8 +1,9 @@
 import lume from "lume/mod.ts";
 import katex from "lume/plugins/katex.ts";
 import wiki from "./source/wiki.ts";
+import redirects from "./source/redirects.ts";
 import favicon from "lume/plugins/favicon.ts";
-import redirects from "lume/plugins/redirects.ts";
+
 // import jsx from "lume/plugins/jsx_preact.ts";
 
 
