@@ -44,7 +44,7 @@ Deno fundamentally eases the sharing and reusing of build scripts and ruleset li
         <input type="radio" name="site33-tabs" id="site33-tab2">
         <label for="site33-tab2">Unix</label>
         <input type="radio" name="site33-tabs" id="site33-tab3">
-        <label for="site33-tab3">GitHub Releases</label>
+        <label for="site33-tab3">From GitHub</label>
         <input type="radio" name="site33-tabs" id="site33-tab3">
         <div class="site33-tab-content" id="site33-content1" style="min-height: 6em">
             <p class="language-bash" id="content-windows-deno-install"> irm https://deno.land/install.ps1 | iex </p>

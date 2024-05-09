@@ -5,6 +5,7 @@
       "npm:@js-temporal/polyfill@0.4.4": "npm:@js-temporal/polyfill@0.4.4",
       "npm:@mdit/plugin-alert@0.8.0": "npm:@mdit/plugin-alert@0.8.0_markdown-it@14.1.0",
       "npm:@types/estree@1.0.5": "npm:@types/estree@1.0.5",
+      "npm:@types/node": "npm:@types/node@18.16.19",
       "npm:autoprefixer@10.4.19": "npm:autoprefixer@10.4.19_postcss@8.4.38",
       "npm:date-fns@3.6.0": "npm:date-fns@3.6.0",
       "npm:estree-walker@3.0.3": "npm:estree-walker@3.0.3",
@@ -24,6 +25,7 @@
       "npm:preact-render-to-string@6.4.2": "npm:preact-render-to-string@6.4.2_preact@10.20.2",
       "npm:preact@10.20.2": "npm:preact@10.20.2",
       "npm:sharp@0.33.3": "npm:sharp@0.33.3",
+      "npm:shlex": "npm:shlex@2.1.2",
       "npm:svg2png-wasm@1.4.1": "npm:svg2png-wasm@1.4.1",
       "npm:unidecode@1.0.1": "npm:unidecode@1.0.1"
     },
@@ -875,6 +877,10 @@
           "semver": "semver@7.6.0"
         }
       },
+      "shlex@2.1.2": {
+        "integrity": "sha512-Nz6gtibMVgYeMEhUjp2KuwAgqaJA1K155dU/HuDaEJUGgnmYfVtVZah+uerVWdH8UGnyahhDCgABbYTbs254+w==",
+        "dependencies": {}
+      },
       "simple-swizzle@0.2.2": {
         "integrity": "sha512-JA//kQgZtbuY83m+xT+tXJkmJncGMTFT+C+g2h2R9uxkYIrE2yy9sgmcLhCnw57/WSD+Eh3J97FPEDFnbXnDUg==",
         "dependencies": {
@@ -937,6 +943,9 @@
         "dependencies": {}
       }
     }
+  },
+  "redirects": {
+    "https://github.com/thautwarm/nomake/raw/v0.1.3/mod.ts": "https://raw.githubusercontent.com/thautwarm/nomake/v0.1.3/mod.ts"
   },
   "remote": {
     "https://cdn.jsdelivr.net/gh/lumeland/cms@v0.3.10/adapters/lume.ts": "d9cd3553d765886084b9446b816f02aec5d74ee03d7ab78a80b1a0db2c7430a0",
