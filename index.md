@@ -42,8 +42,8 @@ I'm a software engineer and a programming language enthusiast.
 I earned my graduate degree in computer science from the University of Tsukuba, Japan. I was the member of the [Programming Logic Group](https://www.logic.cs.tsukuba.ac.jp/index.html).
 
 Academic Records:
-- *Quick and Reusable Code Generation for Idris*, [PPL 2020](https://jssst-ppl.org/workshop/2020/program.html), [repo](https://github.com/thautwarm/Typed-BNF)
-- *JIT for Dynamic Programming Languages Considered Easy*, [Lambda Days 2021](https://www.lambdadays.org/lambdadays2021/taine-zhao) & [slides](https://www.lambdadays.org/static/upload/media/161673197138855tainezhaojitfordplsconsideredeasy.pdf)
+- *Quick and Reusable Code Generation for Idris*, [PPL 2020](https://jssst-ppl.org/workshop/2020/program.html), [repo](https://github.com/thautwarm/Quick-Backend)
+- *JIT for Dynamic Programming Languages Considered Easy*, [Lambda Days 2021](https://www.lambdadays.org/lambdadays2021/taine-zhao) & [slides](https://www.lambdadays.org/static/upload/media/161673197138855tainezhaojitfordplsconsideredeasy.pdf), [repo](https://github.com/thautwarm/diojit)
 - *Typed BNF: Backend-independent Semantic Actions*, [PPL 2022](https://jssst-ppl.org/workshop/2022/program), [repo](https://github.com/thautwarm/Typed-BNF)
 
 > Typed BNF has emerged as an essential technique for TyMLang, a MATLAB-compatible language that I lead the development of at [TongYuan](https://github.com/Suzhou-Tongyuan/). This language seamlessly supports critical MATLAB open-source libraries, such as [Delta-Sigma](https://github.com/Matlab-Toolbox/delta_sigma). Its usability significantly surpasses that of Octave, Scilab, and other MATLAB-like alternatives.
