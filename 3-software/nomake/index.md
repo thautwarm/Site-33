@@ -36,31 +36,32 @@ Deno fundamentally eases the sharing and reusing of build scripts and ruleset li
     }
 </script>
 
-1. Install [Deno](https://deno.com/)
+1. Install NoMake for your platform.
+
+    Supported platforms: `win-x64`, `linux-x64`, `macos-x64`, `linux-arm64`, `macos-arm64`.
 
     <div class="site33-tabs">
         <input type="radio" name="site33-tabs" id="site33-tab1" checked>
-        <label for="site33-tab1">Windows</label>
+        <label for="site33-tab1">GitHub Releases</label>
         <input type="radio" name="site33-tabs" id="site33-tab2">
-        <label for="site33-tab2">Unix</label>
-        <input type="radio" name="site33-tabs" id="site33-tab3">
-        <label for="site33-tab3">From GitHub</label>
-        <input type="radio" name="site33-tabs" id="site33-tab3">
+        <label for="site33-tab2">Deno Library</label>
         <div class="site33-tab-content" id="site33-content1" style="min-height: 6em">
-            <p class="language-bash" id="content-windows-deno-install"> irm https://deno.land/install.ps1 | iex </p>
+            <p> Download the binaries and add them to your PATH: <a href="https://github.com/thautwarm/nomake/releases">https://github.com/thautwarm/nomake/releases</a> </p>
         </div>
         <div class="site33-tab-content" id="site33-content2" style="min-height: 6em">
-            <p id="content-unix-deno-install"> curl -fsSL https://deno.land/install.sh | sh </p>
-        </div>
-        <div class="site33-tab-content" id="site33-content3" style="min-height: 6em">
-            <p>The Deno releases can be found at <a id="content-gh-deno-install" href="https://github.com/denoland/deno/releases"> https://github.com/denoland/deno/releases </a>.</p>
+            <p> Import the latest package from the url <a href="https://github.com/thautwarm/nomake/raw/v0.1.4/mod.ts"> https://github.com/thautwarm/nomake/raw/v0.1.4/mod.ts </a> </p>
         </div>
     </div>
 
-2. Run your build script:
+2. Run your build script (requires a `build.ts` file as an entry point).
 
     ```bash
-    deno run -A build.ts
+    nomake help
+    nomake <build target>
+
+    ## or if you're using nomake as a Deno library:
+    # deno run -A build.ts help
+    # deno run -A build.ts <build target>
     ```
 
 See examples at [NoMake Examples](https://github.com/thautwarm/nomake/tree/main/example).
@@ -69,8 +70,15 @@ See examples at [NoMake Examples](https://github.com/thautwarm/nomake/tree/main/
 
 ```typescript
 // build.ts
-import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.3/mod.ts'
+import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.4/mod.ts'
 
+// define options
+NM.option('legacy', ({ value }) => { /* do stuff with value */ })
+
+// parse options
+NM.parseOptions()
+
+// define one or more targets
 NM.target(
     {
         name: 'output.txt',
@@ -83,6 +91,9 @@ NM.target(
             )
         }
     })
+
+// trigger the build process
+await NM.makefile()
 ```
 
 ## Namespaces
@@ -90,7 +101,7 @@ NM.target(
 Functionality in NoMake is organized into namespaces. Here are some of the most important ones:
 
 - `NM.Platform`: Platform detection and manipulation
-- `NM.Env`: Type-safe environment variable access
+- [`NM.Env`](./3-env.md): Type-safe environment variable access
 - `NM.Path`: Filesystem operations (similar to Python `pathlib`)
 - `NM.Repo`: Git repository operations
 - `NM.Log`: Logging utilities
@@ -98,7 +109,8 @@ Functionality in NoMake is organized into namespaces. Here are some of the most 
 - `NM.Bflat`: C# native compilation toolchain without .NET SDKs & Visual Studio ([Linux/Windows only](https://github.com/bflattened/bflat/issues/110); for macOS support, use [.NET SDKs](https://learn.microsoft.com/en-us/dotnet/core/install/macos) by Microsoft)
 
 The core operations are directly defined in the `NM` namespace, including:
-- `NM.target()`: Define a build target
-- `NM.option()`: Define a build option
-- `NM.parseOptions()`: Parse the build options
-- `NM.makefile()`: Invoke the build process
+- [`NM.target()`](./2-core/target.md): Define a build target
+- [`NM.option()`](./2-core/option.md): Define a build option
+- [`NM.parseOptions()`](./2-core/parseOptions.md): Parse the build options
+- [`NM.makefile()`](./2-core/makefile.md): Invoke the build process
+

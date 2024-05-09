@@ -10,7 +10,7 @@
 ## Usage
 
 ```typescript
-import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.3/mod.ts'
+import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.4/mod.ts'
 
 const Config = {
     DEBUG: false

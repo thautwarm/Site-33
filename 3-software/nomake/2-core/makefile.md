@@ -5,7 +5,7 @@ This function triggers the build process.
 ## Usage
 
 ```typescript
-import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.3/mod.ts'
+import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.4/mod.ts'
 
 // define options
 NM.option('debug', ({ value }) => NM.Log.verbose(`do stuff with ${value}`))
