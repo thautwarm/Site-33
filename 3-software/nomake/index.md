@@ -49,7 +49,7 @@ Deno fundamentally eases the sharing and reusing of build scripts and ruleset li
             <p> Download the binaries and add them to your PATH: <a href="https://github.com/thautwarm/nomake/releases">https://github.com/thautwarm/nomake/releases</a> </p>
         </div>
         <div class="site33-tab-content" id="site33-content2" style="min-height: 6em">
-            <p> Import the latest package from the url <a href="https://github.com/thautwarm/nomake/raw/v0.1.4/mod.ts"> https://github.com/thautwarm/nomake/raw/v0.1.4/mod.ts </a> </p>
+            <p> Import the latest package from the url <a href="https://github.com/thautwarm/nomake/raw/v0.1.5/mod.ts"> https://github.com/thautwarm/nomake/raw/v0.1.5/mod.ts </a> </p>
         </div>
     </div>
 
@@ -70,7 +70,7 @@ See examples at [NoMake Examples](https://github.com/thautwarm/nomake/tree/main/
 
 ```typescript
 // build.ts
-import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.4/mod.ts'
+import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.5/mod.ts'
 
 // define options
 NM.option('legacy', ({ value }) => { /* do stuff with value */ })
@@ -100,11 +100,11 @@ await NM.makefile()
 
 Functionality in NoMake is organized into namespaces. Here are some of the most important ones:
 
-- `NM.Platform`: Platform detection and manipulation
-- [`NM.Env`](./3-env.md): Type-safe environment variable access
-- `NM.Path`: Filesystem operations (similar to Python `pathlib`)
+- [`NM.Platform`](./3-modules/1-platform.md): Platform detection and manipulation
+- [`NM.Env`](./3-modules/2-env.md): Type-safe environment variable access
+- [`NM.Path`](./3-modules/3-path.md): Filesystem operations (similar to Python `pathlib`)
+- [`NM.Log`](./3-modules/4-log.md): Logging utilities
 - `NM.Repo`: Git repository operations
-- `NM.Log`: Logging utilities
 - `NM.CC`: C/C++ compilation toolchain
 - `NM.Bflat`: C# native compilation toolchain without .NET SDKs & Visual Studio ([Linux/Windows only](https://github.com/bflattened/bflat/issues/110); for macOS support, use [.NET SDKs](https://learn.microsoft.com/en-us/dotnet/core/install/macos) by Microsoft)
 
@@ -114,3 +114,11 @@ The core operations are directly defined in the `NM` namespace, including:
 - [`NM.parseOptions()`](./2-core/parseOptions.md): Parse the build options
 - [`NM.makefile()`](./2-core/makefile.md): Invoke the build process
 
+## Patterns
+
+NoMake provides a set of patterns assign type safety for many common jobs in build systems, such as:
+
+1. Defining and organizing artifacts
+2. Platform-specific build rules
+3. Environment variables of interest
+4. Grouping and retrieving target dependencies

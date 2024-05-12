@@ -1,6 +1,8 @@
 ---
 oldUrl: /life/windows-workflow.html
 date: 2022-09-07
+tags:
+    - article
 ---
 
 # Windows上的Linux工作流搭建

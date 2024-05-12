@@ -1,1 +1,5 @@
-# 语言实现
+---
+layout: list-article-layout.tsx
+---
+
+# 编程语言技术

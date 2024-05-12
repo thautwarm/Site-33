@@ -9,7 +9,7 @@
     <summary> Examples </summary>
 
     ```typescript
-    import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.4/mod.ts'
+    import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.5/mod.ts'
 
     function operationTolerantToFailures()
     {
@@ -44,7 +44,7 @@
 ## Usage
 
 ```typescript
-import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.4/mod.ts'
+import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.5/mod.ts'
 
 function helper()
 {

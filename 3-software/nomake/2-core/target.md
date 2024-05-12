@@ -184,7 +184,7 @@ You might be refer to the [Dependency](#dependency-def) definition.
 You can group dependencies using `Record`-style composition, which helps your organize your dependencies.
 
 ```typescript
-import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.4/mod.ts'
+import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.5/mod.ts'
 
 function glob(options: { root: string, suffix: string, excludeParts?: string[] })
 {
@@ -214,7 +214,7 @@ NM.target(
 A virtual target is a target that does not produce an artifact. It is analogous to the `PHONY` target in Makefile.
 
 ```typescript
-import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.4/mod.ts'
+import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.5/mod.ts'
 
 NM.target(
     {
@@ -256,7 +256,7 @@ The `rebuild` parameter of `target()` specifies the rebuild mode of the target. 
 The following code demonstrates the default behavior of the `rebuild` parameter:
 
 ```typescript
-import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.4/mod.ts'
+import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.5/mod.ts'
 
 NM.target(
     {
@@ -286,7 +286,7 @@ The `doc` parameter of `target()` specifies the documentation of the target.
 So far, only virtual targets have been documented. The documentation of the target can be accessed via the `help` option.
 
 ```typescript
-import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.4/mod.ts'
+import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.5/mod.ts'
 
 NM.option(
     'legacy',

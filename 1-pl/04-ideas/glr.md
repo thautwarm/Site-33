@@ -1,6 +1,8 @@
 ---
 date: 2022-04-13
 oldUrl: /design/linear-time-lr-in-glr.html
+tags:
+    - article
 ---
 
 # 缓存Scannerless GLR解析

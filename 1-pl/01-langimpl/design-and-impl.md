@@ -2,6 +2,8 @@
 title: 编程语言的设计和实现
 oldUrl: /compiler/interpreter.html
 date: 2022-08-17
+tags:
+    - article
 ---
 
 # 编程语言的设计和实现

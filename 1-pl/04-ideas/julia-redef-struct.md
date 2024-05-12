@@ -1,6 +1,8 @@
 ---
 oldUrl: /design/julia-redef-struct.html
 date: 2022-08-01
+tags:
+    - article
 ---
 
 # Julia交互会话中的重定义问题

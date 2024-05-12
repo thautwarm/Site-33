@@ -58,11 +58,15 @@ export default function () {
             "_includes/css/updates.css",
             "_includes/css/overrides.css",
             "_includes/styles.css",
-            "_includes/templates/breadcrumb.vto",
+            "_includes/typecheck.tsx",
+            "_includes/list-article-layout.tsx",
             "_includes/blog-layout.vto",
+            "_includes/list-sub-layout.vto",
+            "_includes/templates/breadcrumb.vto",
             "_includes/templates/menu_item.vto",
             "_includes/templates/menu.vto",
-            "_includes/blog-layout2.tsx",
+            "_includes/templates/list-sub-item.vto",
+            "_includes/templates/list-sub.vto",
             "styles.css",
         ];
 

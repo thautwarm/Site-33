@@ -5,7 +5,7 @@ Static checking for the usage of environment variables is hard to achieve in reg
 ## Usage
 
 ```typescript
-import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.4/mod.ts'
+import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.5/mod.ts'
 
 // environment variables of interest in the project scope
 const env = NM.Env.create(

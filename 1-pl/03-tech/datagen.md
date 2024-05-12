@@ -1,6 +1,8 @@
 ---
 oldUrl: /pl/datagen.html
 date: 2022-12-16
+tags:
+    - article
 ---
 
 # Random Test Data Generation for Arbitrary Types

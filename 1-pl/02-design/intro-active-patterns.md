@@ -2,6 +2,8 @@
 title: A Short Introduction to Active Patterns
 oldUrl: /design/a-short-intro-to-active-patterns.html
 date: 2022-01-26
+tags:
+    - article
 ---
 
 # A Short Introduction to Active Patterns
