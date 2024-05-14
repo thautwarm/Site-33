@@ -1,3 +1,8 @@
+---
+tags:
+    - article
+date: 2024-05-15
+---
 # Stable Argsort
 
 This is a note on how to implement a stable `argsort` function based on an existing sort function, in a simple and pragmatic way.

@@ -31,7 +31,7 @@ td:hover {
 }
 </style>
 
-**Posts**: [PL/编程语言](./1-pl/index.md); [Life/生活](./2-life/index.md).
+**Posts**: [Programming/编程](./1-programming/index.md); [Life/生活](./2-life/index.md).
 
 **Software**: [NoMake](./3-software/nomake/index.md) and [others](./3-software/index.md).
 
