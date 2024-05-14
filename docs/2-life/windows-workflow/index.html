@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows上的Linux工作流搭建</title>
+
+    <meta name="supported-color-schemes" content="light dark">
+    <meta name="theme-color" content="hsl(220, 20%, 100%)" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="hsl(220, 20%, 10%)" media="(prefers-color-scheme: dark)">
+
+    <link rel="stylesheet" href="/Site-33/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/Site-33/styles.css">
+
+    <link rel="canonical" href="https://thautwarm.github.io/Site-33/2-life/windows-workflow/">
+    
+  <link rel="icon" sizes="48x48" href="/Site-33/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/Site-33/apple-touch-icon.png">
+<script type="text/javascript" src="/Site-33/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded',()=>{new PagefindUI({"element":"#search","showImages":false,"excerptLength":0,"showEmptyFilters":true,"showSubResults":false,"resetStyles":true,"bundlePath":"/Site-33/pagefind/","baseUrl":"/Site-33/"});});</script></head>
+
+  <body>
+    <div class="container">
+      <div class="toolbar">
+        <div id="search" class="search"></div>
+      </div>
+
+      <nav class="menu-container">
+  
+
+  
+    
+      <a class="menu-highlight" href="/Site-33/">Site-33 by thautwarm</a>
+    
+  
+
+  <ul class="menu">
+  
+  
+    
+  
+  </ul>
+</nav>
+
+
+      
+      <nav class="toc">
+        <h2>On this page</h2>
+        <ol>
+          
+          <li>
+            <a href="#%E8%BF%99%E4%B8%AA%E9%A1%B5%E9%9D%A2%E7%9A%84%E5%A4%A7%E6%A6%82%E7%94%A8%E5%A4%84">这个页面的大概用处</a>
+
+            
+          </li>
+          
+          <li>
+            <a href="#msys2-%26-why-not-wsl%3F">MSYS2 &amp; Why NOT WSL?</a>
+
+            
+          </li>
+          
+          <li>
+            <a href="#%E9%85%8D%E7%BD%AE%E6%B5%81%E7%A8%8B">配置流程</a>
+
+            
+            <ul>
+              
+              <li>
+                <a href="#0.-windows%E7%B3%BB%E7%BB%9F%E9%A9%B1%E5%8A%A8%EF%BC%8C%E4%BB%A5%E5%8F%8A%E4%BB%A3%E7%90%86%E8%BD%AF%E4%BB%B6">0. Windows系统驱动，以及代理软件</a>
+              </li>
+              
+              <li>
+                <a href="#1.-%E6%9C%80%E5%9F%BA%E6%9C%AC%E7%9A%84%E9%85%8D%E7%BD%AE">1. 最基本的配置</a>
+              </li>
+              
+              <li>
+                <a href="#2.-%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE">2. 开发环境配置</a>
+              </li>
+              
+              <li>
+                <a href="#%E5%B8%B8%E7%94%A8%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE">常用环境配置</a>
+              </li>
+              
+            </ul>
+            
+          </li>
+          
+          <li>
+            <a href="#%E5%85%B6%E4%BB%96">其他</a>
+
+            
+          </li>
+          
+        </ol>
+      </nav>
+      
+
+      <main class="main">
+        <nav>
+  <ul class="breadcrumb">
+    
+    
+    <li class="breadcrumb-item"><a href="/Site-33/">Site-33 by thautwarm</a></li>
+    
+    
+    
+    <li class="breadcrumb-item"><a href="/Site-33/2-life/">Life 生活</a></li>
+    
+    
+    
+    
+  </ul>
+</nav>
+
+
+        <div class="body">
+          
+
+          <em> 此文档创建于 2022/9/7 </em>
+          
+            <h1>Windows上的Linux工作流搭建</h1>
+<p>今天在新电脑上配置工作环境，由于是每次都很耗时的重复工作，这次就来记录一下全流程。</p>
+<h2 id="%E8%BF%99%E4%B8%AA%E9%A1%B5%E9%9D%A2%E7%9A%84%E5%A4%A7%E6%A6%82%E7%94%A8%E5%A4%84" tabindex="-1"><a href="#%E8%BF%99%E4%B8%AA%E9%A1%B5%E9%9D%A2%E7%9A%84%E5%A4%A7%E6%A6%82%E7%94%A8%E5%A4%84" class="header-anchor">这个页面的大概用处</a></h2>
+<p>首先是方便我自己以后配置环境。</p>
+<p>此外，作为一份独家指南，本页面详细指导如何在Windows上搭建原生的linux工作环境。</p>
+<h2 id="msys2-%26-why-not-wsl%3F" tabindex="-1"><a href="#msys2-%26-why-not-wsl%3F" class="header-anchor">MSYS2 &amp; Why NOT WSL?</a></h2>
+<p>这个方案将基于MSYS2。不使用WSL的根本原因是，对于基础开发需求，WSL仍然与原生Linux开发有差异。</p>
+<p>WSL的问题可以细分为以下几点：</p>
+<ol>
+<li>
+<p>Windows上书写的bash文件强行使用CRLF，因此在WSL下运行失败。</p>
+</li>
+<li>
+<p>Windows上不能直接修改WSL中的文件，否则文件失效。</p>
+</li>
+<li>
+<p>WSL的home不是Windows home，这意味着我有两个.bashrc/.zshrc，有两套不同的环境，两套环境还需要区别对待。虽有一定的互操作性，但Windows/WSL的文件/命令等对于另一方需特殊对待。</p>
+</li>
+</ol>
+<p>相比于使用WSL的诸多问题，我们使用MSYS2达成的效果是：一个支持Windows桌面系统的linux开发环境，或者一个正确支持的linux工具集的Windows <sup><a class="footnote-ref" href="#fn-1" id="fnref-1">1</a></sup>。</p>
+<h2 id="%E9%85%8D%E7%BD%AE%E6%B5%81%E7%A8%8B" tabindex="-1"><a href="#%E9%85%8D%E7%BD%AE%E6%B5%81%E7%A8%8B" class="header-anchor">配置流程</a></h2>
+<h3 id="0.-windows%E7%B3%BB%E7%BB%9F%E9%A9%B1%E5%8A%A8%EF%BC%8C%E4%BB%A5%E5%8F%8A%E4%BB%A3%E7%90%86%E8%BD%AF%E4%BB%B6" tabindex="-1"><a href="#0.-windows%E7%B3%BB%E7%BB%9F%E9%A9%B1%E5%8A%A8%EF%BC%8C%E4%BB%A5%E5%8F%8A%E4%BB%A3%E7%90%86%E8%BD%AF%E4%BB%B6" class="header-anchor">0. Windows系统驱动，以及代理软件</a></h3>
+<p>使用供应商提供的驱动安装方式，如thinkpad使用联想商店安装驱动。</p>
+<p>对于代理软件，因为新机器的网络还未配置，此时获取软件是比较麻烦的。可以在旧机器上使用 <code>python -m http.server &lt;端口号&gt;</code> 开启文件服务器，然后在装机的机器上访问下载好的代理软件以及配置。</p>
+<h3 id="1.-%E6%9C%80%E5%9F%BA%E6%9C%AC%E7%9A%84%E9%85%8D%E7%BD%AE" tabindex="-1"><a href="#1.-%E6%9C%80%E5%9F%BA%E6%9C%AC%E7%9A%84%E9%85%8D%E7%BD%AE" class="header-anchor">1. 最基本的配置</a></h3>
+<ol start="0">
+<li>
+<p>将用户目录加入快速访问</p>
+</li>
+<li>
+<p>针对使用 win+space 切换输入法以避免按键冲突的用户解决 Windows 输入法问题，做以下步骤：</p>
+<ul>
+<li>卸载默认的中文输入法 (在首先语言里删除中文)</li>
+<li>安装想要的输入法，如搜狗输入法</li>
+<li>新建一个注册表文件 <code>坑爹bug.reg</code> (<a href="https://www.zhihu.com/question/22288432/answer/447721321">来源的知乎回答</a>)，输入如下内容并执行，重启生效：<pre><code class="language-powershell hljs">Windows Registry Editor Version <span class="hljs-number">5.00</span>
+[<span class="hljs-type">HKEY_CURRENT_USER</span>\<span class="hljs-type">Control</span> <span class="hljs-type">Panel</span>\<span class="hljs-type">Input</span> <span class="hljs-type">Method</span>\<span class="hljs-type">Hot</span> <span class="hljs-type">Keys</span>\<span class="hljs-number">00000010</span>]
+<span class="hljs-string">"Key Modifiers"</span>=hex:<span class="hljs-number">00</span>,c0,<span class="hljs-number">00</span>,<span class="hljs-number">00</span>
+<span class="hljs-string">"Virtual Key"</span>=hex:ff,<span class="hljs-number">00</span>,<span class="hljs-number">00</span>,<span class="hljs-number">00</span>
+[<span class="hljs-type">HKEY_CURRENT_USER</span>\<span class="hljs-type">Control</span> <span class="hljs-type">Panel</span>\<span class="hljs-type">Input</span> <span class="hljs-type">Method</span>\<span class="hljs-type">Hot</span> <span class="hljs-type">Keys</span>\<span class="hljs-number">00000070</span>]
+<span class="hljs-string">"Key Modifiers"</span>=hex:<span class="hljs-number">00</span>,c0,<span class="hljs-number">00</span>,<span class="hljs-number">00</span>
+<span class="hljs-string">"Virtual Key"</span>=hex:ff,<span class="hljs-number">00</span>,<span class="hljs-number">00</span>,<span class="hljs-number">00</span>
+[<span class="hljs-type">HKEY_USERS</span>\<span class="hljs-type">.DEFAULT</span>\<span class="hljs-type">Control</span> <span class="hljs-type">Panel</span>\<span class="hljs-type">Input</span> <span class="hljs-type">Method</span>\<span class="hljs-type">Hot</span> <span class="hljs-type">Keys</span>\<span class="hljs-number">00000010</span>]
+<span class="hljs-string">"Key Modifiers"</span>=hex:<span class="hljs-number">02</span>,c0,<span class="hljs-number">00</span>,<span class="hljs-number">00</span>
+<span class="hljs-string">"Target IME"</span>=hex:<span class="hljs-number">00</span>,<span class="hljs-number">00</span>,<span class="hljs-number">00</span>,<span class="hljs-number">00</span>
+<span class="hljs-string">"Virtual Key"</span>=hex:ff,<span class="hljs-number">00</span>,<span class="hljs-number">00</span>,<span class="hljs-number">00</span>
+[<span class="hljs-type">HKEY_USERS</span>\<span class="hljs-type">.DEFAULT</span>\<span class="hljs-type">Control</span> <span class="hljs-type">Panel</span>\<span class="hljs-type">Input</span> <span class="hljs-type">Method</span>\<span class="hljs-type">Hot</span> <span class="hljs-type">Keys</span>\<span class="hljs-number">00000070</span>]
+<span class="hljs-string">"Key Modifiers"</span>=hex:<span class="hljs-number">02</span>,c0,<span class="hljs-number">00</span>,<span class="hljs-number">00</span>
+<span class="hljs-string">"Target IME"</span>=hex:<span class="hljs-number">00</span>,<span class="hljs-number">00</span>,<span class="hljs-number">00</span>,<span class="hljs-number">00</span>
+<span class="hljs-string">"Virtual Key"</span>=hex:ff,<span class="hljs-number">00</span>,<span class="hljs-number">00</span>,<span class="hljs-number">00</span>
+</code></pre>
+</li>
+</ul>
+</li>
+<li>
+<p>针对 Emacs 用户，切换 Ctrl 和 Capslock 键:</p>
+<ul>
+<li>
+<p>新建注册文件 <code>switch-ctrl-capslock.reg</code> 输入以下内容并执行，重启生效：</p>
+<pre><code class="language-powershell hljs">Windows Registry Editor Version <span class="hljs-number">5.00</span>
+[<span class="hljs-type">HKEY_LOCAL_MACHINE</span>\<span class="hljs-type">SYSTEM</span>\<span class="hljs-type">CurrentControlSet</span>\<span class="hljs-type">Control</span>\<span class="hljs-type">Keyboard</span> <span class="hljs-type">Layout</span>]
+<span class="hljs-string">"Scancode Map"</span>=hex:<span class="hljs-number">00</span>,<span class="hljs-number">00</span>,<span class="hljs-number">00</span>,<span class="hljs-number">00</span>,<span class="hljs-number">00</span>,<span class="hljs-number">00</span>,<span class="hljs-number">00</span>,<span class="hljs-number">00</span>,<span class="hljs-number">02</span>,<span class="hljs-number">00</span>,<span class="hljs-number">00</span>,<span class="hljs-number">00</span>,<span class="hljs-number">1</span>d,<span class="hljs-number">00</span>,<span class="hljs-number">3</span>a,<span class="hljs-number">00</span>,<span class="hljs-number">00</span>,<span class="hljs-number">00</span>,<span class="hljs-number">00</span>,<span class="hljs-number">00</span>
+</code></pre>
+</li>
+</ul>
+</li>
+<li>
+<p>(对于使用Edge的用户) 使用规则代理：</p>
+<ul>
+<li>
+<p>开启全局代理。</p>
+</li>
+<li>
+<p>打开 Microsoft Edge，访问 Chrome 商店，为 Edge 安装 SwitchyOmega。</p>
+<p>注意：移植到 Edge 商店中的 SwitchyOmega 有后门，会窃取你的支付信息等，为了避免造成严重的财产损失，请务必使用 Chrome 商店上的官方 SwitchyOmega。</p>
+</li>
+<li>
+<p>设置完规则代理后，关闭全局代理。</p>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="2.-%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE" tabindex="-1"><a href="#2.-%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE" class="header-anchor">2. 开发环境配置</a></h3>
+<ol>
+<li>
+<p>安装更新的powershell:</p>
+<p><a href="https://docs.microsoft.com/zh-cn/powershell/scripting/install/installing-powershell-on-windows">https://docs.microsoft.com/zh-cn/powershell/scripting/install/installing-powershell-on-windows</a></p>
+<p>该页面应包含powershell下载链接。</p>
+</li>
+<li>
+<p>配置Windows包管理器scoop</p>
+<ul>
+<li>
+<p>官方页面 <a href="https://scoop.sh/">https://scoop.sh/</a> 介绍了最新的scoop安装方法。记得设置Policy时要使用管理员权限。</p>
+</li>
+<li>
+<p>安装scoop后，执行以下命令：</p>
+</li>
+</ul>
+<pre><code class="language-bash hljs">[net.webrequest]::defaultwebproxy = new-object net.webproxy <span class="hljs-string">"http://127.0.0.1:&lt;端口号&gt;"</span>
+scoop config proxy 127.0.0.1:&lt;端口号&gt;
+scoop install git
+</code></pre>
+</li>
+<li>
+<p>安装vscode:</p>
+<pre><code class="language-bash hljs">scoop bucket add extras
+scoop install vscode
+<span class="hljs-comment"># 右键打开vscode （执行后重启生效）：</span>
+C:\Users\&lt;用户名&gt;\scoop\apps\vscode\current\install-associations.reg
+</code></pre>
+<p>随后打开vscode, 登录GitHub账号，同步键位和主题。</p>
+</li>
+<li>
+<p>配置msys2和其他插件 （建议暂且先使用我提供的配置，后续做自定义修改）</p>
+<ol>
+<li>
+<p>在windows高级系统设置里，设置用户系统变量</p>
+<pre><code class="language-bash hljs">HOME=C:\Users\&lt;用户名&gt;
+HOMEPATH=C:\Users\&lt;用户名&gt;
+</code></pre>
+</li>
+<li>
+<p>安装字体Caskaydia Cove Regular Nerd Font Complete Windows Compatible.otf</p>
+<p>字体目录链接:</p>
+<p><a href="https://github.com/ryanoasis/nerd-fonts/tree/master/patched-fonts/CascadiaCode/Regular/complete">https://github.com/ryanoasis/nerd-fonts/tree/master/patched-fonts/CascadiaCode/Regular/complete</a></p>
+</li>
+<li>
+<p>从应用商店安装 windows terminal</p>
+<p>如果windows应用商店无法打开，可以直接在浏览器中访问 <a href="https://www.microsoft.com/zh-cn/p/windows-terminal/9n0dx20hk701?activetab=pivot:overviewtab">windows-terminal</a>。</p>
+</li>
+<li>
+<p>打开 windows terminal，修改键位：将<code>switch-to-tab index &lt;编号&gt;</code>设置为<code>alt + &lt;编号 - 1&gt;</code>。</p>
+</li>
+<li>
+<p>安装 MSYS2 和一些重要插件，但暂且先不要执行 <code>msys2</code> 命令。</p>
+<pre><code class="language-bash hljs">scoop install msys2
+scoop install fnm
+</code></pre>
+</li>
+<li>
+<p>windows terminal 点开 settings，新建空 profile，任意取名，commend line 参数填入 <code>mingw64.cmd -shell bash</code>。</p>
+<p>将该 profile 设置为默认 profile。找不到图形界面可以打开 JSON Settings，将默认的 profile uuid 改为刚刚新建的 profile 的 uuid。所有信息都可以在 JSON Settings 中找到。</p>
+</li>
+<li>
+<p>设置刚刚新建的 Profile 的外观 (Appearance 选项)，将字体设置为刚刚安装的 CaskaydiaCove NF，颜色主题自选。</p>
+</li>
+<li>
+<p>新建 <code>~/.bash_profile</code>，用 vscode 打开，填入以下内容</p>
+ <details>
+ <summary>点击展开.bash_profile 文件内容</summary>
+<pre><code class="language-bash hljs"><span class="hljs-keyword">if</span> [ -f <span class="hljs-string">"<span class="hljs-variable">${HOME}</span>/.bashrc"</span> ] ; <span class="hljs-keyword">then</span>
+    <span class="hljs-built_in">source</span> <span class="hljs-string">"<span class="hljs-variable">${HOME}</span>/.bashrc"</span>
+<span class="hljs-keyword">fi</span>
+</code></pre>
+ </details>
+</li>
+<li>
+<p>新建 <code>~/.bash-colors.sh</code> 和 <code>~/.bashrc</code>，填入以下内容 (推荐走完配置流程后再自行配置)。</p>
+ <details>
+ <summary>点击展开.bash-colors.sh 文件内容</summary>
+<pre><code class="language-bash hljs"><span class="hljs-comment"># .bash-colors.sh</span>
+<span class="hljs-keyword">function</span> __ {
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"<span class="hljs-variable">$@</span>"</span>
+}
+<span class="hljs-keyword">function</span> __make_ansi {
+  next=<span class="hljs-variable">$1</span>; <span class="hljs-built_in">shift</span>
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"\[\e[<span class="hljs-subst">$(__$next $@)</span>m\]"</span>
+}
+<span class="hljs-keyword">function</span> __make_echo {
+  next=<span class="hljs-variable">$1</span>; <span class="hljs-built_in">shift</span>
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"\033[<span class="hljs-subst">$(__$next $@)</span>m"</span>
+}
+<span class="hljs-keyword">function</span> __reset {
+  next=<span class="hljs-variable">$1</span>; <span class="hljs-built_in">shift</span>
+  out=<span class="hljs-string">"<span class="hljs-subst">$(__$next $@)</span>"</span>
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"0<span class="hljs-variable">${out:+;<span class="hljs-variable">${out}</span>}</span>"</span>
+}
+<span class="hljs-keyword">function</span> __bold {
+  next=<span class="hljs-variable">$1</span>; <span class="hljs-built_in">shift</span>
+  out=<span class="hljs-string">"<span class="hljs-subst">$(__$next $@)</span>"</span>
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"<span class="hljs-variable">${out:+<span class="hljs-variable">${out}</span>;}</span>1"</span>
+}
+<span class="hljs-keyword">function</span> __faint {
+  next=<span class="hljs-variable">$1</span>; <span class="hljs-built_in">shift</span>
+  out=<span class="hljs-string">"<span class="hljs-subst">$(__$next $@)</span>"</span>
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"<span class="hljs-variable">${out:+<span class="hljs-variable">${out}</span>;}</span>2"</span>
+}
+<span class="hljs-keyword">function</span> __italic {
+  next=<span class="hljs-variable">$1</span>; <span class="hljs-built_in">shift</span>
+  out=<span class="hljs-string">"<span class="hljs-subst">$(__$next $@)</span>"</span>
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"<span class="hljs-variable">${out:+<span class="hljs-variable">${out}</span>;}</span>3"</span>
+}
+<span class="hljs-keyword">function</span> __underline {
+  next=<span class="hljs-variable">$1</span>; <span class="hljs-built_in">shift</span>
+  out=<span class="hljs-string">"<span class="hljs-subst">$(__$next $@)</span>"</span>
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"<span class="hljs-variable">${out:+<span class="hljs-variable">${out}</span>;}</span>4"</span>
+}
+<span class="hljs-keyword">function</span> __negative {
+  next=<span class="hljs-variable">$1</span>; <span class="hljs-built_in">shift</span>
+  out=<span class="hljs-string">"<span class="hljs-subst">$(__$next $@)</span>"</span>
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"<span class="hljs-variable">${out:+<span class="hljs-variable">${out}</span>;}</span>7"</span>
+}
+<span class="hljs-keyword">function</span> __crossed {
+  next=<span class="hljs-variable">$1</span>; <span class="hljs-built_in">shift</span>
+  out=<span class="hljs-string">"<span class="hljs-subst">$(__$next $@)</span>"</span>
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"<span class="hljs-variable">${out:+<span class="hljs-variable">${out}</span>;}</span>8"</span>
+}
+<span class="hljs-keyword">function</span> __color_normal_fg {
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"3<span class="hljs-variable">$1</span>"</span>
+}
+<span class="hljs-keyword">function</span> __color_normal_bg {
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"4<span class="hljs-variable">$1</span>"</span>
+}
+<span class="hljs-keyword">function</span> __color_bright_fg {
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"9<span class="hljs-variable">$1</span>"</span>
+}
+<span class="hljs-keyword">function</span> __color_bright_bg {
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"10<span class="hljs-variable">$1</span>"</span>
+}
+<span class="hljs-keyword">function</span> __color_black   {
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"0"</span>
+}
+<span class="hljs-keyword">function</span> __color_red   {
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"1"</span>
+}
+<span class="hljs-keyword">function</span> __color_green   {
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"2"</span>
+}
+<span class="hljs-keyword">function</span> __color_yellow  {
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"3"</span>
+}
+<span class="hljs-keyword">function</span> __color_blue  {
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"4"</span>
+}
+<span class="hljs-keyword">function</span> __color_magenta {
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"5"</span>
+}
+<span class="hljs-keyword">function</span> __color_cyan  {
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"6"</span>
+}
+<span class="hljs-keyword">function</span> __color_white   {
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"7"</span>
+}
+<span class="hljs-keyword">function</span> __color_rgb {
+  r=<span class="hljs-variable">$1</span> &amp;&amp; g=<span class="hljs-variable">$2</span> &amp;&amp; b=<span class="hljs-variable">$3</span>
+  [[ r == g &amp;&amp; g == b ]] &amp;&amp; <span class="hljs-built_in">echo</span> $(( <span class="hljs-variable">$r</span> / <span class="hljs-number">11</span> + <span class="hljs-number">232</span> )) &amp;&amp; <span class="hljs-built_in">return</span> <span class="hljs-comment"># gray range above 232</span>
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"8;5;<span class="hljs-subst">$(( ($r * 36  + $b * 6 + $g)</span> / 51 + 16 ))"</span>
+}
+<span class="hljs-keyword">function</span> __color {
+  color=<span class="hljs-variable">$1</span>; <span class="hljs-built_in">shift</span>
+  <span class="hljs-keyword">case</span> <span class="hljs-string">"<span class="hljs-variable">$1</span>"</span> <span class="hljs-keyword">in</span>
+    <span class="hljs-built_in">fg</span>|<span class="hljs-built_in">bg</span>) side=<span class="hljs-string">"<span class="hljs-variable">$1</span>"</span>; <span class="hljs-built_in">shift</span> ;;
+    *) side=<span class="hljs-built_in">fg</span>;;
+  <span class="hljs-keyword">esac</span>
+  <span class="hljs-keyword">case</span> <span class="hljs-string">"<span class="hljs-variable">$1</span>"</span> <span class="hljs-keyword">in</span>
+    normal|bright) mode=<span class="hljs-string">"<span class="hljs-variable">$1</span>"</span>; <span class="hljs-built_in">shift</span>;;
+    *) mode=normal;;
+  <span class="hljs-keyword">esac</span>
+  [[ <span class="hljs-variable">$color</span> == <span class="hljs-string">"rgb"</span> ]] &amp;&amp; rgb=<span class="hljs-string">"<span class="hljs-variable">$1</span> <span class="hljs-variable">$2</span> <span class="hljs-variable">$3</span>"</span>; <span class="hljs-built_in">shift</span> 3
+  next=<span class="hljs-variable">$1</span>; <span class="hljs-built_in">shift</span>
+  out=<span class="hljs-string">"<span class="hljs-subst">$(__$next $@)</span>"</span>
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"<span class="hljs-subst">$(__color_${mode}_${side} $(__color_${color} $rgb)</span>)<span class="hljs-variable">${out:+;<span class="hljs-variable">${out}</span>}</span>"</span>
+}
+<span class="hljs-keyword">function</span> __black   {
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"<span class="hljs-subst">$(__color black $@)</span>"</span>
+}
+<span class="hljs-keyword">function</span> __red   {
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"<span class="hljs-subst">$(__color red $@)</span>"</span>
+}
+<span class="hljs-keyword">function</span> __green   {
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"<span class="hljs-subst">$(__color green $@)</span>"</span>
+}
+<span class="hljs-keyword">function</span> __yellow  {
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"<span class="hljs-subst">$(__color yellow $@)</span>"</span>
+}
+<span class="hljs-keyword">function</span> __blue  {
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"<span class="hljs-subst">$(__color blue $@)</span>"</span>
+}
+<span class="hljs-keyword">function</span> __magenta {
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"<span class="hljs-subst">$(__color magenta $@)</span>"</span>
+}
+<span class="hljs-keyword">function</span> __cyan  {
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"<span class="hljs-subst">$(__color cyan $@)</span>"</span>
+}
+<span class="hljs-keyword">function</span> __white   {
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"<span class="hljs-subst">$(__color white $@)</span>"</span>
+}
+<span class="hljs-keyword">function</span> __rgb {
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"<span class="hljs-subst">$(__color rgb $@)</span>"</span>
+}
+<span class="hljs-keyword">function</span> __color_parse {
+  next=<span class="hljs-variable">$1</span>; <span class="hljs-built_in">shift</span>
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"<span class="hljs-subst">$(__$next $@)</span>"</span>
+}
+<span class="hljs-keyword">function</span> color {
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"<span class="hljs-subst">$(__color_parse make_ansi $@)</span>"</span>
+}
+<span class="hljs-keyword">function</span> echo_color {
+  <span class="hljs-built_in">echo</span> <span class="hljs-string">"<span class="hljs-subst">$(__color_parse make_echo $@)</span>"</span>
+}
+black=<span class="hljs-string">"\[\e[0;30m\]"</span>
+red=<span class="hljs-string">"\[\e[0;31m\]"</span>
+green=<span class="hljs-string">"\[\e[0;32m\]"</span>
+yellow=<span class="hljs-string">"\[\e[0;33m\]"</span>
+blue=<span class="hljs-string">"\[\e[0;34m\]"</span>
+purple=<span class="hljs-string">"\[\e[0;35m\]"</span>
+cyan=<span class="hljs-string">"\[\e[0;36m\]"</span>
+white=<span class="hljs-string">"\[\e[0;37m\]"</span>
+lightyellow=<span class="hljs-string">"\[\e[0;91m\]"</span>
+lightblue=<span class="hljs-string">"\[\e[0;94m\]"</span>
+lightcyan=<span class="hljs-string">"\[\e[0;96m\]"</span>
+bold_black=<span class="hljs-string">"\[\e[30;1m\]"</span>
+bold_red=<span class="hljs-string">"\[\e[31;1m\]"</span>
+bold_green=<span class="hljs-string">"\[\e[32;1m\]"</span>
+bold_yellow=<span class="hljs-string">"\[\e[33;1m\]"</span>
+bold_blue=<span class="hljs-string">"\[\e[34;1m\]"</span>
+bold_purple=<span class="hljs-string">"\[\e[35;1m\]"</span>
+bold_cyan=<span class="hljs-string">"\[\e[36;1m\]"</span>
+bold_white=<span class="hljs-string">"\[\e[37;1m\]"</span>
+bold_orange=<span class="hljs-string">"\[\e[91;1m\]"</span>
+underline_black=<span class="hljs-string">"\[\e[30;4m\]"</span>
+underline_red=<span class="hljs-string">"\[\e[31;4m\]"</span>
+underline_green=<span class="hljs-string">"\[\e[32;4m\]"</span>
+underline_yellow=<span class="hljs-string">"\[\e[33;4m\]"</span>
+underline_blue=<span class="hljs-string">"\[\e[34;4m\]"</span>
+underline_purple=<span class="hljs-string">"\[\e[35;4m\]"</span>
+underline_cyan=<span class="hljs-string">"\[\e[36;4m\]"</span>
+underline_white=<span class="hljs-string">"\[\e[37;4m\]"</span>
+underline_orange=<span class="hljs-string">"\[\e[91;4m\]"</span>
+background_black=<span class="hljs-string">"\[\e[40m\]"</span>
+background_red=<span class="hljs-string">"\[\e[41m\]"</span>
+background_green=<span class="hljs-string">"\[\e[42m\]"</span>
+background_yellow=<span class="hljs-string">"\[\e[43m\]"</span>
+background_blue=<span class="hljs-string">"\[\e[44m\]"</span>
+background_purple=<span class="hljs-string">"\[\e[45m\]"</span>
+background_cyan=<span class="hljs-string">"\[\e[46m\]"</span>
+background_white=<span class="hljs-string">"\[\e[47;1m\]"</span>
+background_orange=<span class="hljs-string">"\[\e[101m\]"</span>
+normal=<span class="hljs-string">"\[\e[0m\]"</span>
+reset_color=<span class="hljs-string">"\[\e[39m\]"</span>
+<span class="hljs-comment"># These colors are meant to be used with `echo -e`</span>
+echo_black=<span class="hljs-string">"\033[0;30m"</span>
+echo_red=<span class="hljs-string">"\033[0;31m"</span>
+echo_green=<span class="hljs-string">"\033[0;32m"</span>
+echo_yellow=<span class="hljs-string">"\033[0;33m"</span>
+echo_blue=<span class="hljs-string">"\033[0;34m"</span>
+echo_purple=<span class="hljs-string">"\033[0;35m"</span>
+echo_cyan=<span class="hljs-string">"\033[0;36m"</span>
+echo_white=<span class="hljs-string">"\033[0;37;1m"</span>
+echo_orange=<span class="hljs-string">"\033[0;91m"</span>
+echo_bold_black=<span class="hljs-string">"\033[30;1m"</span>
+echo_bold_red=<span class="hljs-string">"\033[31;1m"</span>
+echo_bold_green=<span class="hljs-string">"\033[32;1m"</span>
+echo_bold_yellow=<span class="hljs-string">"\033[33;1m"</span>
+echo_bold_blue=<span class="hljs-string">"\033[34;1m"</span>
+echo_bold_purple=<span class="hljs-string">"\033[35;1m"</span>
+echo_bold_cyan=<span class="hljs-string">"\033[36;1m"</span>
+echo_bold_white=<span class="hljs-string">"\033[37;1m"</span>
+echo_bold_orange=<span class="hljs-string">"\033[91;1m"</span>
+echo_underline_black=<span class="hljs-string">"\033[30;4m"</span>
+echo_underline_red=<span class="hljs-string">"\033[31;4m"</span>
+echo_underline_green=<span class="hljs-string">"\033[32;4m"</span>
+echo_underline_yellow=<span class="hljs-string">"\033[33;4m"</span>
+echo_underline_blue=<span class="hljs-string">"\033[34;4m"</span>
+echo_underline_purple=<span class="hljs-string">"\033[35;4m"</span>
+echo_underline_cyan=<span class="hljs-string">"\033[36;4m"</span>
+echo_underline_white=<span class="hljs-string">"\033[37;4m"</span>
+echo_underline_orange=<span class="hljs-string">"\033[91;4m"</span>
+echo_background_black=<span class="hljs-string">"\033[40m"</span>
+echo_background_red=<span class="hljs-string">"\033[41m"</span>
+echo_background_green=<span class="hljs-string">"\033[42m"</span>
+echo_background_yellow=<span class="hljs-string">"\033[43m"</span>
+echo_background_blue=<span class="hljs-string">"\033[44m"</span>
+echo_background_purple=<span class="hljs-string">"\033[45m"</span>
+echo_background_cyan=<span class="hljs-string">"\033[46m"</span>
+echo_background_white=<span class="hljs-string">"\033[47;1m"</span>
+echo_background_orange=<span class="hljs-string">"\033[101m"</span>
+echo_normal=<span class="hljs-string">"\033[0m"</span>
+echo_reset_color=<span class="hljs-string">"\033[39m"</span>
+</code></pre>
+ </details>
+ <details>
+ <summary> 点击展开.bashrc 文件内容 </summary>
+<pre><code class="language-bash hljs"><span class="hljs-comment"># ~/.bashrc</span>
+<span class="hljs-built_in">export</span> PUB_HOSTED_URL=https://pub.flutter-io.cn
+<span class="hljs-built_in">export</span> FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
+<span class="hljs-built_in">export</span> PYTHONIOENCODING=utf8
+<span class="hljs-built_in">export</span> JULIA_PKG_SERVER=<span class="hljs-string">"https://mirrors.ustc.edu.cn/julia"</span>
+PROMPT_COMMAND=<span class="hljs-string">"prompt-command"</span>
+<span class="hljs-comment"># cache init</span>
+<span class="hljs-built_in">export</span> NODE_MIRROR=https://mirrors.tuna.tsinghua.edu.cn/nodejs-release/
+<span class="hljs-built_in">export</span> PATH=<span class="hljs-string">"<span class="hljs-variable">$HOME</span>/.local/bin:<span class="hljs-variable">$HOME</span>/local/Julia-1.7.2/bin:<span class="hljs-variable">$PATH</span>"</span>
+<span class="hljs-comment"># conda setup</span>
+<span class="hljs-keyword">function</span> use-<span class="hljs-function"><span class="hljs-title">conda</span></span>(){
+    <span class="hljs-keyword">if</span> <span class="hljs-built_in">command</span> -v conda &amp;&gt; /dev/null
+    <span class="hljs-keyword">then</span>
+        <span class="hljs-built_in">source</span> activate base
+    <span class="hljs-keyword">fi</span>
+}
+<span class="hljs-keyword">if</span> [[ -z <span class="hljs-string">"<span class="hljs-variable">$my_pragma_once</span>"</span> ]]; <span class="hljs-keyword">then</span>
+    <span class="hljs-built_in">source</span> ~/.bash-colors.sh
+    <span class="hljs-built_in">source</span> <span class="hljs-string">"<span class="hljs-subst">$(scoop prefix git)</span>\etc\profile.d\git-prompt.sh"</span>
+    <span class="hljs-built_in">source</span> /usr/share/bash-completion/bash_completion
+    <span class="hljs-built_in">export</span> PATH=<span class="hljs-variable">$HOME</span>/scoop/shims:<span class="hljs-variable">$PATH</span>
+    <span class="hljs-built_in">export</span> my_pragma_once=1
+<span class="hljs-keyword">fi</span>
+HISTSIZE=100000
+HISTFILESIZE=200000
+HOME=~
+HISTFILE=~/.bashistory
+<span class="hljs-built_in">bind</span> <span class="hljs-string">'set show-all-if-ambiguous on'</span>
+<span class="hljs-built_in">bind</span> <span class="hljs-string">'TAB:menu-complete'</span>
+<span class="hljs-built_in">bind</span> <span class="hljs-string">'"\e[A": history-search-backward'</span>
+<span class="hljs-built_in">bind</span> <span class="hljs-string">'"\e[B": history-search-forward'</span>
+<span class="hljs-built_in">bind</span> <span class="hljs-string">'"\eOA": history-search-backward'</span>
+<span class="hljs-built_in">bind</span> <span class="hljs-string">'"\eOB": history-search-forward'</span>
+<span class="hljs-keyword">function</span> setup-bash-<span class="hljs-function"><span class="hljs-title">git</span></span>(){
+    pacman -S mingw-w64-x86_64-emacs
+    git config --global core.autocrlf <span class="hljs-literal">false</span>
+    git config --global core.eol lf
+    git config --global core.editor <span class="hljs-string">"emacs"</span>
+    <span class="hljs-comment"># 鍙栨秷涓嬭娉ㄩ噴锛屼娇鐢╲scode浣滀负git鐨勯粯璁ょ紪杈戝櫒</span>
+    <span class="hljs-comment"># git config --global core.editor "code --wait"</span>
+}
+STATUS_THEME_PROMPT_BAD=<span class="hljs-string">"<span class="hljs-variable">${bold_red}</span>馃挗<span class="hljs-variable">${reset_color}</span><span class="hljs-variable">${normal}</span> "</span>
+STATUS_THEME_PROMPT_OK=<span class="hljs-string">"<span class="hljs-variable">${bold_green}</span>鉁?{reset_color}<span class="hljs-variable">${normal}</span> "</span>
+<span class="hljs-keyword">function</span> mode-<span class="hljs-function"><span class="hljs-title">simple</span></span>(){
+    SIMPLE_PROMPT=1
+}
+<span class="hljs-keyword">function</span> mode-<span class="hljs-function"><span class="hljs-title">pretty</span></span>(){
+    SIMPLE_PROMPT=
+}
+<span class="hljs-keyword">function</span> <span class="hljs-function"><span class="hljs-title">j</span></span>(){
+    <span class="hljs-built_in">cd</span> <span class="hljs-string">"<span class="hljs-subst">$(ajmp complete $@)</span>"</span>
+}
+<span class="hljs-keyword">function</span> <span class="hljs-function"><span class="hljs-title">chpwd</span></span>(){
+    ajmp update <span class="hljs-string">"<span class="hljs-variable">$PWD</span>"</span>
+}
+<span class="hljs-keyword">function</span> prompt-<span class="hljs-function"><span class="hljs-title">command</span></span>(){
+    <span class="hljs-comment"># record history</span>
+    <span class="hljs-built_in">history</span> -a
+    <span class="hljs-comment"># apply chpwd</span>
+    <span class="hljs-keyword">if</span> [[ <span class="hljs-string">"<span class="hljs-variable">$LASTWD</span>"</span> !=  <span class="hljs-string">"<span class="hljs-variable">$PWD</span>"</span> ]]; <span class="hljs-keyword">then</span>
+        chpwd
+    <span class="hljs-keyword">fi</span>
+    LASTWD=<span class="hljs-variable">$PWD</span>
+    <span class="hljs-comment"># set prompt status</span>
+    <span class="hljs-keyword">if</span> [ $? -eq 0 ]
+    <span class="hljs-keyword">then</span>
+        my_status=<span class="hljs-string">" <span class="hljs-variable">$STATUS_THEME_PROMPT_OK</span>"</span>
+    <span class="hljs-keyword">else</span>
+        my_status=<span class="hljs-string">" <span class="hljs-variable">$STATUS_THEME_PROMPT_BAD</span>"</span>
+    <span class="hljs-keyword">fi</span>
+    <span class="hljs-comment"># compute PS1</span>
+    <span class="hljs-built_in">local</span> git_ps branch untracked dirty py
+    <span class="hljs-keyword">if</span> [[ -z <span class="hljs-string">"<span class="hljs-variable">$SIMPLE_PROMPT</span>"</span> ]]; <span class="hljs-keyword">then</span>
+        <span class="hljs-keyword">if</span> <span class="hljs-built_in">command</span> -v python &amp;&gt; /dev/null
+        <span class="hljs-keyword">then</span>
+            py=<span class="hljs-string">" <span class="hljs-variable">${blue}</span>顖?<span class="hljs-subst">$(python --version | sed 's/[[:alpha:]|(|[:space:]]//g')</span><span class="hljs-variable">${reset_color}</span>"</span>
+        <span class="hljs-keyword">fi</span>
+        git rev-parse 2&gt; /dev/null
+        <span class="hljs-keyword">if</span> [[ $? -eq 0 ]]; <span class="hljs-keyword">then</span>
+            branch=$(git branch 2&gt;/dev/null | grep <span class="hljs-string">'*'</span> | sed <span class="hljs-string">'s/* \(.*\)/&amp;/'</span>)
+            <span class="hljs-keyword">if</span> [[ -n $(git status -s) ]]; <span class="hljs-keyword">then</span>
+                untracked=<span class="hljs-string">"<span class="hljs-variable">${yellow}</span>鈼?{reset_color}"</span>
+            <span class="hljs-keyword">fi</span>
+            git diff --quiet || dirty=<span class="hljs-string">"<span class="hljs-variable">${red}</span>鉁?{reset_color}"</span>
+            git_ps=<span class="hljs-string">" <span class="hljs-variable">${cyan}</span>飷?(<span class="hljs-variable">${branch}</span><span class="hljs-variable">${reset_color}</span><span class="hljs-variable">${dirty}</span><span class="hljs-variable">${untracked}</span><span class="hljs-variable">${cyan}</span>)<span class="hljs-variable">${reset_color}</span>"</span>
+        <span class="hljs-keyword">fi</span>
+    <span class="hljs-keyword">fi</span>
+    PS1=<span class="hljs-string">"\n<span class="hljs-variable">${blue}</span>飻?\u <span class="hljs-variable">${reset_color}</span><span class="hljs-variable">${yellow}</span>顜?\D{}<span class="hljs-variable">${reset_color}</span><span class="hljs-variable">${git_ps}</span><span class="hljs-variable">${py}</span><span class="hljs-variable">${my_status}</span><span class="hljs-variable">${blue}</span>飬?\w\n飦?<span class="hljs-variable">${normal}</span>"</span>
+    PS2=<span class="hljs-string">"飦?"</span>
+}
+<span class="hljs-comment"># DOTNET鐨勫浐瀹氶厤缃矾寰?</span>
+<span class="hljs-built_in">export</span> PATH=<span class="hljs-string">"C:\Users\$USER\.dotnet\tools:<span class="hljs-variable">$PATH</span>"</span>
+<span class="hljs-built_in">bind</span> <span class="hljs-string">'"\C-H":backward-kill-word'</span>
+</code></pre>
+ </details>
+</li>
+<li>
+<p>安装Python和一些工具，修复一些Window问题。</p>
+<ol>
+<li>
+<p>从 https://conda-forge.org/miniforge/ 安装 miniforge。</p>
+<p>建议加入勾选【将miniforge环境加入路径】的选项，这是为了对抗 Windows 将 Python 设为默认命令的设计失误。按此设置，开发过程能规避很多问题。</p>
+<p>安装完miniforge后，你的默认环境中有 <code>python</code> 和 <code>pip</code>。</p>
+</li>
+<li>
+<p><code>pip install autojmp</code>，配合上面的 <code>.bashrc</code> 设置，你将能以 <code>j+模糊地址</code> 的方式，跳转到以前去过的目录。</p>
+</li>
+</ol>
+</li>
+<li>
+<p>设置初步完成，打开 windows terminal，你现在拥有一个和 Linux 别无二致的终端环境！</p>
+<p>总的来说，你拥有这些东西：</p>
+<ol>
+<li>支持<strong>主要zsh功能</strong>的终端（上下键历史补全，tab 补全，vim/emacs 快捷键，git补全）</li>
+<li><strong>两个包管理器</strong>：scoop (安装 windows 应用) 和 pacman (安装 mingw64 应用)</li>
+<li>Linux 命令行工具集</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<h3 id="%E5%B8%B8%E7%94%A8%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE" tabindex="-1"><a href="#%E5%B8%B8%E7%94%A8%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE" class="header-anchor">常用环境配置</a></h3>
+<p><strong>SSH 和 GitHub:</strong></p>
+<ol>
+<li>
+<p>生成ssh公私钥: <code>ssh-keygen -t ed25519</code></p>
+</li>
+<li>
+<p>复制ssh公钥： <code>cat ~/.ssh/id_ed25519.pub | clip</code></p>
+</li>
+<li>
+<p>打开 https://github.com/settings/keys， 新建 SSH key，key设置为复制结果。</p>
+</li>
+</ol>
+<p><strong>Emacs 安装:</strong></p>
+<ul>
+<li>
+<p>下面的安装是 Windows 上诸多 Emacs 发行版中唯一可用的那个，它支持 unicode 和纯命令行编辑。</p>
+<pre><code class="language-bash hljs">pacman -S mingw-w64-x86_64-emacs
+</code></pre>
+</li>
+</ul>
+<p><strong>Git设置：</strong></p>
+<p><code>bash     # git config --global core.autocrlf false     # git config --global core.eol lf     #     # 对emacs用户     git config --global core.editor "emacs"     # 对vscode用户     git config --global core.editor "code --wait"     </code></p>
+<p><strong>常用软件及镜像配置：</strong></p>
+<pre><code class="language-bash hljs">
+<span class="hljs-comment"># .net, unity</span>
+scoop install dotnet-sdk
+
+<span class="hljs-comment"># java</span>
+scoop bucket add java
+scoop install openjdk （重启terminal之后java可以访问）
+
+<span class="hljs-comment"># LaTeX</span>
+scoop install miktex
+pacman -S make <span class="hljs-comment"># latexmk需要make</span>
+
+<span class="hljs-comment"># pip</span>
+pip config <span class="hljs-built_in">set</span> global.index-url https://mirrors.bfsu.edu.cn/pypi/web/simple <span class="hljs-comment"># 使用北京外国语大学镜像</span>
+
+<span class="hljs-comment"># conda</span>
+<span class="hljs-comment"># 将~/.condarc设置为北京外国语大学镜像：</span>
+channels:
+    - https://mirrors.bfsu.edu.cn/anaconda/cloud/conda-forge/
+<span class="hljs-comment"># 如果是非商业/教育版用户、可以直接使用anaconda的商业源，配置方法见：https://mirrors.bfsu.edu.cn/help/anaconda/</span>
+</code></pre>
+<h2 id="%E5%85%B6%E4%BB%96" tabindex="-1"><a href="#%E5%85%B6%E4%BB%96" class="header-anchor">其他</a></h2>
+<ol>
+<li>
+<p>自定义右键菜单，推荐使用这个软件：https://github.com/BluePointLilac/ContextMenuManager</p>
+</li>
+<li>
+<p>Windows 更新后，部分 scoop 应用无法从命令行打开了(<code>$PATH</code>被重置)：</p>
+<pre><code class="language-bash hljs"><span class="hljs-comment"># 修复单个应用</span>
+scoop reset &lt;应用名&gt;
+<span class="hljs-comment"># 修复所有应用</span>
+scoop reset *
+</code></pre>
+</li>
+</ol>
+
+          
+        </div>
+
+        
+        <aside role="note" class="footnotes">
+          <dl>
+            
+            <div id="fn-1" class="footnote">
+              <dt><a href="#fnref-1">1</a></dt>
+              <dd><p>何为“正确支持”？:在包括但不限于unicode、路径转换、环境变量、二进制依赖等方面与Windows兼容。</p>
+</dd>
+            </div>
+            
+          </dl>
+        </aside>
+        
+      </main>
+
+      
+    </div>
+  
+
+</body></html>
