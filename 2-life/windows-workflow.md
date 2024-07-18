@@ -399,15 +399,14 @@ WSL的问题可以细分为以下几点：
         <summary> 点击展开.bashrc 文件内容 </summary>
 
         ```bash
-        # ~/.bashrc
-        export PUB_HOSTED_URL=https://pub.flutter-io.cn
-        export FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
+        # export PUB_HOSTED_URL=https://pub.flutter-io.cn
+        # export FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
+        # export NODE_MIRROR=https://mirrors.tuna.tsinghua.edu.cn/nodejs-release/
+        # export JULIA_PKG_SERVER="https://mirrors.ustc.edu.cn/julia"
+        # export PATH="C:\Users\$USER\.dotnet\tools:$PATH"
         export PYTHONIOENCODING=utf8
-        export JULIA_PKG_SERVER="https://mirrors.ustc.edu.cn/julia"
         PROMPT_COMMAND="prompt-command"
-        # cache init
-        export NODE_MIRROR=https://mirrors.tuna.tsinghua.edu.cn/nodejs-release/
-        export PATH="$HOME/.local/bin:$HOME/local/Julia-1.7.2/bin:$PATH"
+        export PATH="$HOME/.local/bin:$PATH"
         # conda setup
         function use-conda(){
             if command -v conda &> /dev/null
@@ -415,6 +414,7 @@ WSL的问题可以细分为以下几点：
                 source activate base
             fi
         }
+        # cache init
         if [[ -z "$my_pragma_once" ]]; then
             source ~/.bash-colors.sh
             source "$(scoop prefix git)\etc\profile.d\git-prompt.sh"
@@ -433,15 +433,18 @@ WSL的问题可以细分为以下几点：
         bind '"\eOA": history-search-backward'
         bind '"\eOB": history-search-forward'
         function setup-bash-git(){
-            pacman -S mingw-w64-x86_64-emacs
             git config --global core.autocrlf false
             git config --global core.eol lf
-            git config --global core.editor "emacs"
-            # 鍙栨秷涓嬭娉ㄩ噴锛屼娇鐢╲scode浣滀负git鐨勯粯璁ょ紪杈戝櫒
+
+            # 取消下行注释，使用emacs作为git默认编辑器
+            # pacman -S mingw-w64-x86_64-emacs
+            # git config --global core.editor "emacs"
+
+            # 取消下行注释，使用vscode作为git默认编辑器
             # git config --global core.editor "code --wait"
         }
-        STATUS_THEME_PROMPT_BAD="${bold_red}馃挗${reset_color}${normal} "
-        STATUS_THEME_PROMPT_OK="${bold_green}鉁?{reset_color}${normal} "
+        STATUS_THEME_PROMPT_BAD="${bold_red}💢${reset_color}${normal} "
+        STATUS_THEME_PROMPT_OK="${bold_green}✅${reset_color}${normal} "
         function mode-simple(){
             SIMPLE_PROMPT=1
         }
@@ -474,25 +477,24 @@ WSL的问题可以细分为以下几点：
             if [[ -z "$SIMPLE_PROMPT" ]]; then
                 if command -v python &> /dev/null
                 then
-                    py=" ${blue}顖?$(python --version | sed 's/[[:alpha:]|(|[:space:]]//g')${reset_color}"
+                    py=" ${blue} $(python --version | sed 's/[[:alpha:]|(|[:space:]]//g')${reset_color}"
                 fi
                 git rev-parse 2> /dev/null
                 if [[ $? -eq 0 ]]; then
                     branch=$(git branch 2>/dev/null | grep '*' | sed 's/* \(.*\)/&/')
                     if [[ -n $(git status -s) ]]; then
-                        untracked="${yellow}鈼?{reset_color}"
+                        untracked="${yellow}●${reset_color}"
                     fi
-                    git diff --quiet || dirty="${red}鉁?{reset_color}"
-                    git_ps=" ${cyan}飷?(${branch}${reset_color}${dirty}${untracked}${cyan})${reset_color}"
+                    git diff --quiet || dirty="${red}✘${reset_color}"
+                    git_ps=" ${cyan} (${branch}${reset_color}${dirty}${untracked}${cyan})${reset_color}"
                 fi
             fi
-            PS1="\n${blue}飻?\u ${reset_color}${yellow}顜?\D{}${reset_color}${git_ps}${py}${my_status}${blue}飬?\w\n飦?${normal}"
-            PS2="飦?"
+            PS1="\n${blue} \u ${reset_color}${yellow} \D{}${reset_color}${git_ps}${py}${my_status}${blue} \w\n ${normal}"
+            PS2=" "
         }
-        # DOTNET鐨勫浐瀹氶厤缃矾寰?
-        export PATH="C:\Users\$USER\.dotnet\tools:$PATH"
         bind '"\C-H":backward-kill-word'
         ```
+
         </details>
 
     10. 安装Python和一些工具，修复一些Window问题。
@@ -534,20 +536,19 @@ WSL的问题可以细分为以下几点：
 
 **Git设置：**
 
-    ```bash
-    # git config --global core.autocrlf false
-    # git config --global core.eol lf
-    #
-    # 对emacs用户
-    git config --global core.editor "emacs"
-    # 对vscode用户
-    git config --global core.editor "code --wait"
-    ```
+```bash
+# git config --global core.autocrlf false
+# git config --global core.eol lf
+#
+# 对emacs用户
+git config --global core.editor "emacs"
+# 对vscode用户
+git config --global core.editor "code --wait"
+```
 
 **常用软件及镜像配置：**
 
 ```bash
-
 # .net, unity
 scoop install dotnet-sdk
 
