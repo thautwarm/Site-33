@@ -8,7 +8,7 @@ import toc from "https://deno.land/x/lume_markdown_plugins@v0.7.0/toc.ts";
 import footnotes from "https://deno.land/x/lume_markdown_plugins@v0.7.0/footnotes.ts";
 import date from "lume/plugins/date.ts";
 import basePath from "lume/plugins/base_path.ts";
-
+import codeCopy from "./codeCopy.ts";
 import { alert } from "npm:@mdit/plugin-alert@0.8.0";
 
 import "lume/types.ts";
@@ -42,8 +42,10 @@ function plugins() {
 
         // Alert plugin
         site.hooks.addMarkdownItPlugin(alert);
+        site.hooks.addMarkdownItPlugin(codeCopy);
     };
 }
+
 
 
 export default function () {
@@ -53,6 +55,7 @@ export default function () {
 
         // Add remote files
         const files = [
+            "_includes/js/clipboard.js",
             "_includes/svg/copy.svg",
             "_includes/css/menu.css",
             "_includes/css/updates.css",
@@ -75,5 +78,6 @@ export default function () {
         }
 
         site.copy('_includes/svg/copy.svg', 'svg/copy.svg')
+        site.copy('_includes/js/clipboard.js', 'js/clipboard.js')
     };
 }
