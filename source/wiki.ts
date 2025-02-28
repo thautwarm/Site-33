@@ -10,8 +10,10 @@ import date from "lume/plugins/date.ts";
 import basePath from "lume/plugins/base_path.ts";
 import codeCopy from "./codeCopy.ts";
 import { alert } from "npm:@mdit/plugin-alert@0.8.0";
+import { tab } from "npm:@mdit/plugin-tab";
 
 import "lume/types.ts";
+import tabTransform from "./tabTransform.ts";
 
 function plugins() {
     return (site: Lume.Site) => {
@@ -43,6 +45,8 @@ function plugins() {
         // Alert plugin
         site.hooks.addMarkdownItPlugin(alert);
         site.hooks.addMarkdownItPlugin(codeCopy);
+        site.hooks.addMarkdownItPlugin(tab, { name: "tabs" });
+        tabTransform(site);
     };
 }
 
