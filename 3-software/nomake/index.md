@@ -40,18 +40,20 @@ Deno fundamentally eases the sharing and reusing of build scripts and ruleset li
 
     Supported platforms: `win-x64`, `linux-x64`, `macos-x64`, `linux-arm64`, `macos-arm64`.
 
-    <div class="site33-tabs">
-        <input type="radio" name="site33-tabs" id="site33-tab1" checked>
-        <label for="site33-tab1">GitHub Releases</label>
-        <input type="radio" name="site33-tabs" id="site33-tab2">
-        <label for="site33-tab2">Deno Library</label>
-        <div class="site33-tab-content" id="site33-content1" style="min-height: 6em">
-            <p> Download the binaries and add them to your PATH: <a href="https://github.com/thautwarm/nomake/releases">https://github.com/thautwarm/nomake/releases</a> </p>
-        </div>
-        <div class="site33-tab-content" id="site33-content2" style="min-height: 6em">
-            <p> Import the latest package from the url <a href="https://github.com/thautwarm/nomake/raw/v0.1.5/mod.ts"> https://github.com/thautwarm/nomake/raw/v0.1.5/mod.ts </a> </p>
-        </div>
-    </div>
+
+    ::: tabs#download
+
+    @tab GitHub Releases
+        
+    Download the binaries and add them to your PATH: [https://github.com/thautwarm/nomake/releases](https://github.com/thautwarm/nomake/releases)
+
+    @tab Deno Library
+
+    ```typescript
+    import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.5/mod.ts'
+    ```
+
+    :::
 
 2. Run your build script (requires a `build.ts` file as an entry point).
 
