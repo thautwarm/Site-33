@@ -1,0 +1,150 @@
+{
+  "/xx": {
+    "originalDate": "2020-01-01",
+    "editDates": []
+  },
+  "/1-programming/01-langimpl/design-and-impl/": {
+    "originalDate": "2022/8/17",
+    "editDates": []
+  },
+  "/1-programming/01-langimpl/": {
+    "originalDate": "2024/5/15",
+    "editDates": []
+  },
+  "/1-programming/02-design/": {
+    "originalDate": "2024/5/15",
+    "editDates": []
+  },
+  "/1-programming/02-design/intro-active-patterns/": {
+    "originalDate": "2022/1/26",
+    "editDates": []
+  },
+  "/1-programming/03-tech/datagen/": {
+    "originalDate": "2022/12/15",
+    "editDates": []
+  },
+  "/1-programming/03-tech/": {
+    "originalDate": "2024/5/15",
+    "editDates": []
+  },
+  "/1-programming/04-ideas/glr/": {
+    "originalDate": "2022/4/13",
+    "editDates": []
+  },
+  "/1-programming/04-ideas/": {
+    "originalDate": "2024/5/15",
+    "editDates": []
+  },
+  "/1-programming/04-ideas/julia-redef-struct/": {
+    "originalDate": "2022/8/1",
+    "editDates": []
+  },
+  "/1-programming/04-ideas/stable-qsort/": {
+    "originalDate": "2024/5/15",
+    "editDates": []
+  },
+  "/1-programming/": {
+    "originalDate": "2024/5/15",
+    "editDates": []
+  },
+  "/2-life/": {
+    "originalDate": "2024/5/13",
+    "editDates": []
+  },
+  "/2-life/windows-workflow/": {
+    "originalDate": "2022/9/7",
+    "editDates": []
+  },
+  "/3-software/": {
+    "originalDate": "2024/5/13",
+    "editDates": []
+  },
+  "/3-software/nomake/2-core/fail/": {
+    "originalDate": "2024/5/13",
+    "editDates": []
+  },
+  "/3-software/nomake/2-core/": {
+    "originalDate": "2024/5/10",
+    "editDates": []
+  },
+  "/3-software/nomake/2-core/makefile/": {
+    "originalDate": "2024/5/13",
+    "editDates": []
+  },
+  "/3-software/nomake/2-core/option/": {
+    "originalDate": "2024/5/13",
+    "editDates": []
+  },
+  "/3-software/nomake/2-core/parseOptions/": {
+    "originalDate": "2024/5/13",
+    "editDates": []
+  },
+  "/3-software/nomake/2-core/target/": {
+    "originalDate": "2024/5/13",
+    "editDates": []
+  },
+  "/3-software/nomake/3-modules/1-platform/": {
+    "originalDate": "2024/5/13",
+    "editDates": []
+  },
+  "/3-software/nomake/3-modules/2-env/": {
+    "originalDate": "2024/5/13",
+    "editDates": []
+  },
+  "/3-software/nomake/3-modules/3-path/": {
+    "originalDate": "2024/5/13",
+    "editDates": []
+  },
+  "/3-software/nomake/3-modules/4-log/": {
+    "originalDate": "2024/5/13",
+    "editDates": []
+  },
+  "/3-software/nomake/3-modules/": {
+    "originalDate": "2024/5/13",
+    "editDates": []
+  },
+  "/3-software/nomake/4-rules/bflat/": {
+    "originalDate": "2024/5/13",
+    "editDates": []
+  },
+  "/3-software/nomake/4-rules/c-toolchain/": {
+    "originalDate": "2024/5/13",
+    "editDates": []
+  },
+  "/3-software/nomake/4-rules/": {
+    "originalDate": "2024/5/13",
+    "editDates": []
+  },
+  "/3-software/nomake/": {
+    "originalDate": "2025/2/28",
+    "editDates": []
+  },
+  "/3-software/tbnf/": {
+    "originalDate": "2025/2/28",
+    "editDates": []
+  },
+  "/3-software/tbnf/json-tutorials/": {
+    "originalDate": "2025/2/28",
+    "editDates": []
+  },
+  "/404.html": {
+    "originalDate": "2024/5/6",
+    "editDates": []
+  },
+  "/": {
+    "originalDate": "2024/5/15",
+    "editDates": []
+  },
+  "/source/styles.css": {
+    "originalDate": "2025/2/28",
+    "editDates": []
+  },
+  "/styles.css": {
+    "originalDate": "2025/3/7",
+    "editDates": []
+  },
+  "/assets/css/style.css": {
+    "originalDate": "2025/3/7",
+    "editDates": []
+  }
+}

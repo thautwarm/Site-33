@@ -13,7 +13,8 @@ import { alert } from "npm:@mdit/plugin-alert@0.8.0";
 import { tab } from "npm:@mdit/plugin-tab";
 
 import "lume/types.ts";
-import tabTransform from "./tabTransform.ts";
+import { tabTransform } from "./tabTransform.ts";
+import { trackOriginalDates } from "./tracking.ts";
 
 function plugins() {
     return (site: Lume.Site) => {
@@ -28,7 +29,7 @@ function plugins() {
             .use(resolveUrls())
             .use(date())
             .use(basePath())
-            .data("layout", "blog-layout.vto")
+            .data("layout", "typecheck.tsx")
             .data("date", "Git Last Modified")
             .mergeKey("extra_head", "stringArray")
             .copy([
@@ -46,7 +47,6 @@ function plugins() {
         site.hooks.addMarkdownItPlugin(alert);
         site.hooks.addMarkdownItPlugin(codeCopy);
         site.hooks.addMarkdownItPlugin(tab, { name: "tabs" });
-        tabTransform(site);
     };
 }
 
@@ -66,6 +66,11 @@ export default function () {
             "_includes/css/overrides.css",
             "_includes/styles.css",
             "_includes/typecheck.tsx",
+            "_includes/tsx/breadcrumb.tsx",
+            "_includes/tsx/menu.tsx",
+            "_includes/tsx/menu_item.tsx",
+            "_includes/tsx/list-sub-item.tsx",
+            "_includes/tsx/list-sub.tsx",
             "_includes/list-article-layout.tsx",
             "_includes/blog-layout.vto",
             "_includes/list-sub-layout.vto",
@@ -77,6 +82,8 @@ export default function () {
             "styles.css",
         ];
 
+        tabTransform(site);
+        trackOriginalDates(site);
         for (const file of files) {
             site.remoteFile(file, import.meta.resolve(`./${file}`));
         }

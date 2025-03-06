@@ -53,7 +53,7 @@
             <h1>{{ it.basename }}</h1>
           {{ /if }}
 
-          <em> 此文档创建于 {{ it.date?.toLocaleDateString('zh-CN') }} </em>
+          <em> 此文档更新于 {{ it.date?.toLocaleDateString('zh-CN') }} </em>
           {{ if content }}
             {{ content }}
           {{ else }}
@@ -85,7 +85,7 @@
       </footer>
       {{ /if }}
     </div>
-    
+
     <!-- Script for code copy functionality -->
     <script src="/js/clipboard.js"></script>
   </body>

@@ -147,3 +147,22 @@ main {
 .icon {
   vertical-align: middle;
 }
+
+
+.article-list .article-list-item {
+  display: flex;
+  width: 100%;
+}
+
+.article-list .article-list-title {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 10px;
+}
+
+.article-list .article-list-date {
+  flex: 0;
+  text-align: right;
+}

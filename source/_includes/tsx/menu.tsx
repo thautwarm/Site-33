@@ -1,48 +1,36 @@
-import { type NavData } from "lume/plugins/nav.ts";
 import * as React from 'npm:preact';
-import * as x from './builder.tsx';
-import MenuItem, { navSortCmp } from './menu_item.tsx';
+import MenuItem from './menu_item.tsx';
 
-const FC: React.FunctionComponent<{ self: Lume.Data }> = ({ self }) => {
-    const page = self.search.page('url=/');
-    const itemMenu = self.nav.menu(self.url)
-    const slug = itemMenu?.slug
+export default function Menu({ self }: { self: Lume.Data }) {
+	const page = self.search.page("url=/");
+	const it_menu = self && self.nav.menu(self.url);
 
-    const nextThis = itemMenu ? self : undefined;
+	return (
+		<nav className="menu-container">
+			{page && (
+				page.logo ?
+					<a className="menu-logo" href={page.url}>
+						<img src={page.logo} alt={page.title || page.slug} />
+					</a> :
+					<a className="menu-highlight" href={page.url}>
+						{page.title || page.slug}
+					</a>
+			)}
 
-    return x.nav(
-        {
-            attrs: { class: 'menu-container' },
-            children: x.fragments(
-                x.cond(
-                    page,
-                    (page) => {
-                        if (page.logo) {
-                            return <a class="menu-logo" href={page.url}>
-                                <img src={page.logo} alt={page.title || slug} />
-                            </a>
-                        }
-                        return <a class="menu-highlight" href={page.url}>{page.title || slug}</a>
-                    }
-                ),
-
-                x.ul(
-                    {
-                        attrs: { class: 'menu' },
-                        children: (() => {
-                            const menu = itemMenu ?? self.nav.menu()
-                            return menu
-                                .children
-                                ?.sort(navSortCmp)
-                                ?.map((child) =>
-                                    x.li({ children: <MenuItem self={nextThis} item={child} /> }))
-                                ?? []
-                        })(),
-                    }
-                )
-            )
-        }
-    )
+			<ul className="menu">
+				{it_menu ?
+					(it_menu?.children?.sort((a, b) => a.data?.order - b.data?.order) || []).map((item) => (
+						<li key={item.slug}>
+							<MenuItem item={item} self={self} />
+						</li>
+					)) :
+					(self.nav.menu().children?.sort((a, b) => a.data?.order - b.data?.order) || []).map((item) => (
+						<li key={item.slug}>
+							<MenuItem item={item} />
+						</li>
+					))
+				}
+			</ul>
+		</nav>
+	);
 }
-
-export default FC

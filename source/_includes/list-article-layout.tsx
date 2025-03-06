@@ -2,12 +2,13 @@ import { type NavData } from "lume/plugins/nav.ts";
 import * as React from 'npm:preact';
 import Breadcrumb from './tsx/breadcrumb.tsx'
 import Menu from './tsx/menu.tsx'
+import { TrackingData } from "../tracking.ts";
 
 export default (data: Lume.Data, helpers: Lume.Helpers) => {
-    const { title, children, basename } = data;
+    const { title, children, basename, lang } = data;
     const articles = Array.from(findAllArticles(data.nav.menu(data.url)));
 
-    return <html>
+    return <html lang={lang || 'en'}>
         <head>
             <meta charset="utf-8" />
             <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -46,11 +47,19 @@ function ArticleList(options: { articles: NavData[] }) {
         const d2 = b.data?.date ?? new Date(0);
         return d2.getTime() - d1.getTime();
     });
-    return <ul>
+    return <ul class='article-list'>
         {
-            articles.map(art => {
-                return <li>
-                    <a href={art.data?.url ?? art.slug}>{art.data?.title ?? art.data?.basename}</a><span style="float: right;">{art.data?.date?.toLocaleDateString()}</span>
+            articles.map((art, i) => {
+                const originalDate = TrackingData[art.data?.url ?? ''].originalDate ?? art.data?.date?.toLocaleDateString('zh-CN');
+                return <li key={i}>
+                    <div class='article-list-item'>
+                        <a class='article-list-title' href={art.data?.url ?? art.slug}>
+                            {art.data?.title ?? art.data?.basename}
+                        </a>
+                        <span class='article-list-date' style="float: right">
+                            {originalDate}
+                        </span>
+                    </div>
                 </li>
             })
         }

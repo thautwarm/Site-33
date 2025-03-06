@@ -31,7 +31,7 @@ site
     }))
     .use(wiki())
     ;
-    
+
 site.remoteFile(
     "_includes/css/syntax-highlight.css",
     "https://unpkg.com/@highlightjs/cdn-assets@11.9.0/styles/nnfx-light.min.css"
