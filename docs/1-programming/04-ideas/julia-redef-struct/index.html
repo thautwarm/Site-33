@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Julia交互会话中的重定义问题</title><meta name="supported-color-schemes" content="light dark"><meta name="theme-color" content="hsl(220, 20%, 100%)" media="(prefers-color-scheme: light)"><meta name="theme-color" content="hsl(220, 20%, 10%)" media="(prefers-color-scheme: dark)"><link rel="stylesheet" href="/Site-33/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/Site-33/styles.css"><link rel="canonical" href="/Site-33/1-programming/04-ideas/julia-redef-struct/"><link rel="icon" sizes="48x48" href="/Site-33/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/Site-33/apple-touch-icon.png">
+<script type="text/javascript" src="/Site-33/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded',()=>{new PagefindUI({"element":"#search","showImages":false,"excerptLength":0,"showEmptyFilters":true,"showSubResults":false,"resetStyles":true,"bundlePath":"/Site-33/pagefind/","baseUrl":"/Site-33/"});});</script></head><body><div></div><div class="container"><div class="toolbar"><div id="search" class="search"></div></div><nav class="menu-container"><a class="menu-highlight" href="/Site-33/">Site-33 by thautwarm</a><ul class="menu"></ul></nav><nav class="toc"><h2>On this page</h2><ol><li><a href="#%E8%83%8C%E6%99%AF%E9%97%AE%E9%A2%98">背景问题</a></li><li><a href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88">解决方案</a></li><li><a href="#%E5%AE%9E%E7%8E%B0">实现</a></li></ol></nav><main class="main"><nav><ul class="breadcrumb"><li class="breadcrumb-item"><a href="/Site-33/">Site-33 by thautwarm</a></li><li class="breadcrumb-item"><a href="/Site-33/1-programming/">Programming 编程</a></li><li class="breadcrumb-item"><a href="/Site-33/1-programming/04-ideas/">点子</a></li></ul></nav><div class="body" data-pagefind-body="true"><em> 此文档创建于 2022/8/1 </em><div><h1>Julia交互会话中的重定义问题</h1>
+<h2 id="%E8%83%8C%E6%99%AF%E9%97%AE%E9%A2%98" tabindex="-1"><a href="#%E8%83%8C%E6%99%AF%E9%97%AE%E9%A2%98" class="header-anchor">背景问题</a></h2>
+<p>使用Python比较多的用户如果接触Julia，除开启动延迟问题，一些重定义的操作也可能让人烦恼。</p>
+
+<div style="position: relative">
+	<pre><code class="language-julia hljs"><span class="hljs-keyword">struct</span> S
+    int_field::<span class="hljs-built_in">Int32</span>
+<span class="hljs-keyword">end</span>
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="struct S
+    int_field::Int32
+end
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>以上语法定义一个结构体，这很酷：它的内存布局和在C里写一个结构体是一样的，内存开销不到一个Python整数的 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>1</mn><mn>4</mn></mfrac></mstyle></mrow><annotation encoding="application/x-tex">\dfrac{1}{4}</annotation></semantics></math></span></span> .</p>
+<p>但是用户不关心，用户关心这个：</p>
+
+<div style="position: relative">
+	<pre><code class="language-julia-repl hljs"><span class="hljs-meta prompt_">julia&gt;</span><span class="language-julia"> <span class="hljs-keyword">struct</span> S
+           int_field::<span class="hljs-built_in">Int32</span>
+       <span class="hljs-keyword">end</span>
+</span># 定义一个结构体
+
+<span class="hljs-meta prompt_">julia&gt;</span><span class="language-julia"> <span class="hljs-keyword">struct</span> S
+           int_field::<span class="hljs-built_in">Int32</span>
+       <span class="hljs-keyword">end</span>
+</span># 定义相同，正常工作
+
+<span class="hljs-meta prompt_">julia&gt;</span><span class="language-julia"> <span class="hljs-keyword">struct</span> S
+           int_field::<span class="hljs-built_in">Int64</span>
+       <span class="hljs-keyword">end</span>
+</span>ERROR: invalid redefinition of type S
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="julia> struct S
+           int_field::Int32
+       end
+# 定义一个结构体
+
+julia> struct S
+           int_field::Int32
+       end
+# 定义相同，正常工作
+
+julia> struct S
+           int_field::Int64
+       end
+ERROR: invalid redefinition of type S
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>之所以发生这个情况，是因为Julia没办法“卸载”一个结构体。</p>
+<p>这有两方面原因：</p>
+<ol>
+<li>
+<p>与Python相比，Julia中的变量名、尤其是定义类型时自动绑定的const变量名是不能重定义的。</p>
+<p>其之所以不能重定义的底层原因是，const变量名并非像Python那样只是字符串到堆对象的绑定，而是到LLVM编译结果中某个稳定位置的符号链接。虽然存在重定向的机会，但Julia没做。</p>
+</li>
+<li>
+<p>Julia之所以不愿意花精力支持重绑定const变量名，是因为他们认为这会对用户造成误导。</p>
+<p>他们担心的情况确实可能出现，因为和Python不同的是，Julia中的类型大规模地用于“重载”（多重派发），重名类型相比Python会产生更多误导。</p>
+</li>
+</ol>
+<p>考虑下面的情况：</p>
+
+<div style="position: relative">
+	<pre><code class="language-julia-repl hljs"><span class="hljs-meta prompt_">julia&gt;</span><span class="language-julia"> <span class="hljs-keyword">struct</span> S
+        v1 :: <span class="hljs-built_in">Int</span>
+        <span class="hljs-keyword">end</span>
+</span>
+<span class="hljs-meta prompt_">julia&gt;</span><span class="language-julia"> x = S(<span class="hljs-number">1</span>)
+</span>
+<span class="hljs-meta prompt_">julia&gt;</span><span class="language-julia"> f(s::S) = <span class="hljs-number">1</span>
+</span>
+<span class="hljs-meta prompt_">julia&gt;</span><span class="language-julia"> <span class="hljs-keyword">struct</span> S
+        v2 :: <span class="hljs-built_in">Float64</span>
+        <span class="hljs-keyword">end</span>
+</span>
+<span class="hljs-meta prompt_">julia&gt;</span><span class="language-julia"> f(s::S, ::<span class="hljs-built_in">Int</span>) = <span class="hljs-number">2</span>
+</span>
+<span class="hljs-meta prompt_">julia&gt;</span><span class="language-julia"> y = S(<span class="hljs-number">1.0</span>)
+</span><span class="hljs-meta prompt_">julia&gt;</span><span class="language-julia"> f(y)
+</span>ERROR: MethodError: no method matching f(::S)
+Closest candidates are:
+f(::S, ::Int64) at ...
+f(::S,) at ...
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="julia> struct S
+        v1 :: Int
+        end
+
+julia> x = S(1)
+
+julia> f(s::S) = 1
+
+julia> struct S
+        v2 :: Float64
+        end
+
+julia> f(s::S, ::Int) = 2
+
+julia> y = S(1.0)
+julia> f(y)
+ERROR: MethodError: no method matching f(::S)
+Closest candidates are:
+f(::S, ::Int64) at ...
+f(::S,) at ...
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>可以看到，如果允许重定义，将会发生 <code>f(::S)</code> 缺失重载，却又提示 <code>f(::S)</code> 存在。</p>
+<p>在使用交互环境时，用户的需求是进行实验迭代。在这个过程中设计快速变动，结构体形状也不例外。</p>
+<p>实际上不止是结构体的重定义，真正的问题是，Julia中const变量的绑定基本都不能改变 (例外是存在的，例如模块名是 const 绑定，但修改只出现warning)。</p>
+
+<div style="position: relative">
+	<pre><code class="language-julia-repl hljs"><span class="hljs-meta prompt_">julia&gt;</span><span class="language-julia"> f(x) = <span class="hljs-number">2</span>x + <span class="hljs-number">3</span>
+</span>f (generic function with 2 methods)
+
+<span class="hljs-meta prompt_">julia&gt;</span><span class="language-julia"> f = <span class="hljs-number">1</span>
+</span>ERROR: invalid redefinition of constant f
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="julia> f(x) = 2x + 3
+f (generic function with 2 methods)
+
+julia> f = 1
+ERROR: invalid redefinition of constant f
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>在这里，我们不得不做一个取舍，即舍弃更好的报错，转而支持灵活的重定义。这个决定是否正确要看场景，在我所关心的场景中，要求上层用户向无法满足需求的语言进行妥协——这是毫无道理的。</p>
+<h2 id="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88" tabindex="-1"><a href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88" class="header-anchor">解决方案</a></h2>
+<p>处于可维护性的考虑，在库代码层面进行类型、常量的重定义是错误的。</p>
+<p>但在我所关心的场景中，交互会话应该支持重定义——以方便用户进行实验。</p>
+<p>目前，结构体乃至通用的 const 绑定的重定义，并没有很好的实现：</p>
+<p>要么使用了非 const 绑定对类型进行别名绑定，这将导致函数中的 <code>isa</code> 检查退化为动态派发，性能下降数百倍；</p>
+<p>要么是利用了泛型参数，将字段变成泛型参量，这将隐式地导致一些类型转换问题，并且不支持用户定义泛型；</p>
+<p>再要么就是利用 type alias，用 <code>Tuple{Tag, ...}</code> 或者 <code>Ref{Tuple{Tag, ...}}</code> 伪装结构体，这几乎是完全工作的，但 Julia 的 Tuple 自动协变:</p>
+
+<div style="position: relative">
+	<pre><code class="language-julia hljs"><span class="hljs-built_in">Tuple</span>{<span class="hljs-built_in">Union</span>{<span class="hljs-built_in">Int</span>, <span class="hljs-built_in">String</span>}, <span class="hljs-built_in">Int</span>} == <span class="hljs-built_in">Union</span>{<span class="hljs-built_in">Tuple</span>{<span class="hljs-built_in">Int</span>, <span class="hljs-built_in">Int</span>}, <span class="hljs-built_in">Tuple</span>{<span class="hljs-built_in">String</span>, <span class="hljs-built_in">Int</span>}}
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="Tuple{Union{Int, String}, Int} == Union{Tuple{Int, Int}, Tuple{String, Int}}
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>这可能导致结构体的字段出现意想不到的协变性质，因此无法确认此种方式是否可靠。</p>
+<p>一个比较好的方式可能是下面这样，重点是对有限的情况做保证，而其他情况保持与原生Julia行为一致：</p>
+<ol>
+<li>
+<p>将 Main 模块设置为动态变化的，而 REPL 始终使用最新的 Main 模块。</p>
+</li>
+<li>
+<p>捕获有限情况的重定义错误。一旦捕获到可以处理的重定义错误，闯进一个新的 Main 模块，将旧的Main模块中所有变量转移到新的Main模块，除开发生冲突的 const 绑定。</p>
+</li>
+</ol>
+<p>这种方法乍一看很危险，因为一些宏展开可能会使用访问当前模块，并一直持有旧的 Main。</p>
+<p>但其实，这并不会出现问题：即使这些宏可能期待 <code>Main</code> 中新定义的方法会扩展他们的行为，但由于将变量从旧模块迁移到新模块可以使用 <code>import</code> 语义，因此方法的扩展是正常工作的。</p>
+<p>当然，不可避免的，和原生 Julia 不兼容的情况是存在的。有一些宏变换可能会基于模块的引用相等性进行工作。例如 PyCall 的 <code>@py_str</code> 会使用当前模块，唯一决定一个执行 Python 代码的命名空间。</p>
+<p>但这种情况相对比较少，使用模块的引用相等性本身也是不推荐的，遇到这种情况更好的做法是先偷着乐一乐，然后写 PR 改进上游的实现，例如将 PyCall 的 <code>@py_str</code> 修改，通过访问模块中一个固定的变量获取 Python 作用域，若不存在则定义——这种方式就与前述的重定义方案兼容了。</p>
+<p><s>明天给代码实现，35行以内。</s></p>
+<h2 id="%E5%AE%9E%E7%8E%B0" tabindex="-1"><a href="#%E5%AE%9E%E7%8E%B0" class="header-anchor">实现</a></h2>
+<p>效果如下:</p>
+
+<div style="position: relative">
+	<pre><code class="language-julia hljs">redef&gt; <span class="hljs-keyword">struct</span> S <span class="hljs-keyword">end</span>
+
+redef&gt; f(::S) = <span class="hljs-number">1</span>
+f (generic <span class="hljs-keyword">function</span> with <span class="hljs-number">1</span> method)
+
+redef&gt; s1 = S()
+S()
+
+redef&gt; f(s1)
+<span class="hljs-number">1</span>
+
+redef&gt; <span class="hljs-keyword">struct</span> S
+         a :: <span class="hljs-built_in">Int</span>
+       <span class="hljs-keyword">end</span>
+
+redef&gt; s2 = S(<span class="hljs-number">2</span>)
+Main.__Main_0.S(<span class="hljs-number">2</span>)
+
+redef&gt; f(::S) = <span class="hljs-number">2</span>
+f (generic <span class="hljs-keyword">function</span> with <span class="hljs-number">2</span> methods)
+
+redef&gt; f(s1)
+<span class="hljs-number">1</span>
+
+redef&gt; f(s2)
+<span class="hljs-number">2</span>
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="redef> struct S end
+
+redef> f(::S) = 1
+f (generic function with 1 method)
+
+redef> s1 = S()
+S()
+
+redef> f(s1)
+1
+
+redef> struct S
+         a :: Int
+       end
+
+redef> s2 = S(2)
+Main.__Main_0.S(2)
+
+redef> f(::S) = 2
+f (generic function with 2 methods)
+
+redef> f(s1)
+1
+
+redef> f(s2)
+2
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>实现如下。</p>
+<ol>
+<li>
+<p>首先，在<code>~/.julia/config/startup.jl</code>中增加下列行：</p>
+
+<div style="position: relative">
+	<pre><code class="language-julia hljs">include(<span class="hljs-string">"redef.jl"</span>)
+atreplinit() <span class="hljs-keyword">do</span> repl
+<span class="hljs-keyword">try</span>
+    <span class="hljs-meta">@async</span> <span class="hljs-keyword">begin</span>
+        Redef.start()
+    <span class="hljs-keyword">end</span>
+<span class="hljs-keyword">catch</span> e
+    throw(e)
+<span class="hljs-keyword">end</span>
+<span class="hljs-keyword">end</span>
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="include(&quot;redef.jl&quot;)
+atreplinit() do repl
+try
+    @async begin
+        Redef.start()
+    end
+catch e
+    throw(e)
+end
+end
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+</li>
+<li>
+<p>然后创建<code>~/.julia/config/redef.jl</code>，填入以下内容：</p>
+
+<div style="position: relative">
+	<pre><code class="language-julia hljs"><span class="hljs-keyword">module</span> Redef
+<span class="hljs-keyword">using</span> ReplMaker
+<span class="hljs-keyword">const</span> pat = <span class="hljs-string">r"invalid redefinition of constant ([\w|\W]+)"</span>
+<span class="hljs-keyword">const</span> cntRef = <span class="hljs-built_in">Ref</span>(<span class="hljs-number">0</span>)
+<span class="hljs-keyword">const</span> curMod = <span class="hljs-built_in">Ref</span>{<span class="hljs-built_in">Module</span>}()
+
+<span class="hljs-keyword">function</span> __init__()
+    cntRef[] = <span class="hljs-number">0</span>
+    curMod[] = Main
+<span class="hljs-keyword">end</span>
+
+<span class="hljs-keyword">function</span> run(ex)
+    m = curMod[]
+    <span class="hljs-keyword">try</span>
+        Base.eval(m, ex)
+    <span class="hljs-keyword">catch</span> e
+        <span class="hljs-keyword">if</span> e <span class="hljs-keyword">isa</span> <span class="hljs-built_in">ErrorException</span> &amp;&amp; (rm = match(pat, e.msg)) !== <span class="hljs-literal">nothing</span>
+            new_mod = <span class="hljs-built_in">Module</span>(<span class="hljs-built_in">Symbol</span>(<span class="hljs-string">"__Main_"</span>, cntRef[]), <span class="hljs-literal">true</span>)
+            cntRef[] += <span class="hljs-number">1</span>
+            curMod[] = new_mod
+            interested_name = <span class="hljs-built_in">Symbol</span>(rm.captures[<span class="hljs-number">1</span>])
+            <span class="hljs-keyword">for</span> each <span class="hljs-keyword">in</span> names(m; all=<span class="hljs-literal">true</span>, imported=<span class="hljs-literal">true</span>)
+                <span class="hljs-keyword">if</span> each == :eval || interested_name === each
+                    <span class="hljs-keyword">continue</span>
+                <span class="hljs-keyword">end</span>
+                full_module_name = <span class="hljs-built_in">Symbol</span>(join(string.(fullname(m)), <span class="hljs-string">"."</span>))
+                <span class="hljs-keyword">if</span> isconst(m, each)
+                    Base.eval(new_mod, :(<span class="hljs-keyword">import</span> $full_module_name: $each))
+                <span class="hljs-keyword">else</span>
+                    Base.eval(new_mod, :($each = $m.$each))
+                <span class="hljs-keyword">end</span>
+            <span class="hljs-keyword">end</span>
+            Base.eval(new_mod, ex)
+        <span class="hljs-keyword">else</span>
+            rethrow(e)
+        <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">end</span>
+<span class="hljs-keyword">end</span>
+
+<span class="hljs-keyword">function</span> redirect_parse(s::<span class="hljs-built_in">AbstractString</span>)
+    ex = Meta.parse(s)
+    :($run($(<span class="hljs-built_in">QuoteNode</span>(ex))))
+<span class="hljs-keyword">end</span>
+
+<span class="hljs-meta">@inline</span> start() = initrepl(
+    redirect_parse;
+    prompt_text = <span class="hljs-string">"redef&gt; "</span>,
+    prompt_color = :magenta,
+    mode_name = :redef_julia,
+    valid_input_checker=ReplMaker.complete_julia
+)
+<span class="hljs-keyword">end</span> <span class="hljs-comment"># end module</span>
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="module Redef
+using ReplMaker
+const pat = r&quot;invalid redefinition of constant ([\w|\W]+)&quot;
+const cntRef = Ref(0)
+const curMod = Ref{Module}()
+
+function __init__()
+    cntRef[] = 0
+    curMod[] = Main
+end
+
+function run(ex)
+    m = curMod[]
+    try
+        Base.eval(m, ex)
+    catch e
+        if e isa ErrorException &amp;&amp; (rm = match(pat, e.msg)) !== nothing
+            new_mod = Module(Symbol(&quot;__Main_&quot;, cntRef[]), true)
+            cntRef[] += 1
+            curMod[] = new_mod
+            interested_name = Symbol(rm.captures[1])
+            for each in names(m; all=true, imported=true)
+                if each == :eval || interested_name === each
+                    continue
+                end
+                full_module_name = Symbol(join(string.(fullname(m)), &quot;.&quot;))
+                if isconst(m, each)
+                    Base.eval(new_mod, :(import $full_module_name: $each))
+                else
+                    Base.eval(new_mod, :($each = $m.$each))
+                end
+            end
+            Base.eval(new_mod, ex)
+        else
+            rethrow(e)
+        end
+    end
+end
+
+function redirect_parse(s::AbstractString)
+    ex = Meta.parse(s)
+    :($run($(QuoteNode(ex))))
+end
+
+@inline start() = initrepl(
+    redirect_parse;
+    prompt_text = &quot;redef> &quot;,
+    prompt_color = :magenta,
+    mode_name = :redef_julia,
+    valid_input_checker=ReplMaker.complete_julia
+)
+end # end module
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+</li>
+</ol>
+</div></div></main></div><script src="/Site-33/js/clipboard.js"></script></body></html>

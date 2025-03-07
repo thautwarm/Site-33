@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Platform</title><meta name="supported-color-schemes" content="light dark"><meta name="theme-color" content="hsl(220, 20%, 100%)" media="(prefers-color-scheme: light)"><meta name="theme-color" content="hsl(220, 20%, 10%)" media="(prefers-color-scheme: dark)"><link rel="stylesheet" href="/Site-33/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/Site-33/styles.css"><link rel="canonical" href="/Site-33/3-software/nomake/3-modules/1-platform/"><link rel="icon" sizes="48x48" href="/Site-33/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/Site-33/apple-touch-icon.png">
+<script type="text/javascript" src="/Site-33/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded',()=>{new PagefindUI({"element":"#search","showImages":false,"excerptLength":0,"showEmptyFilters":true,"showSubResults":false,"resetStyles":true,"bundlePath":"/Site-33/pagefind/","baseUrl":"/Site-33/"});});</script></head><body><div></div><div class="container"><div class="toolbar"><div id="search" class="search"></div></div><nav class="menu-container"><a class="menu-highlight" href="/Site-33/">Site-33 by thautwarm</a><ul class="menu"></ul></nav><main class="main"><nav><ul class="breadcrumb"><li class="breadcrumb-item"><a href="/Site-33/">Site-33 by thautwarm</a></li><li class="breadcrumb-item"><a href="/Site-33/3-software/">Software 软件</a></li><li class="breadcrumb-item"><a href="/Site-33/3-software/nomake/">NoMake</a></li><li class="breadcrumb-item"><a href="/Site-33/3-software/nomake/3-modules/">Builtin Namespaces</a></li></ul></nav><div class="body" data-pagefind-body="true"><em> 此文档创建于 2024/5/13 </em><em style="float: right"> 更新时间 2025/3/7 </em><div><h1>Platform</h1>
+<p>Platform-related utilities are provided in the <code>NM.Platform</code> namespace. The following types are used when working with platforms:</p>
+
+<div style="position: relative">
+	<pre><code class="language-typescript hljs"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> <span class="hljs-variable constant_">NM</span> <span class="hljs-keyword">from</span> <span class="hljs-string">'https://github.com/thautwarm/nomake/raw/v0.1.12/mod.ts'</span>
+
+<span class="hljs-variable constant_">NM</span>.<span class="hljs-property">Platform</span>.<span class="hljs-property">current</span> <span class="hljs-comment">// e.g., { os: "linux", arch: "x64" }</span>
+<span class="hljs-variable constant_">NM</span>.<span class="hljs-property">Platform</span>.<span class="hljs-property">currentOS</span> <span class="hljs-comment">// e.g., "linux"</span>
+<span class="hljs-variable constant_">NM</span>.<span class="hljs-property">Platform</span>.<span class="hljs-property">currentArch</span> <span class="hljs-comment">// e.g., "x64"</span>
+<span class="hljs-variable constant_">NM</span>.<span class="hljs-title function_">linesep</span>() <span class="hljs-comment">// e.g., "\n" or "\r\n", depending on the platform</span>
+<span class="hljs-variable constant_">NM</span>.<span class="hljs-title function_">pathsep</span>() <span class="hljs-comment">// e.g., ":" or ";", depending on the platform</span>
+<span class="hljs-variable constant_">NM</span>.<span class="hljs-title function_">linesep</span>(<span class="hljs-string">'linux'</span>) <span class="hljs-comment">// "\n"</span>
+<span class="hljs-variable constant_">NM</span>.<span class="hljs-title function_">pathsep</span>(<span class="hljs-string">'windows'</span>) <span class="hljs-comment">// ";"</span>
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.12/mod.ts'
+
+NM.Platform.current // e.g., { os: &quot;linux&quot;, arch: &quot;x64&quot; }
+NM.Platform.currentOS // e.g., &quot;linux&quot;
+NM.Platform.currentArch // e.g., &quot;x64&quot;
+NM.linesep() // e.g., &quot;\n&quot; or &quot;\r\n&quot;, depending on the platform
+NM.pathsep() // e.g., &quot;:&quot; or &quot;;&quot;, depending on the platform
+NM.linesep('linux') // &quot;\n&quot;
+NM.pathsep('windows') // &quot;;&quot;
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>The following types are used when working with platforms:</p>
+
+<div style="position: relative">
+	<pre><code class="language-typescript hljs"><span class="hljs-keyword">export</span> <span class="hljs-keyword">type</span> <span class="hljs-variable constant_">OS</span> =
+  | <span class="hljs-string">"linux"</span>
+  | <span class="hljs-string">"windows"</span>
+  | <span class="hljs-string">"macos"</span>
+  | { <span class="hljs-attr">unknownStr</span>: <span class="hljs-built_in">string</span> };
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">type</span> <span class="hljs-title class_">Arch</span> =
+  | <span class="hljs-string">"x86"</span>
+  | <span class="hljs-string">"x64"</span>
+  | <span class="hljs-string">"arm"</span>
+  | <span class="hljs-string">"arm64"</span>
+  | { <span class="hljs-attr">unknownStr</span>: <span class="hljs-built_in">string</span> };
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Platform</span>
+{
+  <span class="hljs-attr">os</span>: <span class="hljs-variable constant_">OS</span>;
+  <span class="hljs-attr">arch</span>: <span class="hljs-title class_">Arch</span>;
+  <span class="hljs-comment">// methods are omitted</span>
+}
+
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="export type OS =
+  | &quot;linux&quot;
+  | &quot;windows&quot;
+  | &quot;macos&quot;
+  | { unknownStr: string };
+
+export type Arch =
+  | &quot;x86&quot;
+  | &quot;x64&quot;
+  | &quot;arm&quot;
+  | &quot;arm64&quot;
+  | { unknownStr: string };
+
+export class Platform
+{
+  os: OS;
+  arch: Arch;
+  // methods are omitted
+}
+
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+</div></div></main></div><script src="/Site-33/js/clipboard.js"></script></body></html>

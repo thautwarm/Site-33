@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Environment Variables</title><meta name="supported-color-schemes" content="light dark"><meta name="theme-color" content="hsl(220, 20%, 100%)" media="(prefers-color-scheme: light)"><meta name="theme-color" content="hsl(220, 20%, 10%)" media="(prefers-color-scheme: dark)"><link rel="stylesheet" href="/Site-33/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/Site-33/styles.css"><link rel="canonical" href="/Site-33/3-software/nomake/3-modules/2-env/"><link rel="icon" sizes="48x48" href="/Site-33/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/Site-33/apple-touch-icon.png">
+<script type="text/javascript" src="/Site-33/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded',()=>{new PagefindUI({"element":"#search","showImages":false,"excerptLength":0,"showEmptyFilters":true,"showSubResults":false,"resetStyles":true,"bundlePath":"/Site-33/pagefind/","baseUrl":"/Site-33/"});});</script></head><body><div></div><div class="container"><div class="toolbar"><div id="search" class="search"></div></div><nav class="menu-container"><a class="menu-highlight" href="/Site-33/">Site-33 by thautwarm</a><ul class="menu"></ul></nav><nav class="toc"><h2>On this page</h2><ol><li><a href="#usage">Usage</a></li></ol></nav><main class="main"><nav><ul class="breadcrumb"><li class="breadcrumb-item"><a href="/Site-33/">Site-33 by thautwarm</a></li><li class="breadcrumb-item"><a href="/Site-33/3-software/">Software 软件</a></li><li class="breadcrumb-item"><a href="/Site-33/3-software/nomake/">NoMake</a></li><li class="breadcrumb-item"><a href="/Site-33/3-software/nomake/3-modules/">Builtin Namespaces</a></li></ul></nav><div class="body" data-pagefind-body="true"><em> 此文档创建于 2024/5/13 </em><em style="float: right"> 更新时间 2025/3/7 </em><div><h1>Environment Variables</h1>
+<p>Static checking for the usage of environment variables is hard to achieve in regular build systems. However, NoMake provides a concise way to practically access environment variables with type checking.</p>
+<h2 id="usage" tabindex="-1"><a href="#usage" class="header-anchor">Usage</a></h2>
+
+<div style="position: relative">
+	<pre><code class="language-typescript hljs"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> <span class="hljs-variable constant_">NM</span> <span class="hljs-keyword">from</span> <span class="hljs-string">'https://github.com/thautwarm/nomake/raw/v0.1.12/mod.ts'</span>
+
+<span class="hljs-comment">// environment variables of interest in the project scope</span>
+<span class="hljs-keyword">const</span> env = <span class="hljs-variable constant_">NM</span>.<span class="hljs-property">Env</span>.<span class="hljs-title function_">create</span>(
+    {
+        <span class="hljs-comment">// set the default value</span>
+        <span class="hljs-attr">PORT</span>: <span class="hljs-string">'8080'</span>,
+        <span class="hljs-attr">HOST</span>: <span class="hljs-string">'localhost'</span>,
+        <span class="hljs-attr">DEBUG</span>: <span class="hljs-literal">undefined</span>,
+    })
+
+env.<span class="hljs-property">OTHER_VAR</span> <span class="hljs-comment">// **compile-time error**</span>
+
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">Deno</span>.<span class="hljs-property">env</span>.<span class="hljs-title function_">get</span>(<span class="hljs-string">"PORT"</span>)) <span class="hljs-comment">// "8080"</span>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(env.<span class="hljs-property">PORT</span>) <span class="hljs-comment">// "8080"</span>
+env.<span class="hljs-property">PORT</span> = <span class="hljs-string">""</span>;
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">Deno</span>.<span class="hljs-property">env</span>.<span class="hljs-title function_">get</span>(<span class="hljs-string">"PORT"</span>)) <span class="hljs-comment">// ""</span>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(env.<span class="hljs-property">PORT</span>) <span class="hljs-comment">// ""</span>
+
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(env.<span class="hljs-property">DEBUG</span>) <span class="hljs-comment">// undefined</span>
+<span class="hljs-title class_">Deno</span>.<span class="hljs-property">env</span>.<span class="hljs-title function_">set</span>(<span class="hljs-string">"DEBUG"</span>, <span class="hljs-string">"ON"</span>)
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(env.<span class="hljs-property">DEBUG</span>) <span class="hljs-comment">// "ON"</span>
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.12/mod.ts'
+
+// environment variables of interest in the project scope
+const env = NM.Env.create(
+    {
+        // set the default value
+        PORT: '8080',
+        HOST: 'localhost',
+        DEBUG: undefined,
+    })
+
+env.OTHER_VAR // **compile-time error**
+
+console.log(Deno.env.get(&quot;PORT&quot;)) // &quot;8080&quot;
+console.log(env.PORT) // &quot;8080&quot;
+env.PORT = &quot;&quot;;
+console.log(Deno.env.get(&quot;PORT&quot;)) // &quot;&quot;
+console.log(env.PORT) // &quot;&quot;
+
+console.log(env.DEBUG) // undefined
+Deno.env.set(&quot;DEBUG&quot;, &quot;ON&quot;)
+console.log(env.DEBUG) // &quot;ON&quot;
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+</div></div></main></div><script src="/Site-33/js/clipboard.js"></script></body></html>

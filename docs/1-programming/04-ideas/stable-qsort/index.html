@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Stable Argsort</title><meta name="supported-color-schemes" content="light dark"><meta name="theme-color" content="hsl(220, 20%, 100%)" media="(prefers-color-scheme: light)"><meta name="theme-color" content="hsl(220, 20%, 10%)" media="(prefers-color-scheme: dark)"><link rel="stylesheet" href="/Site-33/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/Site-33/styles.css"><link rel="canonical" href="/Site-33/1-programming/04-ideas/stable-qsort/"><link rel="icon" sizes="48x48" href="/Site-33/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/Site-33/apple-touch-icon.png">
+<script type="text/javascript" src="/Site-33/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded',()=>{new PagefindUI({"element":"#search","showImages":false,"excerptLength":0,"showEmptyFilters":true,"showSubResults":false,"resetStyles":true,"bundlePath":"/Site-33/pagefind/","baseUrl":"/Site-33/"});});</script></head><body><div></div><div class="container"><div class="toolbar"><div id="search" class="search"></div></div><nav class="menu-container"><a class="menu-highlight" href="/Site-33/">Site-33 by thautwarm</a><ul class="menu"></ul></nav><nav class="toc"><h2>On this page</h2><ol><li><a href="#argsort-%26-stability">Argsort &amp; Stability</a></li><li><a href="#why-is-it-pragmatic%3F">Why is it Pragmatic?</a></li><li><a href="#how-to-implement%3F">How to Implement?</a></li><li><a href="#performance">Performance</a></li><li><a href="#conclusion">Conclusion</a></li></ol></nav><main class="main"><nav><ul class="breadcrumb"><li class="breadcrumb-item"><a href="/Site-33/">Site-33 by thautwarm</a></li><li class="breadcrumb-item"><a href="/Site-33/1-programming/">Programming 编程</a></li><li class="breadcrumb-item"><a href="/Site-33/1-programming/04-ideas/">点子</a></li></ul></nav><div class="body" data-pagefind-body="true"><em> 此文档创建于 2024/5/15 </em><div><h1>Stable Argsort</h1>
+<p>This is a note on how to implement a stable <code>argsort</code> function based on an existing sort function, in a simple and pragmatic way.</p>
+<h2 id="argsort-%26-stability" tabindex="-1"><a href="#argsort-%26-stability" class="header-anchor">Argsort &amp; Stability</a></h2>
+<p>Argsort is a function that returns the indices that would sort an array.</p>
+
+<div style="position: relative">
+	<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mtext>argsort</mtext><mo stretchy="false">(</mo><mo stretchy="false">[</mo><msub><mi>a</mi><mn>1</mn></msub><mo separator="true">,</mo><mo>⋯</mo><mtext> </mtext><mo separator="true">,</mo><msub><mi>a</mi><mi>n</mi></msub><mo stretchy="false">]</mo><mo stretchy="false">)</mo><mo>=</mo><mo stretchy="false">[</mo><msub><mi>i</mi><mn>1</mn></msub><mo separator="true">,</mo><mo>⋯</mo><mtext> </mtext><mo separator="true">,</mo><msub><mi>i</mi><mi>n</mi></msub><mo stretchy="false">]</mo><mtext> </mtext><mtext>where</mtext><mtext> </mtext><mo stretchy="false">[</mo><msub><mi>a</mi><msub><mi>i</mi><mn>1</mn></msub></msub><mo separator="true">,</mo><mo>⋯</mo><mtext> </mtext><mo separator="true">,</mo><msub><mi>a</mi><msub><mi>i</mi><mi>n</mi></msub></msub><mo stretchy="false">]</mo><mtext>&nbsp;is&nbsp;sorted.&nbsp;</mtext></mrow><annotation encoding="application/x-tex">\textrm{arg} \text{sort}([a_1, \cdots, a_n]) = [i_1, \cdots, i_n] \, \text{where} \, [a_{i_1}, \cdots, a_{i_n}] \text{ is sorted. }
+</annotation></semantics></math></span>
+
+	<button class="code-copy-button" data-clipboard-text="\textrm{arg} \text{sort}([a_1, \cdots, a_n]) = [i_1, \cdots, i_n] \, \text{where} \, [a_{i_1}, \cdots, a_{i_n}] \text{ is sorted. }
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>Such a function is useful especially in the context of scientific computing where you also want to keep track of the original indices. For instance, NumPy has a function called <code>argsort</code> that does this.</p>
+
+<div style="position: relative">
+	<pre><code class="language-python hljs"><span class="hljs-keyword">from</span> numpy <span class="hljs-keyword">import</span> argsort
+
+argsort([<span class="hljs-number">3</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>])
+<span class="hljs-comment"># =&gt; [1, 2, 0]</span>
+[[<span class="hljs-number">3</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>][i] <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> argsort([<span class="hljs-number">3</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>])]
+<span class="hljs-comment"># =&gt; [1, 2, 3]</span>
+
+argsort([<span class="hljs-number">100</span>, -<span class="hljs-number">100</span>, <span class="hljs-number">20</span>])
+<span class="hljs-comment"># =&gt; [1, 2, 0]</span>
+[[<span class="hljs-number">100</span>, -<span class="hljs-number">100</span>, <span class="hljs-number">20</span>][i] <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> argsort([<span class="hljs-number">100</span>, -<span class="hljs-number">100</span>, <span class="hljs-number">20</span>])]
+<span class="hljs-comment"># =&gt; [-100, 20, 100]</span>
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="from numpy import argsort
+
+argsort([3, 1, 2])
+# => [1, 2, 0]
+[[3, 1, 2][i] for i in argsort([3, 1, 2])]
+# => [1, 2, 3]
+
+argsort([100, -100, 20])
+# => [1, 2, 0]
+[[100, -100, 20][i] for i in argsort([100, -100, 20])]
+# => [-100, 20, 100]
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>However, <code>argsort</code> does not mean to be stable. That is, if two elements are equal, the order of their indices in the output may not be guaranteed. For instance, in the following example, the order of <code>N</code> and <code>N+1</code> in <code>R</code> is not guaranteed.</p>
+
+<div style="position: relative">
+	<pre><code class="language-python hljs"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+
+N = np.random.randint(<span class="hljs-number">30</span>, <span class="hljs-number">70</span>)
+seq1 = [np.random.randint(<span class="hljs-number">2</span>, <span class="hljs-number">10</span>) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N)]
+seq2 = [np.random.randint(<span class="hljs-number">2</span>, <span class="hljs-number">10</span>) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">98</span>-N)]
+R = argsort([*seq1, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, *seq2])
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="import numpy as np
+
+N = np.random.randint(30, 70)
+seq1 = [np.random.randint(2, 10) for i in range(N)]
+seq2 = [np.random.randint(2, 10) for i in range(98-N)]
+R = argsort([*seq1, 0, 0, *seq2])
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>Since NumPy 1.15, <code>argsort</code> can be made stable by using the <code>kind='stable'</code> parameter.</p>
+
+<div style="position: relative">
+	<pre><code class="language-python hljs"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+
+N = np.random.randint(<span class="hljs-number">30</span>, <span class="hljs-number">70</span>)
+seq1 = [np.random.randint(<span class="hljs-number">2</span>, <span class="hljs-number">10</span>) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N)]
+seq2 = [np.random.randint(<span class="hljs-number">2</span>, <span class="hljs-number">10</span>) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">98</span>-N)]
+R = argsort([*seq1, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, *seq2], kind=<span class="hljs-string">'stable'</span>)
+<span class="hljs-comment"># 'R' always contains a subsequence '[N, N+1]'.</span>
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="import numpy as np
+
+N = np.random.randint(30, 70)
+seq1 = [np.random.randint(2, 10) for i in range(N)]
+seq2 = [np.random.randint(2, 10) for i in range(98-N)]
+R = argsort([*seq1, 0, 0, *seq2], kind='stable')
+# 'R' always contains a subsequence '[N, N+1]'.
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>However, investigating a general approach to implement a stable <code>argsort</code> function based on an existing de-facto sort function is still pragmatic.</p>
+<h2 id="why-is-it-pragmatic%3F" tabindex="-1"><a href="#why-is-it-pragmatic%3F" class="header-anchor">Why is it Pragmatic?</a></h2>
+<p>Creating stable <code>argsort</code> from an existing de-facto sort function still pragmatic, due the following reasons:</p>
+<ol>
+<li><code>argsort</code> functionality may be missing from the standard library of a programming language.</li>
+<li>Even if <code>argsort</code> is available, it may not be stable.</li>
+<li>Even if <code>argsort</code> is available and stable, using custom sort configurations may cause sorting unstable.</li>
+</ol>
+<p>The reason why we didn't implement our own sorting algorithm is, that in most cases, a sorting function from stdlib is well-optimized and well-tested. Many years ago, a friend of mine (let's call hime "doctor" and he is now indeed a Ph.D. student of medicine XD) implemented his own TimSort in Python because he thought "the built-in sorting algorithm is too slow". "Doctor" is of course humerous, and we already know that in Python, we could never beat the performance of the built-in <code>sorted</code> function by implementing our own sorting algorithm in pure Python.</p>
+<p>Anyway, a real-world need to achieve a stable <code>argsort</code> function based on an existing sort function, did happen to me. We performed code generation from Julia (<code>@code_typed</code> IR) to some C-family language to utilize the well-designed sorting algorithms from Julia stdlib. To ease the downstream use cases, we used <code>lt</code> paramter (which is a custom "less than" function) to perform the sorting. Although the default sorting algorithm in Julia is stable, the custom <code>lt</code> function causes the sorting to be unstable.</p>
+<p>Finally, implementing a stable <code>argsort</code> function based on an existing sort function does not cost much. It is simple, and again pragmatic.</p>
+<h2 id="how-to-implement%3F" tabindex="-1"><a href="#how-to-implement%3F" class="header-anchor">How to Implement?</a></h2>
+<p>The idea is simple for any one who know dictionary sorting. We can sort the indices based on the values, and then sort the indices based on their original order. The following Python code demonstrates this idea.</p>
+
+<div style="position: relative">
+	<pre><code class="language-python hljs"><span class="hljs-keyword">def</span> <span class="hljs-title function_">stable_argsort</span>(<span class="hljs-params">arr</span>):
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">sorted</span>(<span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(arr)), key=<span class="hljs-keyword">lambda</span> i: (arr[i], i))
+
+<span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+
+N = np.random.randint(<span class="hljs-number">30</span>, <span class="hljs-number">70</span>)
+seq1 = [np.random.randint(<span class="hljs-number">2</span>, <span class="hljs-number">10</span>) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(N)]
+seq2 = [np.random.randint(<span class="hljs-number">2</span>, <span class="hljs-number">10</span>) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">98</span>-N)]
+stable_argsort([*seq1, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, *seq2])
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="def stable_argsort(arr):
+    return sorted(range(len(arr)), key=lambda i: (arr[i], i))
+
+import numpy as np
+
+N = np.random.randint(30, 70)
+seq1 = [np.random.randint(2, 10) for i in range(N)]
+seq2 = [np.random.randint(2, 10) for i in range(98-N)]
+stable_argsort([*seq1, 0, 0, *seq2])
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>However, <code>key</code> parameter in Python is not flexible enough as the elements to be sorted may not be mapped to a sortable value without expensive computations.</p>
+<p>As the original case happens in Julia, we can also use the <code>lt</code> parameter to perform the sorting. In the downstream use cases, we use the <code>lt</code> parameter to perform the sorting demonstrated in the following Julia code.</p>
+
+<div style="position: relative">
+	<pre><code class="language-julia hljs"><span class="hljs-keyword">function</span> flexible_argsort(arr)
+    <span class="hljs-keyword">function</span> custom_lt(i, j)
+        r = <span class="hljs-meta">@inbounds</span> cmp(arr[i], arr[j])
+        <span class="hljs-keyword">if</span> r &lt; <span class="hljs-number">0</span>
+            <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>
+        <span class="hljs-keyword">elseif</span> iszero(r)
+            <span class="hljs-comment"># the key to make the sorting stable</span>
+            <span class="hljs-keyword">return</span> i &lt; j
+        <span class="hljs-keyword">else</span>
+            <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>
+        <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">end</span>
+
+    <span class="hljs-keyword">return</span> sort(<span class="hljs-number">1</span>:length(arr), lt=custom_lt)
+<span class="hljs-keyword">end</span>
+
+<span class="hljs-keyword">function</span> normal_argsort(arr)
+    <span class="hljs-keyword">return</span> sort(<span class="hljs-number">1</span>:length(arr), by = i -&gt; <span class="hljs-meta">@inbounds</span> arr[i])
+<span class="hljs-keyword">end</span>
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="function flexible_argsort(arr)
+    function custom_lt(i, j)
+        r = @inbounds cmp(arr[i], arr[j])
+        if r < 0
+            return true
+        elseif iszero(r)
+            # the key to make the sorting stable
+            return i < j
+        else
+            return false
+        end
+    end
+
+    return sort(1:length(arr), lt=custom_lt)
+end
+
+function normal_argsort(arr)
+    return sort(1:length(arr), by = i -> @inbounds arr[i])
+end
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<h2 id="performance" tabindex="-1"><a href="#performance" class="header-anchor">Performance</a></h2>
+<p>We test the methods over 1000 double numbers. Benchmark tools: IPython <code>%timeit</code> for Python; <code>@btime</code> for Julia.</p>
+<style>
+table {
+    width: 80%;                /* Set the width of the table */
+    margin: 20px auto;         /* Center the table on the page */
+    border-collapse: collapse; /* Collapse borders between cells */
+}
+
+th, td {
+    border: 1px solid #ddd;    /* Add a border to each cell */
+    padding: 8px;              /* Padding inside each cell */
+    text-align: left;          /* Align text to the left */
+}
+
+th {
+    background-color: #f2f2f2; /* Background color for headers */
+    color: #333;               /* Text color for headers */
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9; /* Zebra striping for rows */
+}
+
+td:hover {
+    background-color: #f1f1f1; /* Highlight row on hover */
+}
+</style>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Method</th>
+<th style="text-align:center">Performance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">NumPy argsort (unstable)</td>
+<td style="text-align:center">12.4 us</td>
+</tr>
+<tr>
+<td style="text-align:center">NumPy argsort (stable)</td>
+<td style="text-align:center">23.6 us</td>
+</tr>
+<tr>
+<td style="text-align:center">Julia normal_argsort (stable)</td>
+<td style="text-align:center">16.5 us</td>
+</tr>
+<tr>
+<td style="text-align:center">Julia flexible_argsort (stable)</td>
+<td style="text-align:center">18.7 us</td>
+</tr>
+</tbody>
+</table>
+<p>As can be seen from the benchmark results, our method (i.e., <code>sort</code> from Julia stdlib with <code>lt</code> parameter but <code>lt</code> get passed at the downstream code) keeps performant without lossing it flexibility.</p>
+<h2 id="conclusion" tabindex="-1"><a href="#conclusion" class="header-anchor">Conclusion</a></h2>
+<p>We discussed the importance of stable <code>argsort</code> function and why it is pragmatic to implement the function based on an existing/mature sort function. We also demonstrated how to implement a stable <code>argsort</code> function in Python and Julia, and benchmarked the performance of the methods. The results show that our method is performant and flexible.</p>
+</div></div></main></div><script src="/Site-33/js/clipboard.js"></script></body></html>

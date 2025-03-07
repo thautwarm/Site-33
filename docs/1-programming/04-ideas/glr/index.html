@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>缓存Scannerless GLR解析</title><meta name="supported-color-schemes" content="light dark"><meta name="theme-color" content="hsl(220, 20%, 100%)" media="(prefers-color-scheme: light)"><meta name="theme-color" content="hsl(220, 20%, 10%)" media="(prefers-color-scheme: dark)"><link rel="stylesheet" href="/Site-33/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/Site-33/styles.css"><link rel="canonical" href="/Site-33/1-programming/04-ideas/glr/"><link rel="icon" sizes="48x48" href="/Site-33/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/Site-33/apple-touch-icon.png">
+<script type="text/javascript" src="/Site-33/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded',()=>{new PagefindUI({"element":"#search","showImages":false,"excerptLength":0,"showEmptyFilters":true,"showSubResults":false,"resetStyles":true,"bundlePath":"/Site-33/pagefind/","baseUrl":"/Site-33/"});});</script></head><body><div></div><div class="container"><div class="toolbar"><div id="search" class="search"></div></div><nav class="menu-container"><a class="menu-highlight" href="/Site-33/">Site-33 by thautwarm</a><ul class="menu"></ul></nav><main class="main"><nav><ul class="breadcrumb"><li class="breadcrumb-item"><a href="/Site-33/">Site-33 by thautwarm</a></li><li class="breadcrumb-item"><a href="/Site-33/1-programming/">Programming 编程</a></li><li class="breadcrumb-item"><a href="/Site-33/1-programming/04-ideas/">点子</a></li></ul></nav><div class="body" data-pagefind-body="true"><em> 此文档创建于 2022/4/13 </em><div><h1>缓存Scannerless GLR解析</h1>
+<p>与能高效解析左递归的LR相比，scannerless GLR处理左递归极其缓慢。
+一些语言原本在 token stream 下能被 lookahead 消去歧义，但在 scannerless GLR 却很难做到。空白符就是其中最有名的祸害，毕竟在 scannerless GLR 下，有限的 lookahead 甚至不一定能读完 trailing whitespace。</p>
+<p>一个具体场景是让 JSON 的 key-value pair 后跟空白符，这将导致 shift-reduce 冲突，进而导致每多解析一对 key-value pair 就有一个多余的 N 次 reduce，其中N是已解析的 key-value pair 个数。</p>
+<p>这些额外的 reduce 是不能消除的，但我们可以避免重复的计算：</p>
+<p><strong>在每个state stack element上缓存进行过的reduce</strong></p>
+<p>此缓存是安全的: 在输入的字符串和 parsing table 确定时，GLR 上特定位置的 state stack element 做特定 reduce (可能会有多次 reduce) 的结果也是确定的。<strong>但需要一些假设: semantic action 和 semantic predicate 不引入副作用。</strong></p>
+<p>在 JSON key-value pair 的例子里，虽然每次 shift-reduce 冲突都引起一次暂不需要的 reduce，但这个 reduce 的全过程会在正确的 reduce 时刻复现，缓存它将帮我们避免重复计算。缓存结果为多个 state stack。</p>
+
+<div style="position: relative">
+	<pre><code class="language-json hljs"><span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">"a"</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1</span> <span class="hljs-comment">// 这里遇到空白符，kv-pair可能已经结束，有一次reduce</span>
+    <span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">"b"</span><span class="hljs-punctuation">:</span> <span class="hljs-number">2</span> <span class="hljs-comment">// 遇到空白符，reduce两次，但前一次被缓存，所以只做一次reduce</span>
+    <span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">"c"</span><span class="hljs-punctuation">:</span> <span class="hljs-number">3</span> <span class="hljs-comment">// 遇到空白符，reduce三次，但前两次被缓存，所以只做一次reduce</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="{
+    &quot;a&quot;: 1 // 这里遇到空白符，kv-pair可能已经结束，有一次reduce
+    ,
+    &quot;b&quot;: 2 // 遇到空白符，reduce两次，但前一次被缓存，所以只做一次reduce
+    ,
+    &quot;c&quot;: 3 // 遇到空白符，reduce三次，但前两次被缓存，所以只做一次reduce
+}
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>利用这个技巧，我们将上述的左递归情况从 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mo stretchy="false">(</mo><msup><mi>n</mi><mn>2</mn></msup><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">O(n^2)</annotation></semantics></math></span></span> 优化至 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mo stretchy="false">(</mo><mi>n</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">O(n)</annotation></semantics></math></span></span>。</p>
+<p>Reference implementation: <a href="https://github.com/thautwarm/uGLR">https://github.com/thautwarm/uGLR</a>.</p>
+</div></div></main></div><script src="/Site-33/js/clipboard.js"></script></body></html>

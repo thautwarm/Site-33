@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Log</title><meta name="supported-color-schemes" content="light dark"><meta name="theme-color" content="hsl(220, 20%, 100%)" media="(prefers-color-scheme: light)"><meta name="theme-color" content="hsl(220, 20%, 10%)" media="(prefers-color-scheme: dark)"><link rel="stylesheet" href="/Site-33/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/Site-33/styles.css"><link rel="canonical" href="/Site-33/3-software/nomake/3-modules/4-log/"><link rel="icon" sizes="48x48" href="/Site-33/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/Site-33/apple-touch-icon.png">
+<script type="text/javascript" src="/Site-33/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded',()=>{new PagefindUI({"element":"#search","showImages":false,"excerptLength":0,"showEmptyFilters":true,"showSubResults":false,"resetStyles":true,"bundlePath":"/Site-33/pagefind/","baseUrl":"/Site-33/"});});</script></head><body><div></div><div class="container"><div class="toolbar"><div id="search" class="search"></div></div><nav class="menu-container"><a class="menu-highlight" href="/Site-33/">Site-33 by thautwarm</a><ul class="menu"></ul></nav><nav class="toc"><h2>On this page</h2><ol><li><a href="#logging-levels">Logging Levels</a></li><li><a href="#basic-usage">Basic Usage</a></li><li><a href="#adding-and-removing-loggers">Adding and Removing Loggers</a></li><li><a href="#advanced-usage">Advanced Usage</a><ul><li><a href="#custom-severity-and-level">Custom Severity and Level</a></li><li><a href="#custom-logger">Custom Logger</a></li></ul></li></ol></nav><main class="main"><nav><ul class="breadcrumb"><li class="breadcrumb-item"><a href="/Site-33/">Site-33 by thautwarm</a></li><li class="breadcrumb-item"><a href="/Site-33/3-software/">Software 软件</a></li><li class="breadcrumb-item"><a href="/Site-33/3-software/nomake/">NoMake</a></li><li class="breadcrumb-item"><a href="/Site-33/3-software/nomake/3-modules/">Builtin Namespaces</a></li></ul></nav><div class="body" data-pagefind-body="true"><em> 此文档创建于 2024/5/13 </em><em style="float: right"> 更新时间 2025/3/7 </em><div><h1>Log</h1>
+<p><code>NM.Log</code> is a static class that provides logging utilities.</p>
+<h2 id="logging-levels" tabindex="-1"><a href="#logging-levels" class="header-anchor">Logging Levels</a></h2>
+<p>Log levels are crucial for providing insights into the execution of a build system. They offer a spectrum of verbosity, allowing users to tailor the amount of information they receive according to their needs. NoMake's log level design is built upon extensive practice with previous build systems, ensuring clarity, utility, and adaptability.</p>
+<ul>
+<li><code>ok</code></li>
+<li><code>error</code></li>
+<li><code>warn</code></li>
+<li><code>info</code></li>
+<li><code>normal</code></li>
+<li><code>verbose</code> (could be used for debugging)</li>
+</ul>
+<p>The default severity of the levels is in the order listed above (higher to lower).</p>
+<h2 id="basic-usage" tabindex="-1"><a href="#basic-usage" class="header-anchor">Basic Usage</a></h2>
+
+<div style="position: relative">
+	<pre><code class="language-typescript hljs"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> <span class="hljs-variable constant_">NM</span> <span class="hljs-keyword">from</span> <span class="hljs-string">'https://github.com/thautwarm/nomake/raw/v0.1.12/mod.ts'</span>
+
+<span class="hljs-comment">// level: normal</span>
+<span class="hljs-variable constant_">NM</span>.<span class="hljs-property">Log</span>.<span class="hljs-title function_">msg</span>(<span class="hljs-string">"&lt;normal message&gt;"</span>)
+<span class="hljs-variable constant_">NM</span>.<span class="hljs-property">Log</span>.<span class="hljs-title function_">msg</span>(<span class="hljs-string">"&lt;normal message&gt;"</span>, <span class="hljs-string">'Title'</span>)
+
+<span class="hljs-comment">// level: ok</span>
+<span class="hljs-variable constant_">NM</span>.<span class="hljs-property">Log</span>.<span class="hljs-title function_">ok</span>(<span class="hljs-string">'&lt;successful message&gt;'</span>)
+<span class="hljs-variable constant_">NM</span>.<span class="hljs-property">Log</span>.<span class="hljs-title function_">ok</span>(<span class="hljs-string">'&lt;successful message&gt;'</span>, <span class="hljs-string">'Title'</span>)
+
+<span class="hljs-comment">// level: error</span>
+<span class="hljs-variable constant_">NM</span>.<span class="hljs-property">Log</span>.<span class="hljs-title function_">error</span>(<span class="hljs-string">'&lt;error message&gt;'</span>)
+<span class="hljs-variable constant_">NM</span>.<span class="hljs-property">Log</span>.<span class="hljs-title function_">error</span>(<span class="hljs-string">'&lt;error message&gt;'</span>, <span class="hljs-string">'Title'</span>)
+
+<span class="hljs-comment">// level: warn</span>
+<span class="hljs-variable constant_">NM</span>.<span class="hljs-property">Log</span>.<span class="hljs-title function_">warn</span>(<span class="hljs-string">'&lt;warning message&gt;'</span>)
+<span class="hljs-variable constant_">NM</span>.<span class="hljs-property">Log</span>.<span class="hljs-title function_">warn</span>(<span class="hljs-string">'&lt;warning message&gt;'</span>, <span class="hljs-string">'Title'</span>)
+
+<span class="hljs-comment">// level: info</span>
+<span class="hljs-variable constant_">NM</span>.<span class="hljs-property">Log</span>.<span class="hljs-title function_">info</span>(<span class="hljs-string">'&lt;info message&gt;'</span>)
+<span class="hljs-variable constant_">NM</span>.<span class="hljs-property">Log</span>.<span class="hljs-title function_">info</span>(<span class="hljs-string">'&lt;info message&gt;'</span>, <span class="hljs-string">'Title'</span>)
+
+<span class="hljs-comment">// level: verbose</span>
+<span class="hljs-variable constant_">NM</span>.<span class="hljs-property">Log</span>.<span class="hljs-title function_">verbose</span>(<span class="hljs-string">"&lt;verbose message&gt;"</span>)
+<span class="hljs-variable constant_">NM</span>.<span class="hljs-property">Log</span>.<span class="hljs-title function_">verbose</span>(<span class="hljs-string">"&lt;verbose message&gt;"</span>, <span class="hljs-string">'Title'</span>)
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.12/mod.ts'
+
+// level: normal
+NM.Log.msg(&quot;<normal message>&quot;)
+NM.Log.msg(&quot;<normal message>&quot;, 'Title')
+
+// level: ok
+NM.Log.ok('<successful message>')
+NM.Log.ok('<successful message>', 'Title')
+
+// level: error
+NM.Log.error('<error message>')
+NM.Log.error('<error message>', 'Title')
+
+// level: warn
+NM.Log.warn('<warning message>')
+NM.Log.warn('<warning message>', 'Title')
+
+// level: info
+NM.Log.info('<info message>')
+NM.Log.info('<info message>', 'Title')
+
+// level: verbose
+NM.Log.verbose(&quot;<verbose message>&quot;)
+NM.Log.verbose(&quot;<verbose message>&quot;, 'Title')
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<h2 id="adding-and-removing-loggers" tabindex="-1"><a href="#adding-and-removing-loggers" class="header-anchor">Adding and Removing Loggers</a></h2>
+
+<div style="position: relative">
+	<pre><code class="language-typescript hljs"><span class="hljs-keyword">const</span> logger = <span class="hljs-variable constant_">NM</span>.<span class="hljs-property">Log</span>.<span class="hljs-title function_">addTransport</span>(<span class="hljs-string">'path/to/file'</span>)
+
+<span class="hljs-comment">/*
+    do something
+*/</span>
+
+<span class="hljs-variable constant_">NM</span>.<span class="hljs-property">Log</span>.<span class="hljs-title function_">rmTransport</span>(logger)
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="const logger = NM.Log.addTransport('path/to/file')
+
+/*
+    do something
+*/
+
+NM.Log.rmTransport(logger)
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>The <code>addTransport</code> method returns a logger object that can be used to remove the logger from the list of loggers.</p>
+<h2 id="advanced-usage" tabindex="-1"><a href="#advanced-usage" class="header-anchor">Advanced Usage</a></h2>
+<h3 id="custom-severity-and-level" tabindex="-1"><a href="#custom-severity-and-level" class="header-anchor">Custom Severity and Level</a></h3>
+<p>You could define the severity for your custom logger by using a second argument for the <code>addTransport</code>.</p>
+
+<div style="position: relative">
+	<pre><code class="language-typescript hljs"><span class="hljs-comment">// a logger that only logs info and above,</span>
+<span class="hljs-comment">// with custom severity</span>
+<span class="hljs-keyword">const</span> logger = <span class="hljs-variable constant_">NM</span>.<span class="hljs-property">Log</span>.<span class="hljs-title function_">addTransport</span>(<span class="hljs-string">'path/to/file'</span>, {
+    <span class="hljs-attr">severity</span>: {
+        <span class="hljs-attr">ok</span>: <span class="hljs-number">3</span>,
+        <span class="hljs-attr">error</span>: <span class="hljs-number">3</span>,
+        <span class="hljs-attr">warn</span>: <span class="hljs-number">3</span>,
+        <span class="hljs-attr">info</span>: <span class="hljs-number">2</span>,
+        <span class="hljs-attr">normal</span>: <span class="hljs-number">1</span>,
+        <span class="hljs-attr">verbose</span>: <span class="hljs-number">1</span>,
+    },
+    <span class="hljs-attr">level</span>: <span class="hljs-string">'info'</span>
+})
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="// a logger that only logs info and above,
+// with custom severity
+const logger = NM.Log.addTransport('path/to/file', {
+    severity: {
+        ok: 3,
+        error: 3,
+        warn: 3,
+        info: 2,
+        normal: 1,
+        verbose: 1,
+    },
+    level: 'info'
+})
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<h3 id="custom-logger" tabindex="-1"><a href="#custom-logger" class="header-anchor">Custom Logger</a></h3>
+<p>The <code>addTransport</code> method can also take a custom logger that implements the following interface:</p>
+
+<div style="position: relative">
+	<pre><code class="language-typescript hljs"><span class="hljs-keyword">export</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">Transport</span>
+{
+  <span class="hljs-attr">severity</span>: <span class="hljs-title class_">Record</span>&lt;<span class="hljs-title class_">LogLevel</span>, <span class="hljs-built_in">number</span>&gt;
+  <span class="hljs-attr">level</span>: <span class="hljs-title class_">LogLevel</span>
+  <span class="hljs-title function_">log</span>(<span class="hljs-attr">msg</span>: <span class="hljs-built_in">string</span>, <span class="hljs-attr">level</span>: <span class="hljs-title class_">LogLevel</span>, title?: <span class="hljs-built_in">string</span>): <span class="hljs-built_in">void</span>;
+}
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="export interface Transport
+{
+  severity: Record<LogLevel, number>
+  level: LogLevel
+  log(msg: string, level: LogLevel, title?: string): void;
+}
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>There is an example of a custom logger:</p>
+
+<div style="position: relative">
+	<pre><code class="language-typescript hljs"><span class="hljs-keyword">class</span> <span class="hljs-title class_">CustomLogger</span> <span class="hljs-keyword">implements</span> <span class="hljs-variable constant_">NM</span>.<span class="hljs-property">Transport</span>
+{
+  severity = {
+    <span class="hljs-attr">ok</span>: <span class="hljs-number">3</span>,
+    <span class="hljs-attr">error</span>: <span class="hljs-number">3</span>,
+    <span class="hljs-attr">warn</span>: <span class="hljs-number">3</span>,
+    <span class="hljs-attr">info</span>: <span class="hljs-number">2</span>,
+    <span class="hljs-attr">normal</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">verbose</span>: <span class="hljs-number">1</span>,
+  }
+  level = <span class="hljs-string">'info'</span>
+
+  <span class="hljs-title function_">log</span>(<span class="hljs-attr">msg</span>: <span class="hljs-built_in">string</span>, <span class="hljs-attr">level</span>: <span class="hljs-title class_">LogLevel</span>, title?: <span class="hljs-built_in">string</span>): <span class="hljs-built_in">void</span>
+  {
+    title ??= level;
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">`[<span class="hljs-subst">${title}</span>] <span class="hljs-subst">${msg}</span>`</span>);
+  }
+}
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="class CustomLogger implements NM.Transport
+{
+  severity = {
+    ok: 3,
+    error: 3,
+    warn: 3,
+    info: 2,
+    normal: 1,
+    verbose: 1,
+  }
+  level = 'info'
+
+  log(msg: string, level: LogLevel, title?: string): void
+  {
+    title ??= level;
+    console.log(`[${title}] ${msg}`);
+  }
+}
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+</div></div></main></div><script src="/Site-33/js/clipboard.js"></script></body></html>

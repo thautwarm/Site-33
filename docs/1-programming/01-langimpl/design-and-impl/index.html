@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>编程语言的设计和实现</title><meta name="supported-color-schemes" content="light dark"><meta name="theme-color" content="hsl(220, 20%, 100%)" media="(prefers-color-scheme: light)"><meta name="theme-color" content="hsl(220, 20%, 10%)" media="(prefers-color-scheme: dark)"><link rel="stylesheet" href="/Site-33/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/Site-33/styles.css"><link rel="canonical" href="/Site-33/1-programming/01-langimpl/design-and-impl/"><link rel="icon" sizes="48x48" href="/Site-33/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/Site-33/apple-touch-icon.png">
+<script type="text/javascript" src="/Site-33/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded',()=>{new PagefindUI({"element":"#search","showImages":false,"excerptLength":0,"showEmptyFilters":true,"showSubResults":false,"resetStyles":true,"bundlePath":"/Site-33/pagefind/","baseUrl":"/Site-33/"});});</script></head><body><div></div><div class="container"><div class="toolbar"><div id="search" class="search"></div></div><nav class="menu-container"><a class="menu-highlight" href="/Site-33/">Site-33 by thautwarm</a><ul class="menu"></ul></nav><nav class="toc"><h2>On this page</h2><ol><li><a href="#%E8%AF%AD%E6%B3%95%E5%92%8C%E8%AF%AD%E4%B9%89">语法和语义</a><ul><li><a href="#%E4%BB%80%E4%B9%88%E6%98%AF%E8%AF%AD%E6%B3%95-(syntax)">什么是语法 (Syntax)</a></li><li><a href="#%E8%AF%AD%E6%B3%95%E5%92%8C-bnf">语法和 BNF</a></li><li><a href="#%E6%8A%BD%E8%B1%A1%E8%AF%AD%E6%B3%95%E6%A0%91">抽象语法树</a></li><li><a href="#%E4%BB%80%E4%B9%88%E6%98%AF%E8%AF%AD%E4%B9%89">什么是语义</a></li><li><a href="#%E7%9B%B8%E7%BB%A7%E5%BC%8F%E5%92%8C%E6%93%8D%E4%BD%9C%E8%AF%AD%E4%B9%89">相继式和操作语义</a></li><li><a href="#%E5%9B%9B%E5%88%99%E8%BF%90%E7%AE%97%E7%9A%84%E6%93%8D%E4%BD%9C%E8%AF%AD%E4%B9%89">四则运算的操作语义</a></li><li><a href="#%E5%B8%A6%E7%8A%B6%E6%80%81%E7%9A%84%E8%AF%AD%E4%B9%89">带状态的语义</a></li></ul></li><li><a href="#%E4%B8%80%E4%B8%AA%E6%9C%80%E7%AE%80%E5%8D%95%E7%9A%84%E8%A7%A3%E9%87%8A%E5%99%A8">一个最简单的解释器</a><ul><li><a href="#lc%E7%9A%84%E8%AF%AD%E6%B3%95%E7%BB%93%E6%9E%84%E5%92%8C%E8%AF%AD%E4%B9%89">LC的语法结构和语义</a></li><li><a href="#lc-%E6%89%A9%E5%B1%95%E3%80%81%E5%8E%9F%E8%AF%AD%E5%87%BD%E6%95%B0">LC 扩展、原语函数</a></li><li><a href="#%E6%89%A9%E5%B1%95-lc-%E7%9A%84%E8%A7%A3%E9%87%8A%E5%99%A8%E5%AE%9E%E7%8E%B0-(python)">扩展 LC 的解释器实现 (Python)</a></li></ul></li><li><a href="#lc%E7%9A%84%E8%AF%AD%E6%B3%95%E8%A7%A3%E6%9E%90">LC的语法解析</a><ul><li><a href="#%E5%AE%9E%E7%94%A8%E4%B8%BB%E4%B9%89%E7%9A%84-parsing-%E6%8A%80%E6%9C%AF%E9%80%89%E5%9E%8B">实用主义的 parsing 技术选型</a></li><li><a href="#%E5%9F%BA%E4%BA%8E-python-lark-%E6%9D%A5%E8%A7%A3%E6%9E%90-lc-%E8%AF%AD%E6%B3%95">基于 Python Lark 来解析 LC 语法</a></li></ul></li><li><a href="#%E6%9B%B4%E4%B8%B0%E5%AF%8C%E7%9A%84%E8%AF%AD%E8%A8%80%E6%9E%84%E9%80%A0%3A-%E5%8F%98%E9%87%8F%E7%BB%91%E5%AE%9A%E3%80%81if%2C-while">更丰富的语言构造: 变量绑定、if, while</a></li><li><a href="#%E5%AD%97%E8%8A%82%E7%A0%81%E7%BC%96%E8%AF%91-(%E5%BE%85%E5%AE%8C%E6%88%90)">字节码编译 (待完成)</a></li></ol></nav><main class="main"><nav><ul class="breadcrumb"><li class="breadcrumb-item"><a href="/Site-33/">Site-33 by thautwarm</a></li><li class="breadcrumb-item"><a href="/Site-33/1-programming/">Programming 编程</a></li><li class="breadcrumb-item"><a href="/Site-33/1-programming/01-langimpl/">编程语言技术</a></li></ul></nav><div class="body" data-pagefind-body="true"><em> 此文档创建于 2022/8/17 </em><div><h1>编程语言的设计和实现</h1>
+<!-- include style -->
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.6.0/build/styles/github.min.css"> -->
+<h2 id="%E8%AF%AD%E6%B3%95%E5%92%8C%E8%AF%AD%E4%B9%89" tabindex="-1"><a href="#%E8%AF%AD%E6%B3%95%E5%92%8C%E8%AF%AD%E4%B9%89" class="header-anchor">语法和语义</a></h2>
+<p>我们在讨论什么:</p>
+<ul>
+<li>语法 (Syntax)</li>
+<li>语义 (Semantics)</li>
+</ul>
+<h3 id="%E4%BB%80%E4%B9%88%E6%98%AF%E8%AF%AD%E6%B3%95-(syntax)" tabindex="-1"><a href="#%E4%BB%80%E4%B9%88%E6%98%AF%E8%AF%AD%E6%B3%95-(syntax)" class="header-anchor">什么是语法 (Syntax)</a></h3>
+<p>语法 (syntax) 是指代码文本的规范，只有符合语法的代码才可能被编译器/解释器处理。</p>
+<p>例如，<code>a = 1;</code> 是C语言的赋值语法，而 <code>a := 1</code> 在C语言中不合法。</p>
+<p>其中，一个重要的概念是<strong>语法结构</strong>，它通常以语法树 (syntax tree) 的形式展现:</p>
+<p><img src="/Site-33/1-programming/01-langimpl/static/interpreter-ast-tree.png" alt="AST Tree"></p>
+<h3 id="%E8%AF%AD%E6%B3%95%E5%92%8C-bnf" tabindex="-1"><a href="#%E8%AF%AD%E6%B3%95%E5%92%8C-bnf" class="header-anchor">语法和 BNF</a></h3>
+<p>语法规则通常使用 BNF 文法定义。下面是四则运算的 BNF 文法：</p>
+
+<div style="position: relative">
+	<pre><code class="language-bnf hljs">e : addsub
+
+addsub : addsub '+' muldiv
+       | addsub '-' muldiv
+       | muldiv
+
+muldiv : muldiv '*' atom
+       | muldiv '/' atom
+       | atom
+
+atom : '(' e ')' | NUMBER
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="e : addsub
+
+addsub : addsub '+' muldiv
+       | addsub '-' muldiv
+       | muldiv
+
+muldiv : muldiv '*' atom
+       | muldiv '/' atom
+       | atom
+
+atom : '(' e ')' | NUMBER
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>以下是此知识点涉及的习题，带着习题学习，能方便自行评估学习的效果。</p>
+<p><em>习题</em></p>
+<ol>
+<li>
+<p>"<code>(1 + 1) + 1</code>"是否是合法的四则运算语言文本？</p>
+</li>
+<li>
+<p>"<code>(1 / 2) + 1</code>"是否是合法的四则运算语言文本？</p>
+</li>
+<li>
+<p>"<code>1.2</code>"是否是合法的四则运算语言文本？</p>
+</li>
+<li>
+<p>如果"1 + 1.2"对应<strong>语法树</strong>是 <code>Add(Int(1), Float(1.2))</code>，</p>
+<p>问："<code>1 + 1.2 * 2</code>"的语法树是？</p>
+</li>
+</ol>
+<h4 id="%E6%8A%BD%E8%B1%A1%E8%AF%AD%E6%B3%95%E6%A0%91%E5%92%8C%E5%85%B7%E4%BD%93%E8%AF%AD%E6%B3%95%E6%A0%91" tabindex="-1"><a href="#%E6%8A%BD%E8%B1%A1%E8%AF%AD%E6%B3%95%E6%A0%91%E5%92%8C%E5%85%B7%E4%BD%93%E8%AF%AD%E6%B3%95%E6%A0%91" class="header-anchor">抽象语法树和具体语法树</a></h4>
+<p>根据BNF文法，我们将语言的文本解析为语法树——文本在语法规则下的结构化表示。</p>
+<p>常用的语法树有两种：</p>
+<ol>
+<li>具体语法树 (CST)： 除开结构化语法外，事无巨细地记录源代码信息。<em>CST可以无损地转回源代码</em>。</li>
+<li>抽象语法树：只考虑后续工作需要的语法结构，抛弃了 CST 中对下游任务冗余的信息，如空白符，分隔符，缩进等。</li>
+</ol>
+<p>举例子，给定一个语句 <code>a = 1;</code>, CST 与 AST 的差异通常如下图所示。</p>
+<style>
+       .colsplit {
+          width: 100%;
+          border-collapse: collapse;
+          padding: 2px;
+       }
+       .column {
+            width: 50%;
+            border: 1px solid black;
+            text-align: center;
+            padding: 8px;
+       }
+</style>
+<div class="colsplit-container">
+<table class="colsplit">
+<tbody><tr>
+<th> 具体语法树 </th>
+<th> 抽象语法树 </th>
+</tr>
+<tr>
+<td class="column">
+
+<div style="position: relative">
+	<pre><code class="language-python hljs">Statement(
+    kind = <span class="hljs-string">"assign"</span>,
+    children = [
+       Variable(<span class="hljs-string">"a"</span>),
+       Token(<span class="hljs-string">"="</span>),
+       IntLiteral(<span class="hljs-number">1</span>),
+       Token(<span class="hljs-string">";"</span>)
+    ]
+)
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="Statement(
+    kind = &quot;assign&quot;,
+    children = [
+       Variable(&quot;a&quot;),
+       Token(&quot;=&quot;),
+       IntLiteral(1),
+       Token(&quot;;&quot;)
+    ]
+)
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+</td>
+<td class="column">
+
+<div style="position: relative">
+	<pre><code class="language-python hljs">Assignment(
+    target=Variable(<span class="hljs-string">"a"</span>),
+    value=IntLiteral(<span class="hljs-number">1</span>)
+)
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="Assignment(
+    target=Variable(&quot;a&quot;),
+    value=IntLiteral(1)
+)
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+</td>
+</tr>
+</tbody></table>
+</div>
+<p>为了方便理解，上述两种语法树均进行了简化（例如略去行列号等），但仍然不难看出，<strong>抽象语法树的信息比具体语法树更少，也更加紧凑</strong>。</p>
+<p>在涉及语法树的主要任务是编译、解释与各式代码分析，此类应用属于主流，一般只会用到抽象语法树，而无需具体语法树<sup><a class="footnote-ref" href="#fn-1" id="fnref-1">1</a></sup>。<strong>这意味着语言的具体语法通常不影响语言的运行</strong>。</p>
+<p>一门编程语言可以拥有多种具体语法，只要他们的语法结构和语义相同。语法不同、而语法结构与语义相同的语言之间，差异是表面的、不重要的，例如 <code>f(x, y, z)</code> 和 <code>call f with x, y, z</code>。</p>
+<h3 id="%E6%8A%BD%E8%B1%A1%E8%AF%AD%E6%B3%95%E6%A0%91" tabindex="-1"><a href="#%E6%8A%BD%E8%B1%A1%E8%AF%AD%E6%B3%95%E6%A0%91" class="header-anchor">抽象语法树</a></h3>
+<div class="markdown-alert markdown-alert-tip">
+<p class="markdown-alert-title">Tip</p>
+<ol>
+<li>抽象语法树是编译器/解释器工作的基础，通常作为编译器/解释器的输入。</li>
+<li>抽象语法树一般使用 ADT (代数数据类型) 来表达。
+ADT 的结构有 sort 和 constructor 两个关键概念。</li>
+</ol>
+</div>
+<p>抽象语法树一般表示为 ADT (代数数据类型 /Algebraic Data Type)。</p>
+<p>使用 ADT 表示的语法树，常常被分为多个种类 (sort)，在绝大多数编程语言中，语法树有以下的 sort 划分：</p>
+<ul>
+<li>
+<p>表达式: 例如整数字面量表达式，函数调用表达式，二元运算表达式等。</p>
+</li>
+<li>
+<p>语句：例如赋值语句，if语句等。</p>
+</li>
+<li>
+<p>定义：例如数据类型定义，函数定义等。</p>
+</li>
+</ul>
+<p>由上可见，每一个 sort 都可能继续划分。每一个sort可能有一到多个构造器 (constructor)。</p>
+<p>例如, 表达式 sort 有整数字面量、函数调用表达式和二元运算表达式这些 constructor：</p>
+
+<div style="position: relative">
+	<pre><code class="language-reasonml hljs"><span class="hljs-type">Expr</span> = <span class="hljs-type">IntLiteral</span>(value: <span class="hljs-built_in">int</span>)
+     | <span class="hljs-type">FunctionCall</span>(func: <span class="hljs-type">Expr</span>, args: <span class="hljs-built_in">list</span>&lt;<span class="hljs-type">Expr</span>&gt;)
+     | <span class="hljs-type">BinaryExpr</span>(left: <span class="hljs-type">Expr</span>, op: <span class="hljs-type">BinaryOperator</span>, right: <span class="hljs-type">Expr</span>)
+     |<span class="hljs-operator"> ...
+</span></code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="Expr = IntLiteral(value: int)
+     | FunctionCall(func: Expr, args: list<Expr>)
+     | BinaryExpr(left: Expr, op: BinaryOperator, right: Expr)
+     | ...
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>像上面这样能够描述 ADT 定义的语言，叫作抽象语法定义语言 (ASDL/Abstract Syntax Definition Language)。</p>
+<p>我们会频繁使用 ASDL (及之前提到的 BNF 等) 格式来提高沟通效率。例如，以下是四则运算的语法树：</p>
+
+<div style="position: relative">
+	<pre><code class="language-reasonml hljs"><span class="hljs-type">ArithExpr</span> = <span class="hljs-type">Add</span>(left: <span class="hljs-type">ArithExpr</span>, right: <span class="hljs-type">ArithExpr</span>)
+          | <span class="hljs-type">Sub</span>(left: <span class="hljs-type">ArithExpr</span>, right: <span class="hljs-type">ArithExpr</span>)
+          | <span class="hljs-type">Mul</span>(left: <span class="hljs-type">ArithExpr</span>, right: <span class="hljs-type">ArithExpr</span>)
+          | <span class="hljs-type">Div</span>(left: <span class="hljs-type">ArithExpr</span>, right: <span class="hljs-type">ArithExpr</span>)
+          | <span class="hljs-type">Number</span>(value: number)
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="ArithExpr = Add(left: ArithExpr, right: ArithExpr)
+          | Sub(left: ArithExpr, right: ArithExpr)
+          | Mul(left: ArithExpr, right: ArithExpr)
+          | Div(left: ArithExpr, right: ArithExpr)
+          | Number(value: number)
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>可以看到，使用 ASDL/ADT 可以更加清晰地表达语法树的结构。</p>
+<h3 id="%E4%BB%80%E4%B9%88%E6%98%AF%E8%AF%AD%E4%B9%89" tabindex="-1"><a href="#%E4%BB%80%E4%B9%88%E6%98%AF%E8%AF%AD%E4%B9%89" class="header-anchor">什么是语义</a></h3>
+<div class="markdown-alert markdown-alert-tip">
+<p class="markdown-alert-title">Tip</p>
+<ol>
+<li><strong>语义是对语法结构的解释</strong>。</li>
+<li><strong>解释方式是多样的，不同的语义产生不同的解释</strong>。</li>
+</ol>
+</div>
+<p>解释方式是多样的，例如，打印语法树是一种可行的解释。</p>
+<p>但在通用编程的语境下，人们一般关注的解释方式是代码执行 (evaluation) 。</p>
+<p>不管对语法结构做何种解释，需要一套规则来描述解释过程。</p>
+<p>以下框架提供了描述语义的常见手段:</p>
+<blockquote>
+<p>语法结构 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>X</mi></mrow><annotation encoding="application/x-tex">X</annotation></semantics></math></span></span> 的执行结果是 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi></mrow><annotation encoding="application/x-tex">r</annotation></semantics></math></span></span> <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>⟺</mo></mrow><annotation encoding="application/x-tex">\Longleftrightarrow</annotation></semantics></math></span></span> <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>X</mi><mo>⇝</mo><mi>r</mi></mrow><annotation encoding="application/x-tex">X \rightsquigarrow r</annotation></semantics></math></span></span>.</p>
+</blockquote>
+<p>这里的 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>X</mi></mrow><annotation encoding="application/x-tex">X</annotation></semantics></math></span></span> 是一个语法结构，如果对应编程概念，它是 host language (实现编译器、解释器所使用的语言) 中的一棵语法树 <sup><a class="footnote-ref" href="#fn-2" id="fnref-2">2</a></sup>。</p>
+<p><span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>X</mi><mo>∈</mo><mtext>语法树全集</mtext></mrow><annotation encoding="application/x-tex">
+X \in \text{语法树全集}
+</annotation></semantics></math></span></span></p>
+<p>这里的 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi></mrow><annotation encoding="application/x-tex">r</annotation></semantics></math></span></span> 是一个<strong>值</strong>，如果对应编程概念，它是 target language (编译器、解释器运行最终代码所使用的语言) 中的一块运行时数据。为了方便，接下来的讨论中，<ins><strong>我们会预设 target language 是 Python</strong> </ins>，以方便读者理解在 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi></mrow><annotation encoding="application/x-tex">r</annotation></semantics></math></span></span> 上做的各种变换。</p>
+<p><span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>r</mi><mo>∈</mo><mtext>Target&nbsp;Language值全集</mtext></mrow><annotation encoding="application/x-tex">
+r \in \text{Target Language值全集}
+</annotation></semantics></math></span></span></p>
+<p>上面这个框架，表达四则运算语言的语义绰绰有余：</p>
+<p><span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mtext>Add(Number(2),&nbsp;Number(2.0))</mtext><mo>⇝</mo><mn>4.0</mn></mrow><annotation encoding="application/x-tex">
+\text{Add(Number(2), Number(2.0))} \rightsquigarrow 4.0
+</annotation></semantics></math></span></span></p>
+<p>但是，由于语法结构的具体数目是无限的，我们不能一一列举所有的语义规则。因此，我们需要采取一种递归的方式来描述语义，让这套递归规则能够覆盖所有的语法结构。</p>
+<p>下面，我们依然以四则运算语言为例，给出一套可行的递归规则，介绍<strong>相继式</strong> (sequent) 和<strong>操作语义</strong> (operational semantics)。</p>
+<h3 id="%E7%9B%B8%E7%BB%A7%E5%BC%8F%E5%92%8C%E6%93%8D%E4%BD%9C%E8%AF%AD%E4%B9%89" tabindex="-1"><a href="#%E7%9B%B8%E7%BB%A7%E5%BC%8F%E5%92%8C%E6%93%8D%E4%BD%9C%E8%AF%AD%E4%B9%89" class="header-anchor">相继式和操作语义</a></h3>
+<p>对于大多数语言来说，合法的语法结构是无限的，想想也知道，我们不能在一个语言规范手册里写下：</p>
+<p><span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mtext>Add</mtext><mo stretchy="false">(</mo><mn>1</mn><mo separator="true">,</mo><mtext>Add</mtext><mo stretchy="false">(</mo><mn>1</mn><mo separator="true">,</mo><mtext>Add</mtext><mo stretchy="false">(</mo><mo>⋯</mo><mtext> </mtext><mo separator="true">,</mo><mtext>Add</mtext><mo stretchy="false">(</mo><mtext>Number</mtext><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo><mo separator="true">,</mo><mtext>Number</mtext><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo><mo stretchy="false">)</mo><mo stretchy="false">)</mo><mo stretchy="false">)</mo><mo stretchy="false">)</mo><mo>⇝</mo><mn>2992</mn></mrow><annotation encoding="application/x-tex">
+\text{Add}(1, \text{Add}(1, \text{Add}(\cdots,  \text{Add}(\text{Number}(1), \text{Number}(1))))) \rightsquigarrow 2992
+</annotation></semantics></math></span></span></p>
+<p>这里我们需要一个“注意到”。</p>
+<div class="markdown-alert markdown-alert-tip">
+<p class="markdown-alert-title">Tip</p>
+<p>注意到语法结构的定义是递归的。
+因此可以定义出一套递归的、有限的规则，为<strong>合法语法结构的全体</strong>描述语义。</p>
+</div>
+<p>为了做到这一点，我们介绍<strong>相继式</strong>：</p>
+<p><span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>P</mi><mn>1</mn></msub><mo separator="true">,</mo><msub><mi>P</mi><mn>2</mn></msub><mo separator="true">,</mo><mo>⋯</mo><mtext> </mtext><mo separator="true">,</mo><msub><mi>P</mi><mi>n</mi></msub><mo>⊢</mo><mi>Q</mi></mrow><annotation encoding="application/x-tex">
+P_1, P_2, \cdots, P_n \vdash Q
+</annotation></semantics></math></span></span></p>
+<p>这里的 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>P</mi><mn>1</mn></msub><mo separator="true">,</mo><msub><mi>P</mi><mn>2</mn></msub><mo separator="true">,</mo><mo>⋯</mo><mtext> </mtext><mo separator="true">,</mo><msub><mi>P</mi><mi>n</mi></msub></mrow><annotation encoding="application/x-tex">P_1, P_2, \cdots, P_n</annotation></semantics></math></span></span> 是条件 (<strong>前件</strong>)，<span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Q</mi></mrow><annotation encoding="application/x-tex">Q</annotation></semantics></math></span></span> 是结论 (<strong>后继</strong>)。</p>
+<p>上面的公式，在逻辑上是一种断言 (assertion)，它表明在条件 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>P</mi><mn>1</mn></msub><mo separator="true">,</mo><msub><mi>P</mi><mn>2</mn></msub><mo separator="true">,</mo><mo>⋯</mo><mtext> </mtext><mo separator="true">,</mo><msub><mi>P</mi><mi>n</mi></msub></mrow><annotation encoding="application/x-tex">P_1, P_2, \cdots, P_n</annotation></semantics></math></span></span> 都成立的情况下，基于规则 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>⊢</mo></mrow><annotation encoding="application/x-tex">\vdash</annotation></semantics></math></span></span> 的推导能得到 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Q</mi></mrow><annotation encoding="application/x-tex">Q</annotation></semantics></math></span></span>。</p>
+<p>相继式更重要的用途是描述推导过程，在实践上，你可以使用<strong>前件</strong>和<strong>后继</strong>这样的术语来强调 “现在我在讨论规则推导”。</p>
+<p>形如 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo>⊢</mo><mi>Q</mi></mrow><annotation encoding="application/x-tex">P \vdash Q</annotation></semantics></math></span></span> 的相继式，其整体可以作为条件，服务于更复杂的推导。例如，假设 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>c</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">c_i</annotation></semantics></math></span></span> 是一个相继式，那么我们可以有如下的推导：</p>
+<p align="center">
+    <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mrow><msub><mi>c</mi><mn>1</mn></msub><mtext>  </mtext><mtext>  </mtext><msub><mi>c</mi><mn>2</mn></msub><mtext>  </mtext><mtext>  </mtext><msub><mi>c</mi><mn>3</mn></msub></mrow><msub><mi>c</mi><mn>4</mn></msub></mfrac></mstyle><mo>⟺</mo></mrow><annotation encoding="application/x-tex">\dfrac{c_1 \;\; c_2 \;\; c_3 } {c_4} \Longleftrightarrow</annotation></semantics></math></span></span> 在条件 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>c</mi><mn>1</mn></msub><msub><mi>c</mi><mn>2</mn></msub><msub><mi>c</mi><mn>3</mn></msub></mrow><annotation encoding="application/x-tex">c_1 c_2 c_3</annotation></semantics></math></span></span> 都成立的情况下，推导 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>c</mi><mn>4</mn></msub></mrow><annotation encoding="application/x-tex">c_4</annotation></semantics></math></span></span> 成立。
+</p>
+<p>基于相继式，推演的逻辑可以层层嵌套，方便我们用一种规范性的方式，来描述包括编程语言语义在内的任何逻辑规则。</p>
+<h3 id="%E5%9B%9B%E5%88%99%E8%BF%90%E7%AE%97%E7%9A%84%E6%93%8D%E4%BD%9C%E8%AF%AD%E4%B9%89" tabindex="-1"><a href="#%E5%9B%9B%E5%88%99%E8%BF%90%E7%AE%97%E7%9A%84%E6%93%8D%E4%BD%9C%E8%AF%AD%E4%B9%89" class="header-anchor">四则运算的操作语义</a></h3>
+<p>在开始之前，我们需要定义一些<em>元符号</em> (可以大致理解为宿主语言中的变量)，来让规则变得容易被纸笔描述：</p>
+
+<div style="position: relative">
+	<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mtable rowspacing="0.25em" columnalign="right left right" columnspacing="0em 1em"><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mi>i</mi><mo separator="true">,</mo><msub><mi>i</mi><mn>1</mn></msub><mo separator="true">,</mo><msub><mi>i</mi><mn>2</mn></msub><mo>⋯</mo><msub><mi>i</mi><mi>n</mi></msub><mo>∈</mo><mtext>实数</mtext></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mi>X</mi><mo separator="true">,</mo><mi>Y</mi><mo>∈</mo><mtext>四则运算语言的语法结构全集</mtext></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mi>f</mi><mo stretchy="false">(</mo><msub><mi>i</mi><mn>1</mn></msub><mo separator="true">,</mo><msub><mi>i</mi><mn>2</mn></msub><mo stretchy="false">)</mo><mo separator="true">,</mo><mtext>  </mtext><mi>f</mi><mo>∈</mo><mo stretchy="false">{</mo><mrow><mtext mathvariant="bold">+,</mtext><mtext>&nbsp;</mtext><mtext mathvariant="bold">-,</mtext><mtext>&nbsp;</mtext><mtext mathvariant="bold">*,</mtext><mtext>&nbsp;</mtext><mtext mathvariant="bold">/</mtext></mrow><mo stretchy="false">}</mo><mtext>  </mtext><mtext>  </mtext><mtext>表示实数的加/减/乘/除</mtext></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow></mrow></mstyle></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{aligned}
+&amp; i, i_1, i_2 \cdots i_n \in \text{实数}  &amp; \\
+&amp; X, Y \in \text{四则运算语言的语法结构全集} &amp;  \\
+&amp; f(i_1, i_2),\; f \in \{\textbf{+, -, *, /}\}\;\;  \text{表示实数的加/减/乘/除} &amp;   \\
+\end{aligned}
+</annotation></semantics></math></span>
+
+	<button class="code-copy-button" data-clipboard-text="\begin{aligned}
+&amp; i, i_1, i_2 \cdots i_n \in \text{实数}  &amp; \\
+&amp; X, Y \in \text{四则运算语言的语法结构全集} &amp;  \\
+&amp; f(i_1, i_2),\; f \in \{\textbf{+, -, *, /}\}\;\;  \text{表示实数的加/减/乘/除} &amp;   \\
+\end{aligned}
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>借助这些元符号，我们定义四则运算语言的完整语义(乘法，除法，减法被省略)：</p>
+
+<div style="position: relative">
+	<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><mrow><mi>X</mi><mo>⇝</mo><msub><mi>i</mi><mn>1</mn></msub><mtext>  </mtext><mtext>  </mtext><mi>Y</mi><mo>⇝</mo><msub><mi>i</mi><mn>2</mn></msub></mrow><mrow><mtext>Add</mtext><mo stretchy="false">(</mo><mi>X</mi><mo separator="true">,</mo><mi>Y</mi><mo stretchy="false">)</mo><mo>⇝</mo><mtext mathvariant="bold">+</mtext><mo stretchy="false">(</mo><msub><mi>i</mi><mn>1</mn></msub><mo separator="true">,</mo><msub><mi>i</mi><mn>2</mn></msub><mo stretchy="false">)</mo></mrow></mfrac><mspace width="2em"></mspace><mfrac><mrow></mrow><mrow><mtext>Number</mtext><mo stretchy="false">(</mo><mi>i</mi><mo stretchy="false">)</mo><mo>⇝</mo><mi>i</mi></mrow></mfrac></mrow><annotation encoding="application/x-tex">\dfrac{X \rightsquigarrow i_1 \;\; Y \rightsquigarrow i_2 }{\text{Add}(X, Y) \rightsquigarrow \textbf{+}(i_1, i_2) } \qquad \dfrac{ }{ \text{Number}(i) \rightsquigarrow i}
+</annotation></semantics></math></span>
+
+	<button class="code-copy-button" data-clipboard-text="\dfrac{X \rightsquigarrow i_1 \;\; Y \rightsquigarrow i_2 }{\text{Add}(X, Y) \rightsquigarrow \textbf{+}(i_1, i_2) } \qquad \dfrac{ }{ \text{Number}(i) \rightsquigarrow i}
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>此处有一些简化，不看也不影响:</p>
+<blockquote>
+<p><span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>⇝</mo></mrow><annotation encoding="application/x-tex">\rightsquigarrow</annotation></semantics></math></span></span> 两侧出现的 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi></mrow><annotation encoding="application/x-tex">i</annotation></semantics></math></span></span> 实际上是不同的。他们身处不同的语言，就像文本 1 与 C++ 运行时整数 1 截然不同。在论文中，<span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>⇝</mo></mrow><annotation encoding="application/x-tex">\rightsquigarrow</annotation></semantics></math></span></span> 左侧的 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi></mrow><annotation encoding="application/x-tex">i</annotation></semantics></math></span></span> 常常表示一个文本，而右侧的 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi></mrow><annotation encoding="application/x-tex">i</annotation></semantics></math></span></span> 表示一个 target language 中的数字，论文常常是有点过度严谨的，因为不仅需要从头定义 target language 的数据结构，还需要在推断过程中体现字面量的求值过程。</p>
+</blockquote>
+<h3 id="%E5%B8%A6%E7%8A%B6%E6%80%81%E7%9A%84%E8%AF%AD%E4%B9%89" tabindex="-1"><a href="#%E5%B8%A6%E7%8A%B6%E6%80%81%E7%9A%84%E8%AF%AD%E4%B9%89" class="header-anchor">带状态的语义</a></h3>
+<p>在 Java 和 C++ 语言中，我们可以修改对象的字段。这是一种副作用，副作用会引起某些函数在参数相同时、返回值却不同。</p>
+
+<div style="position: relative">
+	<pre><code class="language-c++ hljs language-c"><span class="hljs-type">static</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">MyTypeRef</span> *<span class="hljs-title">val</span> =</span> { ... };
+
+<span class="hljs-type">int</span> <span class="hljs-title function_">some_func</span><span class="hljs-params">(<span class="hljs-type">int</span> factor)</span>
+{
+    <span class="hljs-keyword">return</span> val -&gt; a * factor;
+}
+
+<span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span>
+{
+    <span class="hljs-type">int</span> result1, result2;
+    result1 = some_func(<span class="hljs-number">2.0</span>);
+    val -&gt; a = <span class="hljs-number">1</span>; <span class="hljs-comment">// 对象val的字段a被修改</span>
+    result2 = some_func(<span class="hljs-number">2.0</span>);
+    <span class="hljs-comment">// result1 != result2, 副作用！</span>
+    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+}
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="static struct MyTypeRef *val = { ... };
+
+int some_func(int factor)
+{
+    return val -> a * factor;
+}
+
+int main()
+{
+    int result1, result2;
+    result1 = some_func(2.0);
+    val -> a = 1; // 对象val的字段a被修改
+    result2 = some_func(2.0);
+    // result1 != result2, 副作用！
+    return 0;
+}
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>可以看到，C++ 的语义是有副作用的，因此我们方才介绍的 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>X</mi><mo>⇝</mo><mi>r</mi></mrow><annotation encoding="application/x-tex">X \rightsquigarrow r</annotation></semantics></math></span></span> 这套表述不足以描述 C++ 语义：我们原先只考虑了返回值，但一些语言中，<strong>语义涉及到副作用</strong>。</p>
+<p>副作用的本质是函数调用被<strong>隐式</strong>地增加了如下部分：</p>
+<ol>
+<li>一个<strong>参数</strong>: 表示全局状态</li>
+<li>一个额外的<strong>返回值</strong>: 表示函数修改后的全局状态</li>
+</ol>
+<p>因此，当我们在 C++/JavaScript/Python 等主流语言中写下 <code>f(arg)</code> 的时候，我们实际上写下了类似 <code>[GLOBAL_STATE, result] = f(GLOBAL_STATE, arg)</code> 的代码。</p>
+<p>对于具有副作用的语言，程序行为受全局状态影响。按照 PL 领域惯例，语义描述通常要求规则是完全透明的，没有隐式的预设，因而语义应当能够完全决定程序行为。所以，带有副作用的编程语言，在描述语义时必须同时描述全局状态的转移。在这种情况下，描述语义的框架通常是：</p>
+
+<div style="position: relative">
+	<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mo stretchy="false">(</mo><mi>S</mi><mo separator="true">,</mo><mi>X</mi><mo stretchy="false">)</mo><mo>⟶</mo><mo stretchy="false">(</mo><mi>r</mi><mo separator="true">,</mo><mi>S</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(S, X) \longrightarrow (r, S)
+</annotation></semantics></math></span>
+
+	<button class="code-copy-button" data-clipboard-text="(S, X) \longrightarrow (r, S)
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>该框架是非常痛苦的，因为如下四点：</p>
+<ol>
+<li>需要考虑的变量变多</li>
+<li>需要使用的符号变多</li>
+<li>推导公式将变得冗长</li>
+<li>描述副作用很无聊</li>
+</ol>
+<p>上述第4点中的“无聊”一词并非情绪表达，而是一种通用的见解：TLDR; 副作用不是关键。</p>
+<blockquote>
+<p>副作用在直观上理解起来非常容易，关于这一点，当下编程语言的流行情况已有明证；但是，要想使用公式系统将副作用描述清楚，工作量将会倍数增长，但关键的信息，如推导流程、情况分类、特殊语言特性等，却大同小异。</p>
+</blockquote>
+<p>因此，在此段落后，表述将追求关键而不求精准。这就是说，虽然我们仍使用 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mi>S</mi><mo separator="true">,</mo><mi>X</mi><mo stretchy="false">)</mo><mo>⟶</mo><mo stretchy="false">(</mo><mi>r</mi><mo separator="true">,</mo><mi>S</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(S, X) \longrightarrow (r, S)</annotation></semantics></math></span></span> 来描述关键状态的变化，但对于一些特殊的、我们不关心的副作用，例如 IO 等将被有意忽略。例如，当我们处理打印语句时，这里应当出现了一个函数调用，此调用实际做了打印、引发了副作用，但我们不关心这一点并将其视为一个空返回值的纯函数。</p>
+<details>
+<summary> 所幸的是，这种“不正确”丝毫不影响我们精准地理解程序语言的语义，它是一种折衷。 </summary>
+<div style="padding: 12px">
+如果你真的需要“更正确”的框架描述来描述具有副作用的语言的语义，你可能需要接触Haskell的副作用观点，它巧妙地将副作用表示为状态初值 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>S</mi><mn>0</mn></msub></mrow><annotation encoding="application/x-tex">S_0</annotation></semantics></math></span></span> 上发生的一系列变换： <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>S</mi><mi>n</mi></msub><mo>=</mo><msub><mtext mathvariant="italic">eff</mtext><mi>n</mi></msub><mo stretchy="false">(</mo><mo>⋯</mo><mtext> </mtext><mo separator="true">,</mo><msub><mtext mathvariant="italic">eff</mtext><mn>2</mn></msub><mo stretchy="false">(</mo><msub><mtext mathvariant="italic">eff</mtext><mn>1</mn></msub><mo stretchy="false">(</mo><msub><mi>S</mi><mn>0</mn></msub><mo stretchy="false">)</mo><mo stretchy="false">)</mo><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">S_n = \textit{eff}_n(\cdots, \textit{eff}_2(\textit{eff}_1(S_0)))</annotation></semantics></math></span></span>。
+</div>
+</details>
+<p>此外，为了方便介绍，在本文后续部分，我们将认为语法结构是 host language 中的数据结构，而状态 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi></mrow><annotation encoding="application/x-tex">S</annotation></semantics></math></span></span> 及返回值 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi></mrow><annotation encoding="application/x-tex">r</annotation></semantics></math></span></span> 是 target language 中的数据结构。更进一步地，我们让 host language 等于 target language，这样一来，前文中 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext>Number</mtext><mo stretchy="false">(</mo><mi>n</mi><mo stretchy="false">)</mo><mo>⇝</mo><mi>n</mi></mrow><annotation encoding="application/x-tex">\text{Number}(n) \rightsquigarrow n</annotation></semantics></math></span></span> 的含义就非常明确了。</p>
+<h2 id="%E4%B8%80%E4%B8%AA%E6%9C%80%E7%AE%80%E5%8D%95%E7%9A%84%E8%A7%A3%E9%87%8A%E5%99%A8" tabindex="-1"><a href="#%E4%B8%80%E4%B8%AA%E6%9C%80%E7%AE%80%E5%8D%95%E7%9A%84%E8%A7%A3%E9%87%8A%E5%99%A8" class="header-anchor">一个最简单的解释器</a></h2>
+<p>我们接下来讨论一个简单的语言，扩展的 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Λ</mi></mrow><annotation encoding="application/x-tex">\Lambda</annotation></semantics></math></span></span> 演算语言 (LC/Lambda Calculus)。</p>
+<h3 id="lc%E7%9A%84%E8%AF%AD%E6%B3%95%E7%BB%93%E6%9E%84%E5%92%8C%E8%AF%AD%E4%B9%89" tabindex="-1"><a href="#lc%E7%9A%84%E8%AF%AD%E6%B3%95%E7%BB%93%E6%9E%84%E5%92%8C%E8%AF%AD%E4%B9%89" class="header-anchor">LC的语法结构和语义</a></h3>
+<p>我们先用ASDL定义LC语法结构：</p>
+
+<div style="position: relative">
+	<pre><code class="language-reasonml hljs"><span class="hljs-type">LC</span> = <span class="hljs-type">Call</span>(func: <span class="hljs-type">LC</span>, arg: <span class="hljs-type">LC</span>)
+   | <span class="hljs-type">Var</span>(varname: str)
+   | <span class="hljs-type">Func</span>(argname: str, body: <span class="hljs-type">LC</span>)
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="LC = Call(func: LC, arg: LC)
+   | Var(varname: str)
+   | Func(argname: str, body: LC)
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>可以看到 LC 的语法结构很简单，只有三种结构，分别是函数调用、读取变量和定义匿名函数。</p>
+<p>LC的语义也很简单，只是我们不会像教材一样介绍LC的约归 (reduction) 规则，因为介绍相关知识对此阶段的实践没有帮助。之前说过，我们有 host language 和 target language (并且在本文中，两者是一个语言)，我们要立刻将 LC 用一个实际的语言表达，以建立直觉。</p>
+<p>让我们选择 Python = target language = host language。本文之后提到target language，若非特殊说明，都指Python。</p>
+<p>为了给出语义，我们还需要定义一些辅助物件。</p>
+<p>我们需要一个状态 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi></mrow><annotation encoding="application/x-tex">S</annotation></semantics></math></span></span>，它表示 LC 的作用域，在 target language 中，你可以用 Python 的字典来想象它，想象它是一个从字符串到 target language 运行时对象的映射。</p>
+<p align="center">
+    <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mo>=</mo><mo stretchy="false">(</mo><msub><mi>a</mi><mn>1</mn></msub><mo>↦</mo><msub><mi>r</mi><mn>1</mn></msub><mo stretchy="false">)</mo><mo stretchy="false">(</mo><msub><mi>a</mi><mn>2</mn></msub><mo>↦</mo><msub><mi>r</mi><mn>2</mn></msub><mo stretchy="false">)</mo><mo>⋯</mo><mo stretchy="false">(</mo><msub><mi>a</mi><mi>n</mi></msub><mo>↦</mo><msub><mi>r</mi><mi>n</mi></msub><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">S = (a_1 \mapsto r_1) (a_2 \mapsto r_2)  \cdots (a_n \mapsto r_n)</annotation></semantics></math></span></span>
+</p>
+<p>其中，<span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>a</mi><mn>1</mn></msub><mo separator="true">,</mo><mo>⋯</mo><mtext> </mtext><mo separator="true">,</mo><msub><mi>a</mi><mi>n</mi></msub></mrow><annotation encoding="application/x-tex">a_1, \cdots, a_n</annotation></semantics></math></span></span> 可以理解为 target language 中的字符串。</p>
+<p>LC语义如下，其中 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo separator="true">,</mo><msub><mi>r</mi><mi>f</mi></msub><mo separator="true">,</mo><msub><mi>r</mi><mn>1</mn></msub><mo separator="true">,</mo><mo>⋯</mo><msub><mi>r</mi><mi>n</mi></msub></mrow><annotation encoding="application/x-tex">r, r_f, r_1, \cdots r_n</annotation></semantics></math></span></span> 是 target language 中的值，这样的值如果是函数，则是一个数学上的纯函数 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mo>:</mo><mo stretchy="false">(</mo><mi>S</mi><mo separator="true">,</mo><mi>r</mi><mo stretchy="false">)</mo><mo>↦</mo><mo stretchy="false">(</mo><msup><mi>r</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mo separator="true">,</mo><msup><mi>S</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">f: (S, r) \mapsto (r', S') </annotation></semantics></math></span></span>。</p>
+<p><strong>规则1: 变量查找</strong></p>
+
+<div style="position: relative">
+	<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><mrow></mrow><mrow><mo stretchy="false">(</mo><msub><mi>a</mi><mn>1</mn></msub><mo>↦</mo><msub><mi>v</mi><mn>1</mn></msub><mo stretchy="false">)</mo><mo>⋯</mo><mo stretchy="false">(</mo><msub><mi>a</mi><mi>n</mi></msub><mo>↦</mo><msub><mi>v</mi><mi>n</mi></msub><mo stretchy="false">)</mo><mo separator="true">,</mo><mtext>Var</mtext><mo stretchy="false">(</mo><msub><mi>a</mi><mi>k</mi></msub><mo stretchy="false">)</mo><mo>⟶</mo><msub><mi>v</mi><mi>k</mi></msub><mo separator="true">,</mo><mo stretchy="false">(</mo><msub><mi>a</mi><mn>1</mn></msub><mo>↦</mo><msub><mi>v</mi><mn>1</mn></msub><mo stretchy="false">)</mo><mo>⋯</mo><mo stretchy="false">(</mo><msub><mi>a</mi><mi>n</mi></msub><mo>↦</mo><msub><mi>v</mi><mi>n</mi></msub><mo stretchy="false">)</mo></mrow></mfrac><mspace></mspace></mrow><annotation encoding="application/x-tex">\dfrac{}{ (a_1 \mapsto v_1) \cdots (a_n \mapsto v_n), \text{Var}(a_k) \longrightarrow v_k, (a_1 \mapsto v_1) \cdots (a_n \mapsto v_n) } \\
+</annotation></semantics></math></span>
+
+	<button class="code-copy-button" data-clipboard-text="\dfrac{}{ (a_1 \mapsto v_1) \cdots (a_n \mapsto v_n), \text{Var}(a_k) \longrightarrow v_k, (a_1 \mapsto v_1) \cdots (a_n \mapsto v_n) } \\
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p><strong>规则2: 函数调用</strong></p>
+
+<div style="position: relative">
+	<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><mrow><mi>S</mi><mo separator="true">,</mo><msub><mi>X</mi><mi>f</mi></msub><mo>→</mo><mtext>Func</mtext><mo stretchy="false">(</mo><mi>a</mi><mo separator="true">,</mo><msub><mi>X</mi><mtext>body</mtext></msub><mo stretchy="false">)</mo><mo separator="true">,</mo><msup><mi>S</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mspace width="1em"></mspace><msup><mi>S</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mo separator="true">,</mo><msub><mi>X</mi><mtext>arg</mtext></msub><mo>→</mo><msub><mi>r</mi><mtext>arg</mtext></msub><mo separator="true">,</mo><msup><mi>S</mi><mrow><mo mathvariant="normal">′</mo><mo mathvariant="normal">′</mo></mrow></msup><mspace width="1em"></mspace><mo stretchy="false">(</mo><mi>a</mi><mo>↦</mo><msub><mi>r</mi><mtext>arg</mtext></msub><mo stretchy="false">)</mo><msup><mi>S</mi><mrow><mo mathvariant="normal">′</mo><mo mathvariant="normal">′</mo></mrow></msup><mo separator="true">,</mo><msub><mi>X</mi><mtext>body</mtext></msub><mo>→</mo><msub><mi>r</mi><mtext>ret</mtext></msub><mo separator="true">,</mo><msup><mi>S</mi><mrow><mo mathvariant="normal">′</mo><mo mathvariant="normal">′</mo><mo mathvariant="normal">′</mo></mrow></msup></mrow><mrow><mi>S</mi><mo separator="true">,</mo><mtext>Call</mtext><mo stretchy="false">(</mo><msub><mi>X</mi><mi>f</mi></msub><mo separator="true">,</mo><msub><mi>X</mi><mtext>arg</mtext></msub><mo stretchy="false">)</mo><mo>⟶</mo><msub><mi>r</mi><mrow><mi>r</mi><mi>e</mi><mi>t</mi></mrow></msub><mo separator="true">,</mo><msup><mi>S</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup></mrow></mfrac></mrow><annotation encoding="application/x-tex">\dfrac{  S, X_f \rightarrow \text{Func}(a, X_{\text{body}}), S' \quad S', X_{\text{arg}} \rightarrow r_{\text{arg}}, S'' \quad (a \mapsto  r_{\text{arg}}) S'', X_{\text{body}} \rightarrow r_{\text{ret}}, S''' }{ S, \text{Call}(X_f, X_{\text{arg}}) \longrightarrow r_{ret}, S' }
+</annotation></semantics></math></span>
+
+	<button class="code-copy-button" data-clipboard-text="\dfrac{  S, X_f \rightarrow \text{Func}(a, X_{\text{body}}), S' \quad S', X_{\text{arg}} \rightarrow r_{\text{arg}}, S'' \quad (a \mapsto  r_{\text{arg}}) S'', X_{\text{body}} \rightarrow r_{\text{ret}}, S''' }{ S, \text{Call}(X_f, X_{\text{arg}}) \longrightarrow r_{ret}, S' }
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<div class="markdown-alert markdown-alert-tip">
+<p class="markdown-alert-title">Tip</p>
+<p>在我们的语义中，<span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi></mrow><annotation encoding="application/x-tex">S</annotation></semantics></math></span></span> 仅表示作用域，此时函数调用返回的状态应该被抛弃，即最后的
+状态是 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>S</mi><mrow><mo mathvariant="normal">′</mo><mo mathvariant="normal">′</mo></mrow></msup></mrow><annotation encoding="application/x-tex">S''</annotation></semantics></math></span></span> 而不是 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>S</mi><mrow><mo mathvariant="normal">′</mo><mo mathvariant="normal">′</mo><mo mathvariant="normal">′</mo></mrow></msup></mrow><annotation encoding="application/x-tex">S'''</annotation></semantics></math></span></span>。</p>
+<p>但是，如果 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi></mrow><annotation encoding="application/x-tex">S</annotation></semantics></math></span></span> 中包含了其他的副作用，如 IO、内存分配，则相关副作用会在函数调用之后继续继承。</p>
+<p>因此，语义中可能存在多种不同的副作用，它们处理方式各不相同，整体处理难度可见一斑。但不必因此灰心，在具体的程序实现中，副作用的处理是简单的。</p>
+</div>
+<p><strong>规则3: 函数定义</strong></p>
+
+<div style="position: relative">
+	<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mtable rowspacing="0.25em" columnalign="right" columnspacing=""><mtr><mtd class="mtr-glue"></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mfrac><mrow></mrow><mrow><msup><mi>S</mi><mo lspace="0em" rspace="0em">∗</mo></msup><mo separator="true">,</mo><mtext>Func</mtext><mo stretchy="false">(</mo><mi>a</mi><mo separator="true">,</mo><mi>X</mi><mo stretchy="false">)</mo><mo>⟶</mo><mtext>Func</mtext><mo stretchy="false">(</mo><mi>a</mi><mo separator="true">,</mo><mi>X</mi><mo stretchy="false">)</mo><mo separator="true">,</mo><msup><mi>S</mi><mo lspace="0em" rspace="0em">∗</mo></msup></mrow></mfrac></mstyle></mtd><mtd class="mtr-glue"></mtd><mtd class="mml-eqn-num"></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align}
+\dfrac{ }{
+    S^{*}, \text{Func}(a, X) \longrightarrow \text{Func}(a, X), S^{*}
+} \\
+\end{align}
+</annotation></semantics></math></span>
+
+	<button class="code-copy-button" data-clipboard-text="\begin{align}
+\dfrac{ }{
+    S^{*}, \text{Func}(a, X) \longrightarrow \text{Func}(a, X), S^{*}
+} \\
+\end{align}
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>我们之前提过，任何语法结构，如 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext>Func</mtext><mo stretchy="false">(</mo><mi>a</mi><mo separator="true">,</mo><mi>X</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\text{Func}(a, X)</annotation></semantics></math></span></span> 和 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>X</mi></mrow><annotation encoding="application/x-tex">X</annotation></semantics></math></span></span>，都是 host language 中的数据结构，而我们又使用了 target langauge = host language 这一方便的假设，因此实际上直接将语法结构作为函数对象的值来存储。</p>
+<div class="markdown-alert markdown-alert-tip">
+<p class="markdown-alert-title">Tip</p>
+<p>在实践中，函数定义时期应当做进一步处理来优化性能、方便实现。这些处理将 AST 转换成更紧凑、更静态、更方便获取所需运行时信息的结构（即，编译），例如在 Python 中，函数定义会被转换为基于 Code Object 的简单包装器 (<code>types.FunctionType</code>)，而核心的 Code Object 中则包含字节码指令序列、常量缓存池、各种名字用到的字符串对象池等。</p>
+</div>
+<!-- define images -->
+<!-- define references -->
+<p><em>习题</em></p>
+<p>按照上述语义，LC 语言是否支持“闭包 (closure)”？读者须自行了解什么是闭包。</p>
+<h3 id="lc-%E6%89%A9%E5%B1%95%E3%80%81%E5%8E%9F%E8%AF%AD%E5%87%BD%E6%95%B0" tabindex="-1"><a href="#lc-%E6%89%A9%E5%B1%95%E3%80%81%E5%8E%9F%E8%AF%AD%E5%87%BD%E6%95%B0" class="header-anchor">LC 扩展、原语函数</a></h3>
+<p>虽然 LC 语言是一种和图灵机一样强力的底层模型，但如果不在其中引入一些我们熟知的语言构造，它就没有什么实用价值。 虽然可以利用 <a href="https://en.wikipedia.org/wiki/Church_encoding">Church encoding</a> 将整数、布尔、if-else 等高级语言构造拆解为 LC 表示，但此表示对实际编程不适用。</p>
+<p>我们对 LC 进行扩展，添加布尔、数字、字符串、原语函数等。</p>
+
+<div style="position: relative">
+	<pre><code class="language-reasonml hljs"><span class="hljs-type">LC</span> = <span class="hljs-type">Call</span>(func: <span class="hljs-type">LC</span>, args: <span class="hljs-type">LC</span>)
+   | <span class="hljs-type">Var</span>(varname: str)
+   | <span class="hljs-type">Func</span>(argname: str, body: <span class="hljs-type">LC</span>)
+   <span class="hljs-comment">// 扩展</span>
+   | <span class="hljs-type">BoolVal</span>(value: <span class="hljs-built_in">bool</span>)
+   | <span class="hljs-type">NumberVal</span>(value: number)
+   | <span class="hljs-type">StringVal</span>(value: str)
+   | <span class="hljs-type">Prim</span>(name: str)
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="LC = Call(func: LC, args: LC)
+   | Var(varname: str)
+   | Func(argname: str, body: LC)
+   // 扩展
+   | BoolVal(value: bool)
+   | NumberVal(value: number)
+   | StringVal(value: str)
+   | Prim(name: str)
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>原语函数 (primitive functions) 是一种特殊函数，它是 source language 在概念上所内置的函数，是语言本身的一部分，而非用户所定义。</p>
+<details>
+<summary>
+原语函数有时被称为内建函数 (builtin functions) 或 intrinsic functions (固有函数)。三者在实践上有一定程度的混用，但它们之间存在差异。
+</summary>
+<p>
+primitive 蕴含包含正交性和不可分割性，而 instrinsic 则更强调语言与生俱来、如同公理一般的特性，而 builtin 则包含了两者的特性。
+</p>
+</details>
+<p>那么原语函数有什么用？很简单，如果没有原语函数，你甚至很难做到下面的事情：</p>
+<ol>
+<li>数字加法</li>
+<li>数字打印</li>
+</ol>
+<p>原语函数是编程语言访问物理计算机能力的接口，它很重要，因为编程语言是屏蔽物理计算机细节的中间层，最终还是要落实到真实的计算。</p>
+<details>
+<summary>
+Idris 原语函数 <code> op_str_concat </code> 的例子
+</summary>
+<p>著名的实用派函数式语言 Idris，会预设一些特殊名字的函数存在，例如，Idris 语言没有定义函数 <code>op_str_concat</code>，但任何字符串拼接操作最后都会调用到它，因此 Idris 语言本身无需依赖字符串的实现方式。<code>op_str_concat</code> 这样的函数被称为原语函数，它被预设存在，以提供语言最基本的、不可划分的操作。</p>
+</details>
+<p>对于任意一个合法的原语函数 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>:</mo><mo stretchy="false">(</mo><mi>S</mi><mo separator="true">,</mo><mi>r</mi><mo stretchy="false">)</mo><mo>↦</mo><mo stretchy="false">(</mo><mi>r</mi><mo separator="true">,</mo><mi>S</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">p: (S, r) \mapsto (r, S)</annotation></semantics></math></span></span>，获取它的语法 (对应的语法树) 可能是 <code>Prim(name: str)</code>，其执行结果是一个原语函数 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi></mrow><annotation encoding="application/x-tex">p</annotation></semantics></math></span></span>，因此 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi></mrow><annotation encoding="application/x-tex">p</annotation></semantics></math></span></span> 应当可以根据一个名字 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi></mrow><annotation encoding="application/x-tex">a</annotation></semantics></math></span></span> 查询出来。</p>
+<p><span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>p</mi><mo>=</mo><mtext>LookUpPrim</mtext><mo stretchy="false">(</mo><mi>a</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">
+p = \text{LookUpPrim}(a)
+</annotation></semantics></math></span></span></p>
+<p>我们可以定义原语函数 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>:</mo><mo stretchy="false">(</mo><mi>S</mi><mo separator="true">,</mo><mi>r</mi><mo stretchy="false">)</mo><mo>↦</mo><mo stretchy="false">(</mo><mi>r</mi><mo separator="true">,</mo><mi>S</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">p: (S, r) \mapsto (r, S)</annotation></semantics></math></span></span> 的语义，分成两部分，一部分是定义，一部分是调用。</p>
+<p><strong>原语函数定义</strong></p>
+
+<div style="position: relative">
+	<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><mrow></mrow><mrow><mo stretchy="false">(</mo><mi>S</mi><mo separator="true">,</mo><mtext>Prim</mtext><mo stretchy="false">(</mo><mi>a</mi><mo stretchy="false">)</mo><mo stretchy="false">)</mo><mo>⟶</mo><mo stretchy="false">(</mo><mtext>Prim</mtext><mo stretchy="false">(</mo><mi>a</mi><mo stretchy="false">)</mo><mo separator="true">,</mo><mi>S</mi><mo stretchy="false">)</mo></mrow></mfrac></mrow><annotation encoding="application/x-tex">\dfrac{  } {
+    (S, \text{Prim}(a)) \longrightarrow (\text{Prim}(a), S)
+}
+</annotation></semantics></math></span>
+
+	<button class="code-copy-button" data-clipboard-text="\dfrac{  } {
+    (S, \text{Prim}(a)) \longrightarrow (\text{Prim}(a), S)
+}
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>语法树还是直接作为值使用。</p>
+<p><strong>原语函数调用</strong></p>
+
+<div style="position: relative">
+	<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><mrow><mi>p</mi><mo>=</mo><mtext>LookUpPrim</mtext><mo stretchy="false">(</mo><mi>a</mi><mo stretchy="false">)</mo><mspace width="1em"></mspace><mi>S</mi><mo separator="true">,</mo><mi>X</mi><mo>→</mo><msub><mi>r</mi><mrow><mi>a</mi><mi>r</mi><mi>g</mi></mrow></msub><mo separator="true">,</mo><msup><mi>S</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mspace width="1em"></mspace><mo stretchy="false">(</mo><msup><mi>r</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mo separator="true">,</mo><msup><mi>S</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mo stretchy="false">)</mo><mo>=</mo><mi>p</mi><mo stretchy="false">(</mo><mi>S</mi><mo separator="true">,</mo><msub><mi>r</mi><mrow><mi>a</mi><mi>r</mi><mi>g</mi></mrow></msub><mo stretchy="false">)</mo></mrow><mrow><mi>S</mi><mo separator="true">,</mo><mtext>Call</mtext><mo stretchy="false">(</mo><mtext>Prim</mtext><mo stretchy="false">(</mo><mi>a</mi><mo stretchy="false">)</mo><mo separator="true">,</mo><mi>X</mi><mo stretchy="false">)</mo><mo>⟶</mo><msup><mi>r</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mo separator="true">,</mo><msup><mi>S</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup></mrow></mfrac></mrow><annotation encoding="application/x-tex">\dfrac{
+    p = \text{LookUpPrim}(a)
+    \quad
+    S, X \rightarrow r_{arg}, S'
+    \quad
+    (r', S') = p(S, r_{arg})
+}{
+    S, \text{Call}(\text{Prim}(a), X) \longrightarrow r', S'
+}
+</annotation></semantics></math></span>
+
+	<button class="code-copy-button" data-clipboard-text="\dfrac{
+    p = \text{LookUpPrim}(a)
+    \quad
+    S, X \rightarrow r_{arg}, S'
+    \quad
+    (r', S') = p(S, r_{arg})
+}{
+    S, \text{Call}(\text{Prim}(a), X) \longrightarrow r', S'
+}
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p><em>习题</em></p>
+<p>尝试给出 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext>BoolVal</mtext></mrow><annotation encoding="application/x-tex">\text{BoolVal}</annotation></semantics></math></span></span> , <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext>NumberVal</mtext></mrow><annotation encoding="application/x-tex">\text{NumberVal}</annotation></semantics></math></span></span> 和 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext>StringVal</mtext></mrow><annotation encoding="application/x-tex">\text{StringVal}</annotation></semantics></math></span></span> 的语义？</p>
+<h3 id="%E6%89%A9%E5%B1%95-lc-%E7%9A%84%E8%A7%A3%E9%87%8A%E5%99%A8%E5%AE%9E%E7%8E%B0-(python)" tabindex="-1"><a href="#%E6%89%A9%E5%B1%95-lc-%E7%9A%84%E8%A7%A3%E9%87%8A%E5%99%A8%E5%AE%9E%E7%8E%B0-(python)" class="header-anchor">扩展 LC 的解释器实现 (Python)</a></h3>
+<p>现在，让我们根据前面给出的LC语义，在Python语言 (建议Python 3.10以上) 中实现扩展LC的解释器。</p>
+
+<div style="position: relative">
+	<pre><code class="language-python hljs"><span class="hljs-keyword">from</span> __future__ <span class="hljs-keyword">import</span> annotations
+<span class="hljs-keyword">from</span> dataclasses <span class="hljs-keyword">import</span> dataclass
+<span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">Any</span>
+
+<span class="hljs-meta">@dataclass(<span class="hljs-params">frozen=<span class="hljs-literal">True</span></span>)</span>
+<span class="hljs-keyword">class</span> <span class="hljs-title class_">Call</span>:
+    func: LC
+    arg: LC
+
+<span class="hljs-meta">@dataclass(<span class="hljs-params">frozen=<span class="hljs-literal">True</span></span>)</span>
+<span class="hljs-keyword">class</span> <span class="hljs-title class_">Func</span>:
+    name: <span class="hljs-built_in">str</span>
+    body: LC
+
+<span class="hljs-meta">@dataclass(<span class="hljs-params">frozen=<span class="hljs-literal">True</span></span>)</span>
+<span class="hljs-keyword">class</span> <span class="hljs-title class_">Var</span>:
+    name: <span class="hljs-built_in">str</span>
+
+<span class="hljs-meta">@dataclass(<span class="hljs-params">frozen=<span class="hljs-literal">True</span></span>)</span>
+<span class="hljs-keyword">class</span> <span class="hljs-title class_">Prim</span>:
+    name: <span class="hljs-built_in">str</span>
+
+<span class="hljs-comment"># <span class="hljs-doctag">TODO:</span> 自行实现 LC 的其他 constructor</span>
+<span class="hljs-comment"># NumberVal, BoolVal, StringVal</span>
+...
+
+<span class="hljs-comment"># <span class="hljs-doctag">TODO:</span> 自行实现 LookUpPrim</span>
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">lookup_prim</span>(<span class="hljs-params">name: <span class="hljs-built_in">str</span></span>):
+    <span class="hljs-comment"># TODO</span>
+    ...
+
+<span class="hljs-comment"># 定义sort</span>
+LC = Var | Func | Call | Prim | NumberVal | BoolVal | StringVal
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">eval_lc</span>(<span class="hljs-params">S: <span class="hljs-built_in">dict</span>[<span class="hljs-built_in">str</span>, <span class="hljs-type">Any</span>], X: LC</span>) -&gt; <span class="hljs-built_in">tuple</span>[<span class="hljs-type">Any</span>, S]:
+    <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(X, Var):
+        <span class="hljs-keyword">return</span> S[X.name], S
+    ...  <span class="hljs-comment"># <span class="hljs-doctag">TODO:</span> 自行实现</span>
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="from __future__ import annotations
+from dataclasses import dataclass
+from typing import Any
+
+@dataclass(frozen=True)
+class Call:
+    func: LC
+    arg: LC
+
+@dataclass(frozen=True)
+class Func:
+    name: str
+    body: LC
+
+@dataclass(frozen=True)
+class Var:
+    name: str
+
+@dataclass(frozen=True)
+class Prim:
+    name: str
+
+# TODO: 自行实现 LC 的其他 constructor
+# NumberVal, BoolVal, StringVal
+...
+
+# TODO: 自行实现 LookUpPrim
+def lookup_prim(name: str):
+    # TODO
+    ...
+
+# 定义sort
+LC = Var | Func | Call | Prim | NumberVal | BoolVal | StringVal
+
+def eval_lc(S: dict[str, Any], X: LC) -> tuple[Any, S]:
+    if isinstance(X, Var):
+        return S[X.name], S
+    ...  # TODO: 自行实现
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<div class="markdown-alert markdown-alert-tip">
+<p class="markdown-alert-title">Tip</p>
+<ol>
+<li>可以尝试支持一些原语函数，例如加、减、乘、除和打印</li>
+</ol>
+</div>
+<h2 id="lc%E7%9A%84%E8%AF%AD%E6%B3%95%E8%A7%A3%E6%9E%90" tabindex="-1"><a href="#lc%E7%9A%84%E8%AF%AD%E6%B3%95%E8%A7%A3%E6%9E%90" class="header-anchor">LC的语法解析</a></h2>
+<p>欢迎来到编译器最平凡的部分，语法解析 (parsing)。</p>
+<p>除开产出学术成果的研究需要，<strong>否则强烈建议不要在 parsing 上浪费任何的时间</strong>。</p>
+<h3 id="%E5%AE%9E%E7%94%A8%E4%B8%BB%E4%B9%89%E7%9A%84-parsing-%E6%8A%80%E6%9C%AF%E9%80%89%E5%9E%8B" tabindex="-1"><a href="#%E5%AE%9E%E7%94%A8%E4%B8%BB%E4%B9%89%E7%9A%84-parsing-%E6%8A%80%E6%9C%AF%E9%80%89%E5%9E%8B" class="header-anchor">实用主义的 parsing 技术选型</a></h3>
+<p>解析器从源代码文本中提取语法结构，这个语法结构通常指抽象语法树。</p>
+<p>相应的语法解析技术，具体来说有很多，例如手工递归下降法、parser generator 和 parser combinator 等。</p>
+<p>通常来说，解析器需要着重报错与表达力，但对极限性能的需求则相当虚拟。使用ANTLR4 (一个实用的 parser 生成器框架)，按照 lua 规范实现一个 lua 解析器，这样的解析器中会存在相当多的歧义，多少会导致性能问题。但在实践中，上面这样“低质量”的 lua 解析器一秒钟能解析接近10万行来自 real world 的工业代码，这种性能足以让 IDE 分析工具在你每一次落键瞬间重新解析、分析当前文件并更新补全信息。</p>
+<p>因此，建议读者大胆地去使用那些表现力足够强、报错足够好的解析器生成器，例如 ANTLR4, Python Lark 等等；parser combinator/parsec 也可以用，报错机制会更灵活，但做事情会慢一些；需要小心那些 LL(1)/LR(1) 解析器，如果你不算parser 专家，或者不想浪费生命去纠结为什么你的文法不工作。</p>
+<p>此文章将使用 Python 的 Lark 来演示。它的性能其实非常差，但因为非常实用，被大量重要的 Python 开源项目使用 —— 从这里也可以看出，解析器性能很多时候并非关键。</p>
+<h3 id="%E5%9F%BA%E4%BA%8E-python-lark-%E6%9D%A5%E8%A7%A3%E6%9E%90-lc-%E8%AF%AD%E6%B3%95" tabindex="-1"><a href="#%E5%9F%BA%E4%BA%8E-python-lark-%E6%9D%A5%E8%A7%A3%E6%9E%90-lc-%E8%AF%AD%E6%B3%95" class="header-anchor">基于 Python Lark 来解析 LC 语法</a></h3>
+
+<div style="position: relative">
+	<pre><code class="language-abnf hljs">start : lc
+
+lc    : call
+      | atom
+
+call   : call atom
+       | atom
+
+atom  : CNAME
+      | func
+      | prim
+      | number
+      | boolean
+      | string
+      | <span class="hljs-string">"("</span> lc <span class="hljs-string">")"</span>
+
+string : ESCAPED_STRING
+number : NUMBER
+boolean: <span class="hljs-string">"true"</span> | <span class="hljs-string">"false"</span>
+var    : CNAME
+func   : <span class="hljs-string">"func"</span> <span class="hljs-string">"("</span> CNAME <span class="hljs-string">")"</span> <span class="hljs-string">"{"</span> lc <span class="hljs-string">"}"</span>
+prim   : '@' CNAME
+
+%import common.WS               // 这是空白符token
+%import common.ESCAPED_STRING   // 这是双引号字符串token
+%import common.CNAME            // 这是C标志服token
+%import common.NUMBER           // 这是数字token
+%ignore WS                      // 忽略所有空白符
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="start : lc
+
+lc    : call
+      | atom
+
+call   : call atom
+       | atom
+
+atom  : CNAME
+      | func
+      | prim
+      | number
+      | boolean
+      | string
+      | &quot;(&quot; lc &quot;)&quot;
+
+string : ESCAPED_STRING
+number : NUMBER
+boolean: &quot;true&quot; | &quot;false&quot;
+var    : CNAME
+func   : &quot;func&quot; &quot;(&quot; CNAME &quot;)&quot; &quot;{&quot; lc &quot;}&quot;
+prim   : '@' CNAME
+
+%import common.WS               // 这是空白符token
+%import common.ESCAPED_STRING   // 这是双引号字符串token
+%import common.CNAME            // 这是C标志服token
+%import common.NUMBER           // 这是数字token
+%ignore WS                      // 忽略所有空白符
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>这个文法被一行代码的 Lark 编译工具处理后，可以生成一个 LC 语言的解析器，具体可参考 <a href="https://lark-parser.readthedocs.io/en/latest/json_tutorial.html">json_parser全流程</a>。由于这个解析器输出的是具体语法树 (CST)，你可能需要手动转换CST到AST。</p>
+<p>出于可读性和可维护性的考虑，CST 到 AST 的转换最好在文法中进行 (参考语法制导，或semantic actions)。虽然关于这一点常常有一些相反意见，但<a href="https://peps.python.org/pep-0617/#intermediate-parse-tree">Python的发展生动地说明了这点</a>。对此，我的建议是努力地使用语法制导，<strong>但绝不在文法中引入构造 AST 以外的逻辑</strong>。</p>
+
+<div style="position: relative">
+	<pre><code class="language-abnf hljs">// 一个好的使用semantic action的例子
+lc_atom : CNAME   -&gt; Var(token_to_string($<span class="hljs-number">1</span>))
+        | <span class="hljs-string">"true"</span>  -&gt; BoolVal(True)
+        | <span class="hljs-string">"false"</span> -&gt; BoolVal(False)
+        | ...
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="// 一个好的使用semantic action的例子
+lc_atom : CNAME   -> Var(token_to_string($1))
+        | &quot;true&quot;  -> BoolVal(True)
+        | &quot;false&quot; -> BoolVal(False)
+        | ...
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>现在，使用 Lark 或者别的你觉得趁手的解析器生成工具，为 LC 语言生成一个解析器。</p>
+<p>如果你觉得这个工作很无聊或者不好办，可以无情地使用以下步骤获得一个 parser：</p>
+<ol start="0">
+<li>
+<p>安装 Python 并激活环境: <a href="https://conda-forge.org/miniforge/">https://conda-forge.org/miniforge</a></p>
+</li>
+<li>
+<p>创建一个项目文件夹 <code>intp_exercise</code>。</p>
+</li>
+<li>
+<p>新建<code>lc_ast.py</code>，将扩展LC语言的所有语法结构 (<code>Call</code>, <code>Prim</code>, <code>Var</code>, <code>Func</code>, <code>NumberVal</code>等) 以及前面 <code>eval_lc</code> 函数，放入 <code>lc_ast.py</code> 中。</p>
+</li>
+<li>
+<p>在文件夹中创建文件 <code>lc1.lark</code>，在文件夹中创建文件 <code>lc1.lark</code>，内容如下:</p>
+
+<div style="position: relative">
+	<pre><code class="language-python hljs">%%
+<span class="hljs-keyword">from</span> lc_ast <span class="hljs-keyword">import</span> *
+%%
+
+start : lc             -&gt; $<span class="hljs-number">1</span>
+lc    : lc atom        -&gt; Call($<span class="hljs-number">1</span>, $<span class="hljs-number">2</span>)
+      | atom           -&gt; $<span class="hljs-number">1</span>
+atom  : CNAME          -&gt; Var($<span class="hljs-number">1.</span>value)
+      | <span class="hljs-string">'@'</span> CNAME      -&gt; Prim($<span class="hljs-number">2.</span>value)
+      | NUMBER         -&gt; NumberVal(<span class="hljs-built_in">eval</span>($<span class="hljs-number">1.</span>value))
+      | <span class="hljs-string">"true"</span>         -&gt; BoolVal(<span class="hljs-literal">True</span>)
+      | <span class="hljs-string">"false"</span>        -&gt; BoolVal(<span class="hljs-literal">False</span>)
+      | ESCAPED_STRING -&gt; StringVal(<span class="hljs-built_in">eval</span>($<span class="hljs-number">1.</span>value))
+      | <span class="hljs-string">"("</span> lc <span class="hljs-string">")"</span>     -&gt; $<span class="hljs-number">2</span>
+      | <span class="hljs-string">"func"</span> <span class="hljs-string">"("</span> CNAME <span class="hljs-string">")"</span> <span class="hljs-string">"{"</span> lc <span class="hljs-string">"}"</span> -&gt; Func($<span class="hljs-number">3.</span>value, $<span class="hljs-number">6</span>)
+
+%<span class="hljs-keyword">import</span> common.WS               // 这是空白符token
+%<span class="hljs-keyword">import</span> common.ESCAPED_STRING   // 这是双引号字符串token
+%<span class="hljs-keyword">import</span> common.CNAME            // 这是C标志服token
+%<span class="hljs-keyword">import</span> common.NUMBER           // 这是数字token
+%ignore WS                      // 忽略所有空白符
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="%%
+from lc_ast import *
+%%
+
+start : lc             -> $1
+lc    : lc atom        -> Call($1, $2)
+      | atom           -> $1
+atom  : CNAME          -> Var($1.value)
+      | '@' CNAME      -> Prim($2.value)
+      | NUMBER         -> NumberVal(eval($1.value))
+      | &quot;true&quot;         -> BoolVal(True)
+      | &quot;false&quot;        -> BoolVal(False)
+      | ESCAPED_STRING -> StringVal(eval($1.value))
+      | &quot;(&quot; lc &quot;)&quot;     -> $2
+      | &quot;func&quot; &quot;(&quot; CNAME &quot;)&quot; &quot;{&quot; lc &quot;}&quot; -> Func($3.value, $6)
+
+%import common.WS               // 这是空白符token
+%import common.ESCAPED_STRING   // 这是双引号字符串token
+%import common.CNAME            // 这是C标志服token
+%import common.NUMBER           // 这是数字token
+%ignore WS                      // 忽略所有空白符
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+</li>
+<li>
+<p>运行命令 <code>pip install lark-action</code>, 安装 <code>lark-action</code> 包</p>
+</li>
+<li>
+<p>在文件夹<code>intp_exercise/</code>下运行：</p>
+
+<div style="position: relative">
+	<pre><code class="language-bash hljs">python -m lark_action lc1.lark --package=<span class="hljs-string">""</span> --module=<span class="hljs-string">"lc"</span>
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="python -m lark_action lc1.lark --package=&quot;&quot; --module=&quot;lc&quot;
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+</li>
+<li>
+<p><code>lc_run.py</code> 内容如下：</p>
+
+<div style="position: relative">
+	<pre><code class="language-python hljs"><span class="hljs-comment"># lc_run.py</span>
+
+<span class="hljs-keyword">from</span> lc <span class="hljs-keyword">import</span> parser
+<span class="hljs-keyword">from</span> lc_ast <span class="hljs-keyword">import</span> eval_lc
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">add</span>(<span class="hljs-params">ctx, x</span>):
+    <span class="hljs-keyword">def</span> <span class="hljs-title function_">addx</span>(<span class="hljs-params">ctx, y</span>):
+        <span class="hljs-keyword">return</span> y, ctx
+    <span class="hljs-keyword">return</span> addx, ctx
+
+S = { <span class="hljs-string">'add'</span>: add }
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">run_code</span>(<span class="hljs-params">source_code</span>):
+    r, _ = eval_lc(S, parser.parse(source_code))
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">"执行结果为:"</span>, r)
+
+run_code(<span class="hljs-string">"add 1 2"</span>) <span class="hljs-comment"># 3</span>
+run_code(<span class="hljs-string">"(func (x) {add 2 x})(3)"</span>) <span class="hljs-comment"># 5</span>
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="# lc_run.py
+
+from lc import parser
+from lc_ast import eval_lc
+
+def add(ctx, x):
+    def addx(ctx, y):
+        return y, ctx
+    return addx, ctx
+
+S = { 'add': add }
+
+def run_code(source_code):
+    r, _ = eval_lc(S, parser.parse(source_code))
+    print(&quot;执行结果为:&quot;, r)
+
+run_code(&quot;add 1 2&quot;) # 3
+run_code(&quot;(func (x) {add 2 x})(3)&quot;) # 5
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+</li>
+<li>
+<p>执行命令 <code>python lc_run.py</code>。</p>
+</li>
+</ol>
+<p>按照上述步骤，你将可以运行扩展后的 LC 语言，前提是你完成了<a href="#%E6%89%A9%E5%B1%95-lc-%E7%9A%84%E8%A7%A3%E9%87%8A%E5%99%A8%E5%AE%9E%E7%8E%B0-(python)">扩展 LC 的解释器实现 (Python)</a>的代码习题。</p>
+<p>改动 <code>lc_run.py</code> 的代码，多看看效果。</p>
+<p><em>习题</em></p>
+<p>尝试实现一个REPL (Read-Eval-Print-Loop)。</p>
+<h2 id="%E6%9B%B4%E4%B8%B0%E5%AF%8C%E7%9A%84%E8%AF%AD%E8%A8%80%E6%9E%84%E9%80%A0%3A-%E5%8F%98%E9%87%8F%E7%BB%91%E5%AE%9A%E3%80%81if%2C-while" tabindex="-1"><a href="#%E6%9B%B4%E4%B8%B0%E5%AF%8C%E7%9A%84%E8%AF%AD%E8%A8%80%E6%9E%84%E9%80%A0%3A-%E5%8F%98%E9%87%8F%E7%BB%91%E5%AE%9A%E3%80%81if%2C-while" class="header-anchor">更丰富的语言构造: 变量绑定、if, while</a></h2>
+<p>虽然我们已经完成一个有模有样的解释器，但它目前仍很不实用。</p>
+<p>该如何赋值呢？我们甚至不能使用 <code>x = 1</code> 这样的代码。</p>
+<p>此外，函数体也只能支持“一句话”，而不能支持多行，就像下面这样：</p>
+
+<div style="position: relative">
+	<pre><code class="language-go hljs"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(x)</span></span>
+{
+    display x
+    add x x
+}
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="func (x)
+{
+    display x
+    add x x
+}
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>要支持上述能力，我们引入两种新的语法结构：</p>
+<p><strong>变量绑定</strong></p>
+<ul>
+<li>
+<p>语法结构: <code>Assign(name: str, expr: LC)</code></p>
+</li>
+<li>
+<p>语义:</p>
+
+<div style="position: relative">
+	<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><mrow><mi>S</mi><mo separator="true">,</mo><mi>X</mi><mo>⟶</mo><mi>r</mi><mo separator="true">,</mo><msup><mi>S</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup></mrow><mrow><mi>S</mi><mo separator="true">,</mo><mtext>Assign</mtext><mo stretchy="false">(</mo><mi>a</mi><mo separator="true">,</mo><mi>X</mi><mo stretchy="false">)</mo><mo>⟶</mo><mi>r</mi><mo separator="true">,</mo><mo stretchy="false">(</mo><mi>a</mi><mo>↦</mo><mi>r</mi><mo stretchy="false">)</mo><msup><mi>S</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup></mrow></mfrac></mrow><annotation encoding="application/x-tex">\dfrac{ S, X \longrightarrow r, S' }{
+    S, \text{Assign}(a, X) \longrightarrow r, (a \mapsto r) S'
+}
+</annotation></semantics></math></span>
+
+	<button class="code-copy-button" data-clipboard-text="\dfrac{ S, X \longrightarrow r, S' }{
+    S, \text{Assign}(a, X) \longrightarrow r, (a \mapsto r) S'
+}
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+</li>
+</ul>
+<p><strong>语句块</strong></p>
+<ul>
+<li>
+<p>语法结构: <code>Block(body: list&lt;LC&gt;)</code></p>
+</li>
+<li>
+<p>语义:</p>
+
+<div style="position: relative">
+	<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><mrow><msub><mi>S</mi><mn>0</mn></msub><mo separator="true">,</mo><msub><mi>X</mi><mn>1</mn></msub><mo>⟶</mo><msub><mi>r</mi><mn>1</mn></msub><mo separator="true">,</mo><msub><mi>S</mi><mn>1</mn></msub><mspace width="1em"></mspace><msub><mi>S</mi><mn>1</mn></msub><mo separator="true">,</mo><msub><mi>X</mi><mn>2</mn></msub><mo>⟶</mo><msub><mi>r</mi><mn>2</mn></msub><mo separator="true">,</mo><msub><mi>S</mi><mn>2</mn></msub><mtext>  </mtext><mo>⋯</mo><mtext>  </mtext><msub><mi>S</mi><mrow><mi>n</mi><mo>−</mo><mn>1</mn></mrow></msub><mo separator="true">,</mo><msub><mi>X</mi><mi>n</mi></msub><mo>⟶</mo><msub><mi>r</mi><mi>n</mi></msub><mo separator="true">,</mo><msub><mi>S</mi><mi>n</mi></msub></mrow><mrow><msub><mi>S</mi><mn>0</mn></msub><mo separator="true">,</mo><mtext>Block</mtext><mo stretchy="false">(</mo><msub><mi>X</mi><mn>1</mn></msub><msub><mi>X</mi><mn>2</mn></msub><mo>⋯</mo><msub><mi>X</mi><mi>n</mi></msub><mo stretchy="false">)</mo><mo>⟶</mo><msub><mi>r</mi><mi>n</mi></msub><mo separator="true">,</mo><msub><mi>S</mi><mi>n</mi></msub></mrow></mfrac></mrow><annotation encoding="application/x-tex">\dfrac{ S_0, X_1 \longrightarrow r_1, S_1 \quad S_1, X_2 \longrightarrow r_2, S_2  \;\cdots\;  S_{n-1}, X_n \longrightarrow r_n, S_n
+}{
+    S_0, \text{Block}(X_1 X_2 \cdots X_n) \longrightarrow r_n, S_n
+}
+</annotation></semantics></math></span>
+
+	<button class="code-copy-button" data-clipboard-text="\dfrac{ S_0, X_1 \longrightarrow r_1, S_1 \quad S_1, X_2 \longrightarrow r_2, S_2  \;\cdots\;  S_{n-1}, X_n \longrightarrow r_n, S_n
+}{
+    S_0, \text{Block}(X_1 X_2 \cdots X_n) \longrightarrow r_n, S_n
+}
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+</li>
+</ul>
+<p><em>习题</em></p>
+<p>尝试在 lc1.lark 中为 Assign 和 Block 加入合适的语法规则，以支持下面的代码：</p>
+
+<div style="position: relative">
+	<pre><code class="language-go hljs"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(x)</span></span>
+{
+    x = add x x;
+    x = add x <span class="hljs-number">1</span>;
+    x
+}
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="func (x)
+{
+    x = add x x;
+    x = add x 1;
+    x
+}
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p><em>习题</em></p>
+<p>尝试实现以下语言扩展，让我们的语言看起来更“工业界”：</p>
+<ol>
+<li>具名函数：目前实现的LC解释器，函数均为匿名</li>
+<li>if语句</li>
+<li>while语句</li>
+<li>return语句</li>
+<li>多参数函数</li>
+<li>break, continue</li>
+</ol>
+<p>此外，还可以实现相应的REPL以及文件输入执行功能。</p>
+<p>本页面已帮助我的一名实习生掌握了基本的编译、解释技术，项目链接如下，可作为参考实现：</p>
+<p style="text-align: center;">
+    https://github.com/April-ZhouQian/interpret
+</p>
+<p>在后续章节，我们将基于上述参考实现，实现相应语言的字节码编译器。</p>
+<h2 id="%E5%AD%97%E8%8A%82%E7%A0%81%E7%BC%96%E8%AF%91-(%E5%BE%85%E5%AE%8C%E6%88%90)" tabindex="-1"><a href="#%E5%AD%97%E8%8A%82%E7%A0%81%E7%BC%96%E8%AF%91-(%E5%BE%85%E5%AE%8C%E6%88%90)" class="header-anchor">字节码编译 (待完成)</a></h2>
+<p>如果运行前面解释器的参考实现，可以发现，性能比Python还要低好几个数量级。</p>
+
+<div style="position: relative">
+	<pre><code class="language-reasonml hljs"><span class="hljs-type">LC</span> = <span class="hljs-type">Call</span>(func: <span class="hljs-type">LC</span>, args: <span class="hljs-type">LC</span>)
+   | <span class="hljs-type">Var</span>(varname: str)
+   | <span class="hljs-type">Func</span>(argname: str, body: <span class="hljs-type">LC</span>)
+   | <span class="hljs-type">BoolVal</span>(value: <span class="hljs-built_in">bool</span>)
+   | <span class="hljs-type">NumberVal</span>(value: number)
+   | <span class="hljs-type">StringVal</span>(value: str)
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="LC = Call(func: LC, args: LC)
+   | Var(varname: str)
+   | Func(argname: str, body: LC)
+   | BoolVal(value: bool)
+   | NumberVal(value: number)
+   | StringVal(value: str)
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>回顾语义的描述方式，我们使用 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mo separator="true">,</mo><mi>X</mi><mo>⟶</mo><mi>r</mi><mo separator="true">,</mo><msup><mi>S</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup></mrow><annotation encoding="application/x-tex">S, X \longrightarrow r, S'</annotation></semantics></math></span></span> 的表述框架，而编译可以视为对这个过程的一个拆解。</p>
+<p><img src="/Site-33/1-programming/01-langimpl/static/compiler.png" alt="compiler-arch"></p>
+<p>我们考虑上图的如下流程：</p>
+<ol>
+<li>语法结构到字节码。将其用 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>X</mi><mo><mover><mo><mo>⟶</mo></mo><mtext>compile</mtext></mover></mo><msub><mi>I</mi><mn>1</mn></msub><msub><mi>I</mi><mn>2</mn></msub><mo>⋯</mo><msub><mi>I</mi><mi>n</mi></msub></mrow><annotation encoding="application/x-tex">X \overset{\text{compile}}{\longrightarrow} I_1 I_2 \cdots I_n</annotation></semantics></math></span></span> 的形式描述。</li>
+<li>字节码到运行时值，即虚拟机解释。将其用 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mo separator="true">,</mo><mi>I</mi><mo><mover><mo><mo>⟶</mo></mo><mtext>VM</mtext></mover></mo><mi>r</mi><mo separator="true">,</mo><mi>S</mi></mrow><annotation encoding="application/x-tex">S, I \overset{\text{VM}}{\longrightarrow} r, S</annotation></semantics></math></span></span> 的形式描述。</li>
+</ol>
+<p>我们会先介绍 <span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo><mover><mo><mo>⟶</mo></mo><mtext>VM</mtext></mover></mo></mrow><annotation encoding="application/x-tex">\overset{\text{VM}}{\longrightarrow}</annotation></semantics></math></span></span>，但初学者可能因此丢失语境。对此，我们先介绍一个简单例子以方便读者建立直觉。</p>
+<div class="colsplit-container">
+<table class="colsplit">
+<tbody><tr>
+<th> 源码 </th>
+<th> 字节码 </th>
+</tr>
+<tr>
+<td class="column">
+
+<div style="position: relative">
+	<pre><code class="language-python hljs">x = add(x, <span class="hljs-number">1</span>)
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="x = add(x, 1)
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+</td>
+<td class="column">
+
+<div style="position: relative">
+	<pre><code class="language-ocaml hljs"><span class="hljs-type">LOAD_VAR</span> add
+<span class="hljs-type">LOAD_VAR</span> x
+<span class="hljs-type">LOAD_CONST</span> <span class="hljs-number">1</span>
+<span class="hljs-type">LOAD_CONST</span> <span class="hljs-number">2</span>
+<span class="hljs-type">CALL_FUNCTION</span> <span class="hljs-number">2</span>
+<span class="hljs-type">STORE_VAR</span> x
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="LOAD_VAR add
+LOAD_VAR x
+LOAD_CONST 1
+LOAD_CONST 2
+CALL_FUNCTION 2
+STORE_VAR x
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+</td>
+</tr>
+</tbody></table>
+</div>
+</div></div><aside role="note" class="footnotes"><dl><div id="fn-1" class="footnote"><dt><a href="#fnref-1">1</a></dt><dd><p>CST 通常用于 IDE intellisense、unopionated 格式化工具。在 intellisense 场景下，语法结构可能随着少量源码变更却发生剧烈变化，也可能出现不完全的语法结构，因此难以使用简洁、静态定义的 AST 来表达；在非强制风格的格式化工具中，分析器可通过 CST 获取编码风格的细节。</p>
+</dd></div><div id="fn-2" class="footnote"><dt><a href="#fnref-2">2</a></dt><dd><p>在主流的 PL (Programming Language) 研究中，通常是基于字符串的模式匹配、而不是基于 AST 的模式匹配来描述语言。这里使用 AST 是为了方便后续几处的表述更为直观、简洁。</p>
+</dd></div></dl></aside></main></div><script src="/Site-33/js/clipboard.js"></script></body></html>

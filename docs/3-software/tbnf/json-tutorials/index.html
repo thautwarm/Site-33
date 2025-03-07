@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>JSON Tutorials</title><meta name="supported-color-schemes" content="light dark"><meta name="theme-color" content="hsl(220, 20%, 100%)" media="(prefers-color-scheme: light)"><meta name="theme-color" content="hsl(220, 20%, 10%)" media="(prefers-color-scheme: dark)"><link rel="stylesheet" href="/Site-33/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/Site-33/styles.css"><link rel="canonical" href="/Site-33/3-software/tbnf/json-tutorials/"><link rel="icon" sizes="48x48" href="/Site-33/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/Site-33/apple-touch-icon.png">
+<script type="text/javascript" src="/Site-33/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded',()=>{new PagefindUI({"element":"#search","showImages":false,"excerptLength":0,"showEmptyFilters":true,"showSubResults":false,"resetStyles":true,"bundlePath":"/Site-33/pagefind/","baseUrl":"/Site-33/"});});</script></head><body><div></div><div class="container"><div class="toolbar"><div id="search" class="search"></div></div><nav class="menu-container"><a class="menu-highlight" href="/Site-33/">Site-33 by thautwarm</a><ul class="menu"></ul></nav><nav class="toc"><h2>On this page</h2><ol><li><a href="#setup">Setup</a></li><li><a href="#create-the-tbnf-grammar">Create the TBNF grammar</a></li><li><a href="#define-the-type-mapper">Define the type mapper</a></li><li><a href="#generate-the-parser">Generate the parser</a></li><li><a href="#implement-the-interfaces">Implement the interfaces</a></li><li><a href="#create-the-final-parser">Create the final parser</a></li></ol></nav><main class="main"><nav><ul class="breadcrumb"><li class="breadcrumb-item"><a href="/Site-33/">Site-33 by thautwarm</a></li><li class="breadcrumb-item"><a href="/Site-33/3-software/">Software 软件</a></li><li class="breadcrumb-item"><a href="/Site-33/3-software/tbnf/">Typed BNF</a></li></ul></nav><div class="body" data-pagefind-body="true"><em> 此文档创建于 2025/2/28 </em><div><h1>JSON Tutorials</h1>
+<h2 id="setup" tabindex="-1"><a href="#setup" class="header-anchor">Setup</a></h2>
+<p>Firstly, install the <code>tbnf</code> command-line tool from
+<a href="https://github.com/thautwarm/Typed-BNF/releases">the release page</a> and add it
+to your PATH.</p>
+<h2 id="create-the-tbnf-grammar" tabindex="-1"><a href="#create-the-tbnf-grammar" class="header-anchor">Create the TBNF grammar</a></h2>
+<p>Create the <code>Json.tbnf</code> with the following content at the root of your project
+(or any where you want):</p>
+
+<div style="position: relative">
+	<pre><code class="language-ocaml hljs">// <span class="hljs-type">Json</span>.tbnf
+extern var toInt : str -&gt; <span class="hljs-built_in">int</span>
+extern var toFlt : str -&gt; <span class="hljs-built_in">float</span>
+extern var getStr : token -&gt; str
+extern var unesc : str -&gt; str
+extern var appendList : &lt;a&gt; (<span class="hljs-built_in">list</span>&lt;a&gt;, a) -&gt; <span class="hljs-built_in">list</span>&lt;a&gt;
+
+<span class="hljs-keyword">type</span> <span class="hljs-type">Json</span>
+<span class="hljs-keyword">type</span> <span class="hljs-type">JsonPair</span>(name: str, <span class="hljs-keyword">value</span>: <span class="hljs-type">Json</span>)
+
+case <span class="hljs-type">JInt</span> : <span class="hljs-built_in">int</span> -&gt; <span class="hljs-type">Json</span>
+case <span class="hljs-type">JFlt</span> : <span class="hljs-built_in">float</span> -&gt; <span class="hljs-type">Json</span>
+case <span class="hljs-type">JStr</span> : str -&gt; <span class="hljs-type">Json</span>
+case <span class="hljs-type">JNull</span> : <span class="hljs-literal">()</span> -&gt; <span class="hljs-type">Json</span>
+case <span class="hljs-type">JList</span> : (elements: <span class="hljs-built_in">list</span>&lt;<span class="hljs-type">Json</span>&gt;) -&gt; <span class="hljs-type">Json</span>
+case <span class="hljs-type">JDict</span> : <span class="hljs-built_in">list</span>&lt;<span class="hljs-type">JsonPair</span>&gt; -&gt; <span class="hljs-type">Json</span>
+case <span class="hljs-type">JBool</span> : <span class="hljs-built_in">bool</span> -&gt; <span class="hljs-type">Json</span>
+
+ignore space
+
+digit = [<span class="hljs-number">0</span>-<span class="hljs-number">9</span>] ;
+
+start : json { $<span class="hljs-number">1</span> }
+
+<span class="hljs-built_in">int</span> = digit+ ;
+<span class="hljs-built_in">float</span> = digit* <span class="hljs-string">"."</span> <span class="hljs-built_in">int</span> ;
+str = <span class="hljs-string">"\""</span> ( <span class="hljs-string">"\\"</span> _ | ! <span class="hljs-string">"\""</span> )* <span class="hljs-string">"\""</span> ;
+space = (<span class="hljs-string">"\t"</span> | <span class="hljs-string">"\n"</span> | <span class="hljs-string">"\r"</span> | <span class="hljs-string">" "</span>)+;
+
+seplist(sep, elt) : elt { [$<span class="hljs-number">1</span>] }
+                  | seplist(sep, elt) sep elt
+                    { appendList($<span class="hljs-number">1</span>, $<span class="hljs-number">3</span>) }
+
+jsonpair : &lt;str&gt; <span class="hljs-string">":"</span> json { <span class="hljs-type">JsonPair</span>(unesc(getStr($<span class="hljs-number">1</span>)), $<span class="hljs-number">3</span>) }
+
+json : &lt;<span class="hljs-built_in">int</span>&gt; { <span class="hljs-type">JInt</span>(toInt(getStr($<span class="hljs-number">1</span>))) }
+      | &lt;<span class="hljs-built_in">float</span>&gt; { <span class="hljs-type">JFlt</span>(toFlt(getStr($<span class="hljs-number">1</span>))) }
+      | <span class="hljs-string">"null"</span>  { <span class="hljs-type">JNull</span><span class="hljs-literal">()</span> }
+      | &lt;str&gt;   { <span class="hljs-type">JStr</span>(unesc(getStr($<span class="hljs-number">1</span>))) }
+      | <span class="hljs-string">"["</span> <span class="hljs-string">"]"</span> { <span class="hljs-type">JList</span>(<span class="hljs-literal">[]</span>) }
+      | <span class="hljs-string">"{"</span> <span class="hljs-string">"}"</span> { <span class="hljs-type">JDict</span>(<span class="hljs-literal">[]</span>) }
+      | <span class="hljs-string">"true"</span>  { <span class="hljs-type">JBool</span>(<span class="hljs-literal">true</span>) }
+      | <span class="hljs-string">"false"</span>  { <span class="hljs-type">JBool</span>(<span class="hljs-literal">false</span>) }
+      | <span class="hljs-string">"["</span> seplist(<span class="hljs-string">","</span>, json) <span class="hljs-string">"]"</span> { <span class="hljs-type">JList</span>($<span class="hljs-number">2</span>) }
+      | <span class="hljs-string">"{"</span> seplist(<span class="hljs-string">","</span>, jsonpair) <span class="hljs-string">"}"</span> { <span class="hljs-type">JDict</span>($<span class="hljs-number">2</span>) }
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="// Json.tbnf
+extern var toInt : str -> int
+extern var toFlt : str -> float
+extern var getStr : token -> str
+extern var unesc : str -> str
+extern var appendList : <a> (list<a>, a) -> list<a>
+
+type Json
+type JsonPair(name: str, value: Json)
+
+case JInt : int -> Json
+case JFlt : float -> Json
+case JStr : str -> Json
+case JNull : () -> Json
+case JList : (elements: list<Json>) -> Json
+case JDict : list<JsonPair> -> Json
+case JBool : bool -> Json
+
+ignore space
+
+digit = [0-9] ;
+
+start : json { $1 }
+
+int = digit+ ;
+float = digit* &quot;.&quot; int ;
+str = &quot;\&quot;&quot; ( &quot;\\&quot; _ | ! &quot;\&quot;&quot; )* &quot;\&quot;&quot; ;
+space = (&quot;\t&quot; | &quot;\n&quot; | &quot;\r&quot; | &quot; &quot;)+;
+
+seplist(sep, elt) : elt { [$1] }
+                  | seplist(sep, elt) sep elt
+                    { appendList($1, $3) }
+
+jsonpair : <str> &quot;:&quot; json { JsonPair(unesc(getStr($1)), $3) }
+
+json : <int> { JInt(toInt(getStr($1))) }
+      | <float> { JFlt(toFlt(getStr($1))) }
+      | &quot;null&quot;  { JNull() }
+      | <str>   { JStr(unesc(getStr($1))) }
+      | &quot;[&quot; &quot;]&quot; { JList([]) }
+      | &quot;{&quot; &quot;}&quot; { JDict([]) }
+      | &quot;true&quot;  { JBool(true) }
+      | &quot;false&quot;  { JBool(false) }
+      | &quot;[&quot; seplist(&quot;,&quot;, json) &quot;]&quot; { JList($2) }
+      | &quot;{&quot; seplist(&quot;,&quot;, jsonpair) &quot;}&quot; { JDict($2) }
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<h2 id="define-the-type-mapper" tabindex="-1"><a href="#define-the-type-mapper" class="header-anchor">Define the type mapper</a></h2>
+<p>TBNF has several builtin types:</p>
+<ul>
+<li><code>int</code></li>
+<li><code>float</code></li>
+<li><code>str</code></li>
+<li><code>bool</code></li>
+<li><code>list&lt;a&gt;</code></li>
+<li>tuples, e.g.:
+<ul>
+<li><code>int * str</code> is a tuple of an <code>int</code> and a <code>str</code></li>
+<li><code>int * str * bool</code> is a triple of an <code>int</code>, a <code>str</code> and a <code>bool</code></li>
+</ul>
+</li>
+</ul>
+<p>To associate a type in the target language with all TBNF builtin types, you may define how types map to the target language with the <code>tbnf.config.js</code> file:</p>
+<ol>
+<li>
+<p>Create <code>tbnf.config.js</code> file at the your desired output directory.</p>
+</li>
+<li>
+<p>Define the type mapper in the file:</p>
+</li>
+</ol>
+<div class="site33-tabs"><input type="radio" name="site33-tabs/type-mapper" id="type-mapper-1" checked="checked"><label for="type-mapper-1">C#</label><input type="radio" name="site33-tabs/type-mapper" id="type-mapper-2"><label for="type-mapper-2">TypeScript</label><div class="site33-tab-content" style="min-height: 6em;">
+<div style="position: relative">
+	<pre><code class="language-typescript hljs"><span class="hljs-comment">// file: Grammar/tbnf.config.cs</span>
+<span class="hljs-meta">"use strict"</span>;
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">rename_type</span>(<span class="hljs-params">x</span>) {
+    <span class="hljs-keyword">if</span> (x == <span class="hljs-string">"str"</span>) <span class="hljs-keyword">return</span> <span class="hljs-string">"string"</span>
+    <span class="hljs-keyword">if</span> (x == <span class="hljs-string">"token"</span>) <span class="hljs-keyword">return</span> <span class="hljs-string">"IToken"</span>
+    <span class="hljs-keyword">if</span> (x == <span class="hljs-string">"float"</span>) <span class="hljs-keyword">return</span> <span class="hljs-string">"double"</span>
+    <span class="hljs-keyword">if</span> ([<span class="hljs-string">"int"</span>, <span class="hljs-string">"bool"</span>].<span class="hljs-title function_">includes</span>(x)) <span class="hljs-keyword">return</span> x
+    <span class="hljs-keyword">if</span> (<span class="hljs-string">'list'</span> == x) <span class="hljs-keyword">return</span> <span class="hljs-string">'System.Collections.Generic.List'</span>
+    <span class="hljs-keyword">if</span> (x == <span class="hljs-string">"params"</span>) <span class="hljs-keyword">return</span> <span class="hljs-string">"Parameters"</span>
+    <span class="hljs-keyword">return</span> x
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">rename_var</span>(<span class="hljs-params">x</span>) {
+    <span class="hljs-keyword">if</span> (x == <span class="hljs-string">'params'</span>) <span class="hljs-keyword">return</span> x + <span class="hljs-string">"v"</span>
+    <span class="hljs-keyword">return</span> x
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">rename_field</span>(<span class="hljs-params">x</span>) {
+    <span class="hljs-keyword">if</span> (x == <span class="hljs-string">'params'</span>) <span class="hljs-keyword">return</span> <span class="hljs-string">"parameters"</span>
+    <span class="hljs-keyword">return</span> x
+}
+
+<span class="hljs-variable language_">module</span>.<span class="hljs-property">exports</span> = { rename_type, rename_var, rename_field }
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="// file: Grammar/tbnf.config.cs
+&quot;use strict&quot;;
+
+function rename_type(x) {
+    if (x == &quot;str&quot;) return &quot;string&quot;
+    if (x == &quot;token&quot;) return &quot;IToken&quot;
+    if (x == &quot;float&quot;) return &quot;double&quot;
+    if ([&quot;int&quot;, &quot;bool&quot;].includes(x)) return x
+    if ('list' == x) return 'System.Collections.Generic.List'
+    if (x == &quot;params&quot;) return &quot;Parameters&quot;
+    return x
+}
+
+function rename_var(x) {
+    if (x == 'params') return x + &quot;v&quot;
+    return x
+}
+
+function rename_field(x) {
+    if (x == 'params') return &quot;parameters&quot;
+    return x
+}
+
+module.exports = { rename_type, rename_var, rename_field }
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p></p>
+</div><div class="site33-tab-content" style="min-height: 6em;">
+<div style="position: relative">
+	<pre><code class="language-javascript hljs"><span class="hljs-comment">// file: src/grammar/tbnf.config.js</span>
+<span class="hljs-meta">
+"use strict"</span>;
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">rename_type</span>(<span class="hljs-params">x</span>) {
+  <span class="hljs-keyword">if</span> (x == <span class="hljs-string">"list"</span>) <span class="hljs-keyword">return</span> <span class="hljs-string">"Array"</span>;
+  <span class="hljs-keyword">if</span> (x == <span class="hljs-string">"int"</span>) <span class="hljs-keyword">return</span> <span class="hljs-string">"number"</span>;
+  <span class="hljs-keyword">if</span> (x == <span class="hljs-string">"float"</span>) <span class="hljs-keyword">return</span> <span class="hljs-string">"number"</span>;
+  <span class="hljs-keyword">if</span> (x == <span class="hljs-string">"str"</span>) <span class="hljs-keyword">return</span> <span class="hljs-string">"string"</span>;
+  <span class="hljs-keyword">if</span> (x == <span class="hljs-string">"bool"</span>) <span class="hljs-keyword">return</span> <span class="hljs-string">"boolean"</span>;
+  <span class="hljs-keyword">if</span> (x == <span class="hljs-string">"token"</span>) <span class="hljs-keyword">return</span> <span class="hljs-string">"antlr.Token"</span>;
+  <span class="hljs-keyword">return</span> x + <span class="hljs-string">"_t"</span>;
+}
+
+
+<span class="hljs-variable language_">module</span>.<span class="hljs-property">exports</span> = {
+  rename_type
+};
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="// file: src/grammar/tbnf.config.js
+
+&quot;use strict&quot;;
+
+function rename_type(x) {
+  if (x == &quot;list&quot;) return &quot;Array&quot;;
+  if (x == &quot;int&quot;) return &quot;number&quot;;
+  if (x == &quot;float&quot;) return &quot;number&quot;;
+  if (x == &quot;str&quot;) return &quot;string&quot;;
+  if (x == &quot;bool&quot;) return &quot;boolean&quot;;
+  if (x == &quot;token&quot;) return &quot;antlr.Token&quot;;
+  return x + &quot;_t&quot;;
+}
+
+
+module.exports = {
+  rename_type
+};
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+</div></div><div class="markdown-alert markdown-alert-tip">
+<p class="markdown-alert-title">Tip</p>
+<p><code>tbnf.config.cs</code> files used above is suitable for common use cases.</p>
+</div>
+<h2 id="generate-the-parser" tabindex="-1"><a href="#generate-the-parser" class="header-anchor">Generate the parser</a></h2>
+<div class="markdown-alert markdown-alert-note">
+<p class="markdown-alert-title">Note</p>
+<p>When targeting C#, you might be aware of the following points:</p>
+<ol>
+<li>Do not use <code>-lang Json</code> because it will make conflicts between the <code>Json</code> type and <code>Json</code> namespace!</li>
+<li>Assure <code>tbnf</code>'s <code>-lang</code> option is aligned with antlr4's <code>-package</code> option!</li>
+</ol>
+</div>
+<div class="site33-tabs"><input type="radio" name="site33-tabs/download" id="download-1" checked="checked"><label for="download-1">C#</label><input type="radio" name="site33-tabs/download" id="download-2"><label for="download-2">TypeScript</label><div class="site33-tab-content" style="min-height: 6em;">
+<div style="position: relative">
+	<pre><code class="language-bash hljs"><span class="hljs-comment"># install dependencies</span>
+dotnet add package Antlr4.Runtime.Standard
+
+<span class="hljs-comment"># create the grammar directory</span>
+tbnf Json.tbnf -o Grammar/ -lang JsonCS --backend csharp-antlr
+antlr4 -Dlanguage=CSharp Grammar/JsonCS.g4 -o Grammar/ -package JsonCS
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="# install dependencies
+dotnet add package Antlr4.Runtime.Standard
+
+# create the grammar directory
+tbnf Json.tbnf -o Grammar/ -lang JsonCS --backend csharp-antlr
+antlr4 -Dlanguage=CSharp Grammar/JsonCS.g4 -o Grammar/ -package JsonCS
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+</div><div class="site33-tab-content" style="min-height: 6em;">
+<div style="position: relative">
+	<pre><code class="language-bash hljs"><span class="hljs-comment"># install dependencies</span>
+pnpm add antlr4ng --save
+pnpm add -g antlr-ng
+
+<span class="hljs-comment"># create the parser</span>
+tbnf Json.tbnf -o src/grammar -lang Json -be typescript-antlr -ae tagged-union
+antlr-ng -Dlanguage=TypeScript src/grammar/Json.g4 -o src/grammar
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="# install dependencies
+pnpm add antlr4ng --save
+pnpm add -g antlr-ng
+
+# create the parser
+tbnf Json.tbnf -o src/grammar -lang Json -be typescript-antlr -ae tagged-union
+antlr-ng -Dlanguage=TypeScript src/grammar/Json.g4 -o src/grammar
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+</div></div><h2 id="implement-the-interfaces" tabindex="-1"><a href="#implement-the-interfaces" class="header-anchor">Implement the interfaces</a></h2>
+<p>In <code>Json.tbnf</code>, we see some <code>extern</code> declarations:</p>
+
+<div style="position: relative">
+	<pre><code class="language-ocaml hljs">extern var parseInt : str -&gt; <span class="hljs-built_in">int</span>
+extern var parseFlt : str -&gt; <span class="hljs-built_in">float</span>
+extern var getStr : token -&gt; str
+extern var unesc : str -&gt; str
+extern var appendList : &lt;a&gt; (<span class="hljs-built_in">list</span>&lt;a&gt;, a) -&gt; <span class="hljs-built_in">list</span>&lt;a&gt;
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="extern var parseInt : str -> int
+extern var parseFlt : str -> float
+extern var getStr : token -> str
+extern var unesc : str -> str
+extern var appendList : <a> (list<a>, a) -> list<a>
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>These declarations are required by the grammar to achieve semantic actions, but
+they are not provided by the generated parser itself.</p>
+<p>We need to implement these functions in
+<code>&lt;outDir&gt;/&lt;YourLanguage&gt;Require.&lt;suffix&gt;</code> file, where:</p>
+<ul>
+<li>
+<p><code>&lt;YourLanguage&gt;</code></p>
+<p>the language name specified with <code>-lang/--language</code> option.</p>
+</li>
+<li>
+<p><code>&lt;outDir&gt;</code></p>
+<p>the output directory specified with <code>-o/--outDir</code> option.</p>
+</li>
+<li>
+<p><code>&lt;suffix&gt;</code></p>
+<p>the suffix is decided by the backend you've chosen with <code>-be/--backend</code>
+option.</p>
+</li>
+</ul>
+<div class="site33-tabs"><input type="radio" name="site33-tabs/requirements" id="requirements-1" checked="checked"><label for="requirements-1">C#</label><input type="radio" name="site33-tabs/requirements" id="requirements-2"><label for="requirements-2">TypeScript</label><div class="site33-tab-content" style="min-height: 6em;"><p>We need to implement these functions in <code>Grammar/JsonCSRequire.cs</code> file.</p>
+
+<div style="position: relative">
+	<pre><code class="language-csharp hljs"><span class="hljs-keyword">namespace</span> <span class="hljs-title">JsonCS</span>;
+
+<span class="hljs-keyword">using</span> System.Linq;
+<span class="hljs-keyword">using</span> System.Collections.Generic;
+<span class="hljs-keyword">using</span> Antlr4.Runtime;
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">partial</span> <span class="hljs-keyword">class</span> <span class="hljs-title">JsonCSParser</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-built_in">int</span> <span class="hljs-title">toInt</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> s</span>)</span>
+    {
+        <span class="hljs-keyword">return</span> <span class="hljs-built_in">int</span>.Parse(s);
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-built_in">double</span> <span class="hljs-title">toFlt</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> s</span>)</span>
+    {
+        <span class="hljs-keyword">return</span> <span class="hljs-built_in">double</span>.Parse(s);
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-built_in">string</span> <span class="hljs-title">getStr</span>(<span class="hljs-params">IToken s</span>)</span>
+    {
+        <span class="hljs-keyword">return</span> s.Text ?? <span class="hljs-string">""</span>;
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-title">List</span>&lt;<span class="hljs-title">T</span>&gt; <span class="hljs-title">appendList</span>&lt;<span class="hljs-title">T</span>&gt;(<span class="hljs-params">List&lt;T&gt; x, T y</span>)</span>
+    {
+        <span class="hljs-comment">// for modern .NET </span>
+        <span class="hljs-comment">// return [...x, y];</span>
+        <span class="hljs-keyword">return</span> x.Append(y).ToList();
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-built_in">string</span> <span class="hljs-title">unesc</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> s</span>)</span>
+    {
+        <span class="hljs-keyword">var</span> r = <span class="hljs-keyword">new</span> System.Text.StringBuilder();
+        <span class="hljs-built_in">int</span> i = <span class="hljs-number">1</span>;
+        <span class="hljs-keyword">var</span> n = s.Length - <span class="hljs-number">1</span>;
+        <span class="hljs-keyword">while</span> (i &lt; n)
+        {
+            <span class="hljs-keyword">if</span> (s[i] == <span class="hljs-string">'\\'</span>)
+            {
+                i++;
+                <span class="hljs-keyword">switch</span> (s[i])
+                {
+                    <span class="hljs-keyword">case</span> <span class="hljs-string">'b'</span>:
+                        r.Append(<span class="hljs-string">'\b'</span>);
+                        <span class="hljs-keyword">break</span>;
+                    <span class="hljs-keyword">case</span> <span class="hljs-string">'f'</span>:
+                        r.Append(<span class="hljs-string">'\f'</span>);
+                        <span class="hljs-keyword">break</span>;
+                    <span class="hljs-keyword">case</span> <span class="hljs-string">'n'</span>:
+                        r.Append(<span class="hljs-string">'\n'</span>);
+                        <span class="hljs-keyword">break</span>;
+                    <span class="hljs-keyword">case</span> <span class="hljs-string">'r'</span>:
+                        r.Append(<span class="hljs-string">'\r'</span>);
+                        <span class="hljs-keyword">break</span>;
+                    <span class="hljs-keyword">case</span> <span class="hljs-string">'t'</span>:
+                        r.Append(<span class="hljs-string">'\t'</span>);
+                        <span class="hljs-keyword">break</span>;
+                    <span class="hljs-keyword">case</span> <span class="hljs-string">'\\'</span>:
+                        r.Append(<span class="hljs-string">'\\'</span>);
+                        <span class="hljs-keyword">break</span>;
+                    <span class="hljs-keyword">case</span> <span class="hljs-string">'"'</span>:
+                        r.Append(<span class="hljs-string">'"'</span>);
+                        <span class="hljs-keyword">break</span>;
+                    <span class="hljs-keyword">case</span> <span class="hljs-string">'\''</span>:
+                        r.Append(<span class="hljs-string">'\''</span>);
+                        <span class="hljs-keyword">break</span>;
+                    <span class="hljs-literal">default</span>:
+                        r.Append(s[i]);
+                        <span class="hljs-keyword">break</span>;
+                }
+            }
+            <span class="hljs-keyword">else</span>
+            {
+                r.Append(s[i]);
+            }
+            i++;
+        }
+        <span class="hljs-keyword">return</span> r.ToString();
+    }
+}
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="namespace JsonCS;
+
+using System.Linq;
+using System.Collections.Generic;
+using Antlr4.Runtime;
+
+public partial class JsonCSParser
+{
+    public static int toInt(string s)
+    {
+        return int.Parse(s);
+    }
+
+    public static double toFlt(string s)
+    {
+        return double.Parse(s);
+    }
+
+    public static string getStr(IToken s)
+    {
+        return s.Text ?? &quot;&quot;;
+    }
+
+    public static List<T> appendList<T>(List<T> x, T y)
+    {
+        // for modern .NET 
+        // return [...x, y];
+        return x.Append(y).ToList();
+    }
+
+    public static string unesc(string s)
+    {
+        var r = new System.Text.StringBuilder();
+        int i = 1;
+        var n = s.Length - 1;
+        while (i < n)
+        {
+            if (s[i] == '\\')
+            {
+                i++;
+                switch (s[i])
+                {
+                    case 'b':
+                        r.Append('\b');
+                        break;
+                    case 'f':
+                        r.Append('\f');
+                        break;
+                    case 'n':
+                        r.Append('\n');
+                        break;
+                    case 'r':
+                        r.Append('\r');
+                        break;
+                    case 't':
+                        r.Append('\t');
+                        break;
+                    case '\\':
+                        r.Append('\\');
+                        break;
+                    case '&quot;':
+                        r.Append('&quot;');
+                        break;
+                    case '\'':
+                        r.Append('\'');
+                        break;
+                    default:
+                        r.Append(s[i]);
+                        break;
+                }
+            }
+            else
+            {
+                r.Append(s[i]);
+            }
+            i++;
+        }
+        return r.ToString();
+    }
+}
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+</div><div class="site33-tab-content" style="min-height: 6em;"><p>We need to implement these functions in <code>src/grammar/JsonRequire.ts</code> file.</p>
+
+<div style="position: relative">
+	<pre><code class="language-typescript hljs"><span class="hljs-keyword">import</span> { <span class="hljs-title class_">Token</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">"antlr4ng"</span>;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> toInt = <span class="hljs-built_in">parseInt</span>;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> toFlt = <span class="hljs-built_in">parseFloat</span>;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> <span class="hljs-title function_">getStr</span> = (<span class="hljs-params">x: Token</span>) =&gt; x.<span class="hljs-property">text</span> ?? <span class="hljs-string">""</span>;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> appendList&lt;T&gt;(<span class="hljs-attr">x</span>: T[], <span class="hljs-attr">y</span>: T)
+{
+    <span class="hljs-keyword">return</span> [...x, y];
+}
+
+<span class="hljs-comment">// we should export these for the generated parser to use</span>
+<span class="hljs-keyword">export</span> * <span class="hljs-keyword">from</span> <span class="hljs-string">'./JsonConstructor'</span>;
+
+<span class="hljs-comment">// JSON.parse is also a valid implementation,</span>
+<span class="hljs-comment">// but we might not use an existing JSON parser to implement the current JSON parser...</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">unesc</span>(<span class="hljs-params">s: <span class="hljs-built_in">string</span></span>)
+{
+    <span class="hljs-keyword">let</span> r = <span class="hljs-string">""</span>;
+    <span class="hljs-keyword">let</span> i = <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">let</span> n = s.<span class="hljs-property">length</span> - <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">while</span> (i &lt; n)
+    {
+        <span class="hljs-keyword">if</span> (s[i] == <span class="hljs-string">'\\'</span>)
+        {
+            i++;
+            <span class="hljs-keyword">switch</span> (s[i])
+            {
+                <span class="hljs-keyword">case</span> <span class="hljs-string">'b'</span>:
+                    r += <span class="hljs-string">'\b'</span>;
+                    <span class="hljs-keyword">break</span>;
+                <span class="hljs-keyword">case</span> <span class="hljs-string">'t'</span>:
+                    r += <span class="hljs-string">'\t'</span>;
+                    <span class="hljs-keyword">break</span>;
+                <span class="hljs-keyword">case</span> <span class="hljs-string">'n'</span>:
+                    r += <span class="hljs-string">'\n'</span>;
+                    <span class="hljs-keyword">break</span>;
+                <span class="hljs-keyword">case</span> <span class="hljs-string">'f'</span>:
+                    r += <span class="hljs-string">'\f'</span>;
+                    <span class="hljs-keyword">break</span>;
+                <span class="hljs-keyword">case</span> <span class="hljs-string">'r'</span>:
+                    r += <span class="hljs-string">'\r'</span>;
+                    <span class="hljs-keyword">break</span>;
+                <span class="hljs-keyword">case</span> <span class="hljs-string">'\\'</span>:
+                    r += <span class="hljs-string">'\\'</span>;
+                    <span class="hljs-keyword">break</span>;
+                <span class="hljs-keyword">case</span> <span class="hljs-string">'\"'</span>:
+                    r += <span class="hljs-string">'\"'</span>;
+                    <span class="hljs-keyword">break</span>;
+                <span class="hljs-keyword">case</span> <span class="hljs-string">'\''</span>:
+                    r += <span class="hljs-string">'\''</span>;
+                    <span class="hljs-keyword">break</span>;
+                <span class="hljs-attr">default</span>:
+                    r += s[i];
+                    <span class="hljs-keyword">break</span>;
+            }
+        }
+        <span class="hljs-keyword">else</span>
+        {
+            r += s[i];
+        }
+        i++;
+    }
+    <span class="hljs-keyword">return</span> r;
+}
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="import { Token } from &quot;antlr4ng&quot;;
+export const toInt = parseInt;
+export const toFlt = parseFloat;
+export const getStr = (x: Token) => x.text ?? &quot;&quot;;
+export function appendList<T>(x: T[], y: T)
+{
+    return [...x, y];
+}
+
+// we should export these for the generated parser to use
+export * from './JsonConstructor';
+
+// JSON.parse is also a valid implementation,
+// but we might not use an existing JSON parser to implement the current JSON parser...
+export function unesc(s: string)
+{
+    let r = &quot;&quot;;
+    let i = 1;
+    let n = s.length - 1;
+    while (i < n)
+    {
+        if (s[i] == '\\')
+        {
+            i++;
+            switch (s[i])
+            {
+                case 'b':
+                    r += '\b';
+                    break;
+                case 't':
+                    r += '\t';
+                    break;
+                case 'n':
+                    r += '\n';
+                    break;
+                case 'f':
+                    r += '\f';
+                    break;
+                case 'r':
+                    r += '\r';
+                    break;
+                case '\\':
+                    r += '\\';
+                    break;
+                case '\&quot;':
+                    r += '\&quot;';
+                    break;
+                case '\'':
+                    r += '\'';
+                    break;
+                default:
+                    r += s[i];
+                    break;
+            }
+        }
+        else
+        {
+            r += s[i];
+        }
+        i++;
+    }
+    return r;
+}
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+</div></div><h2 id="create-the-final-parser" tabindex="-1"><a href="#create-the-final-parser" class="header-anchor">Create the final parser</a></h2>
+<div class="site33-tabs"><input type="radio" name="site33-tabs/final-parser" id="final-parser-1" checked="checked"><label for="final-parser-1">C#</label><input type="radio" name="site33-tabs/final-parser" id="final-parser-2"><label for="final-parser-2">TypeScript</label><div class="site33-tab-content" style="min-height: 6em;"><p>We finally create the <code>Program.cs</code> file to export the parser and handle parse exceptions:</p>
+
+<div style="position: relative">
+	<pre><code class="language-csharp hljs"><span class="hljs-comment">// Program.cs</span>
+<span class="hljs-keyword">namespace</span> <span class="hljs-title">JsonCS</span>;
+
+<span class="hljs-keyword">using</span> Antlr4.Runtime;
+
+<span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">SyntaxError</span> : <span class="hljs-title">System.Exception</span>
+{
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">int</span> Line { <span class="hljs-keyword">get</span>; }
+    <span class="hljs-keyword">public</span> <span class="hljs-built_in">int</span> Column { <span class="hljs-keyword">get</span>; }
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">SyntaxError</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> message, <span class="hljs-built_in">int</span> line, <span class="hljs-built_in">int</span> column</span>) : <span class="hljs-title">base</span>(<span class="hljs-params">message</span>)</span>
+    {
+        Line = line;
+        Column = column;
+    }
+}
+
+<span class="hljs-keyword">class</span> <span class="hljs-title">ExcErrorListener</span> : <span class="hljs-title">BaseErrorListener</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-keyword">void</span> <span class="hljs-title">SyntaxError</span>(<span class="hljs-params">TextWriter output, IRecognizer recognizer, IToken offendingSymbol, <span class="hljs-built_in">int</span> line, <span class="hljs-built_in">int</span> charPositionInLine, <span class="hljs-built_in">string</span> msg, RecognitionException e</span>)</span>
+    {
+        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> SyntaxError(
+            <span class="hljs-string">"Syntax error at line "</span> + line + <span class="hljs-string">":"</span> + charPositionInLine + <span class="hljs-string">": "</span> + msg,
+            line,
+            charPositionInLine
+        );
+    }
+}
+
+<span class="hljs-keyword">class</span> <span class="hljs-title">LexerErrorListener</span> : <span class="hljs-title">IAntlrErrorListener</span>&lt;<span class="hljs-title">int</span>&gt;
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">SyntaxError</span>(<span class="hljs-params">TextWriter output, IRecognizer recognizer, <span class="hljs-built_in">int</span> offendingSymbol, <span class="hljs-built_in">int</span> line, <span class="hljs-built_in">int</span> charPositionInLine, <span class="hljs-built_in">string</span> msg, RecognitionException e</span>)</span>
+    {
+        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> SyntaxError(msg, line, charPositionInLine);
+    }
+}
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">partial</span> <span class="hljs-keyword">class</span> <span class="hljs-title">JsonCSParser</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Json <span class="hljs-title">Parse</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> s</span>)</span>
+    {
+        ICharStream stream = CharStreams.fromString(s);
+        <span class="hljs-keyword">var</span> lexer = <span class="hljs-keyword">new</span> JsonCSLexer(stream);
+        lexer.RemoveErrorListeners();
+        lexer.AddErrorListener(<span class="hljs-keyword">new</span> LexerErrorListener());
+        ITokenStream tokens = <span class="hljs-keyword">new</span> CommonTokenStream(lexer);
+        <span class="hljs-keyword">var</span> parser = <span class="hljs-keyword">new</span> JsonCSParser(tokens);
+        parser.RemoveErrorListeners();
+        parser.AddErrorListener(<span class="hljs-keyword">new</span> ExcErrorListener());
+        parser.BuildParseTree = <span class="hljs-literal">false</span>;
+        <span class="hljs-keyword">var</span> result = parser.start().result;
+        <span class="hljs-keyword">return</span> result;
+    }
+}
+
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Program</span>
+{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Main</span>(<span class="hljs-params"><span class="hljs-built_in">string</span>[] args</span>)</span>
+    {
+        <span class="hljs-keyword">var</span> json = JsonCSParser.Parse(<span class="hljs-string">"{\"name\": \"John\", \"age\": 30, \"city\": \"New York\"}"</span>);
+        Console.WriteLine(json);
+    }
+}
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="// Program.cs
+namespace JsonCS;
+
+using Antlr4.Runtime;
+
+sealed class SyntaxError : System.Exception
+{
+    public int Line { get; }
+    public int Column { get; }
+    public SyntaxError(string message, int line, int column) : base(message)
+    {
+        Line = line;
+        Column = column;
+    }
+}
+
+class ExcErrorListener : BaseErrorListener
+{
+    public override void SyntaxError(TextWriter output, IRecognizer recognizer, IToken offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
+    {
+        throw new SyntaxError(
+            &quot;Syntax error at line &quot; + line + &quot;:&quot; + charPositionInLine + &quot;: &quot; + msg,
+            line,
+            charPositionInLine
+        );
+    }
+}
+
+class LexerErrorListener : IAntlrErrorListener<int>
+{
+    public void SyntaxError(TextWriter output, IRecognizer recognizer, int offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
+    {
+        throw new SyntaxError(msg, line, charPositionInLine);
+    }
+}
+
+public partial class JsonCSParser
+{
+    public static Json Parse(string s)
+    {
+        ICharStream stream = CharStreams.fromString(s);
+        var lexer = new JsonCSLexer(stream);
+        lexer.RemoveErrorListeners();
+        lexer.AddErrorListener(new LexerErrorListener());
+        ITokenStream tokens = new CommonTokenStream(lexer);
+        var parser = new JsonCSParser(tokens);
+        parser.RemoveErrorListeners();
+        parser.AddErrorListener(new ExcErrorListener());
+        parser.BuildParseTree = false;
+        var result = parser.start().result;
+        return result;
+    }
+}
+
+
+public static class Program
+{
+    public static void Main(string[] args)
+    {
+        var json = JsonCSParser.Parse(&quot;{\&quot;name\&quot;: \&quot;John\&quot;, \&quot;age\&quot;: 30, \&quot;city\&quot;: \&quot;New York\&quot;}&quot;);
+        Console.WriteLine(json);
+    }
+}
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>You can then compile/test the package:</p>
+
+<div style="position: relative">
+	<pre><code class="language-bash hljs">&gt; dotnet run
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="> dotnet run
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>Output:</p>
+
+<div style="position: relative">
+	<pre><code>JDict { value = System.Collections.Generic.List`1[JsonCS.JsonPair] }
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="JDict { value = System.Collections.Generic.List`1[JsonCS.JsonPair] }
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+</div><div class="site33-tab-content" style="min-height: 6em;"><p>We finally create the <code>src/index.ts</code> file to export the parser and handle parse exceptions:</p>
+
+<div style="position: relative">
+	<pre><code class="language-typescript hljs"><span class="hljs-comment">// src/index.ts</span>
+<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> antlr <span class="hljs-keyword">from</span> <span class="hljs-string">"antlr4ng"</span>;
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">JsonParser</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">"./grammar/JsonParser"</span>;
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">JsonLexer</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">"./grammar/JsonLexer"</span>;
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">CommonTokenStream</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">"antlr4ng"</span>;
+
+<span class="hljs-keyword">class</span> <span class="hljs-title class_">ExcErrorListener</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_ inherited__">antlr.BaseErrorListener</span> {
+    <span class="hljs-title function_">syntaxError</span>(<span class="hljs-params">recognizer: antlr.Recognizer&lt;<span class="hljs-built_in">any</span>&gt;, offendingSymbol: <span class="hljs-built_in">any</span>, line: <span class="hljs-built_in">number</span>, charPositionInLine: <span class="hljs-built_in">number</span>, msg: <span class="hljs-built_in">string</span>, e: antlr.RecognitionException | <span class="hljs-literal">null</span></span>) {
+        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">SyntaxError</span>(<span class="hljs-string">"Syntax error at line "</span> + line + <span class="hljs-string">":"</span> + charPositionInLine + <span class="hljs-string">": "</span> + msg);
+    }
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">parseJson</span>(<span class="hljs-params">text: <span class="hljs-built_in">string</span></span>) {
+    <span class="hljs-keyword">const</span> m_InputStream = antlr.<span class="hljs-property">CharStream</span>.<span class="hljs-title function_">fromString</span>(text);
+    <span class="hljs-keyword">const</span> m_Lexer = <span class="hljs-keyword">new</span> <span class="hljs-title class_">JsonLexer</span>(m_InputStream);
+    m_Lexer.<span class="hljs-title function_">removeErrorListeners</span>();
+    m_Lexer.<span class="hljs-title function_">addErrorListener</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">ExcErrorListener</span>());
+    <span class="hljs-keyword">const</span> m_tokenStream = <span class="hljs-keyword">new</span> <span class="hljs-title class_">CommonTokenStream</span>(m_Lexer);
+    <span class="hljs-keyword">const</span> m_Parser = <span class="hljs-keyword">new</span> <span class="hljs-title class_">JsonParser</span>(m_tokenStream);
+    m_Parser.<span class="hljs-title function_">removeErrorListeners</span>();
+    m_Parser.<span class="hljs-title function_">addErrorListener</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">ExcErrorListener</span>());
+    m_Parser.<span class="hljs-property">buildParseTrees</span> = <span class="hljs-literal">false</span>;
+    <span class="hljs-keyword">var</span> start = m_Parser.<span class="hljs-title function_">start</span>();
+    <span class="hljs-keyword">return</span> start.<span class="hljs-property">result</span>;
+}
+
+<span class="hljs-comment">// test the parser</span>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title function_">parseJson</span>(<span class="hljs-string">`{"name": "John", "age": 30, "city": "New York"}`</span>));
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="// src/index.ts
+import * as antlr from &quot;antlr4ng&quot;;
+import { JsonParser } from &quot;./grammar/JsonParser&quot;;
+import { JsonLexer } from &quot;./grammar/JsonLexer&quot;;
+import { CommonTokenStream } from &quot;antlr4ng&quot;;
+
+class ExcErrorListener extends antlr.BaseErrorListener {
+    syntaxError(recognizer: antlr.Recognizer<any>, offendingSymbol: any, line: number, charPositionInLine: number, msg: string, e: antlr.RecognitionException | null) {
+        throw new SyntaxError(&quot;Syntax error at line &quot; + line + &quot;:&quot; + charPositionInLine + &quot;: &quot; + msg);
+    }
+}
+
+export function parseJson(text: string) {
+    const m_InputStream = antlr.CharStream.fromString(text);
+    const m_Lexer = new JsonLexer(m_InputStream);
+    m_Lexer.removeErrorListeners();
+    m_Lexer.addErrorListener(new ExcErrorListener());
+    const m_tokenStream = new CommonTokenStream(m_Lexer);
+    const m_Parser = new JsonParser(m_tokenStream);
+    m_Parser.removeErrorListeners();
+    m_Parser.addErrorListener(new ExcErrorListener());
+    m_Parser.buildParseTrees = false;
+    var start = m_Parser.start();
+    return start.result;
+}
+
+// test the parser
+console.log(parseJson(`{&quot;name&quot;: &quot;John&quot;, &quot;age&quot;: 30, &quot;city&quot;: &quot;New York&quot;}`));
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>You can then compile/test the package:</p>
+
+<div style="position: relative">
+	<pre><code class="language-bash hljs">tsc -p . -outDir dist
+node dist/index.js
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="tsc -p . -outDir dist
+node dist/index.js
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>Output:</p>
+
+<div style="position: relative">
+	<pre><code>{
+  '$type': 'JDict',
+  value: [
+    { name: 'name', value: [Object] },
+    { name: 'age', value: [Object] },
+    { name: 'city', value: [Object] }
+  ]
+}
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="{
+  '$type': 'JDict',
+  value: [
+    { name: 'name', value: [Object] },
+    { name: 'age', value: [Object] },
+    { name: 'city', value: [Object] }
+  ]
+}
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+</div></div></div></div></main></div><script src="/Site-33/js/clipboard.js"></script></body></html>

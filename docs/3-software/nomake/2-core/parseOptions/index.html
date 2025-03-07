@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>parseOptions()</title><meta name="supported-color-schemes" content="light dark"><meta name="theme-color" content="hsl(220, 20%, 100%)" media="(prefers-color-scheme: light)"><meta name="theme-color" content="hsl(220, 20%, 10%)" media="(prefers-color-scheme: dark)"><link rel="stylesheet" href="/Site-33/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/Site-33/styles.css"><link rel="canonical" href="/Site-33/3-software/nomake/2-core/parseOptions/"><link rel="icon" sizes="48x48" href="/Site-33/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/Site-33/apple-touch-icon.png">
+<script type="text/javascript" src="/Site-33/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded',()=>{new PagefindUI({"element":"#search","showImages":false,"excerptLength":0,"showEmptyFilters":true,"showSubResults":false,"resetStyles":true,"bundlePath":"/Site-33/pagefind/","baseUrl":"/Site-33/"});});</script></head><body><div></div><div class="container"><div class="toolbar"><div id="search" class="search"></div></div><nav class="menu-container"><a class="menu-highlight" href="/Site-33/">Site-33 by thautwarm</a><ul class="menu"></ul></nav><main class="main"><nav><ul class="breadcrumb"><li class="breadcrumb-item"><a href="/Site-33/">Site-33 by thautwarm</a></li><li class="breadcrumb-item"><a href="/Site-33/3-software/">Software 软件</a></li><li class="breadcrumb-item"><a href="/Site-33/3-software/nomake/">NoMake</a></li><li class="breadcrumb-item"><a href="/Site-33/3-software/nomake/2-core/">Core Build Operations</a></li></ul></nav><div class="body" data-pagefind-body="true"><em> 此文档创建于 2024/5/13 </em><em style="float: right"> 更新时间 2025/3/7 </em><div><h1>parseOptions()</h1>
+<p>This function needs to be called before building to handle the options but after defining all options, or the options will not be parsed.</p>
+<p>The reason why this is necessary is to allow fine-grained control over the build process stages.</p>
+<p>See <a href="/Site-33/3-software/nomake/2-core/option/">option()</a> for defining build options.</p>
+
+<div style="position: relative">
+	<pre><code class="language-typescript hljs"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> <span class="hljs-variable constant_">NM</span> <span class="hljs-keyword">from</span> <span class="hljs-string">'https://github.com/thautwarm/nomake/raw/v0.1.12/mod.ts'</span>
+
+<span class="hljs-variable constant_">NM</span>.<span class="hljs-title function_">option</span>(<span class="hljs-string">'debug'</span>, <span class="hljs-function">(<span class="hljs-params">{ value }</span>) =&gt;</span> <span class="hljs-variable constant_">NM</span>.<span class="hljs-property">Log</span>.<span class="hljs-title function_">verbose</span>(<span class="hljs-string">`do stuff with <span class="hljs-subst">${value}</span>`</span>))
+
+<span class="hljs-variable constant_">NM</span>.<span class="hljs-title function_">parseOptions</span>()
+
+<span class="hljs-comment">// trigger the build</span>
+<span class="hljs-keyword">await</span> <span class="hljs-variable constant_">NM</span>.<span class="hljs-title function_">makefile</span>()
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.12/mod.ts'
+
+NM.option('debug', ({ value }) => NM.Log.verbose(`do stuff with ${value}`))
+
+NM.parseOptions()
+
+// trigger the build
+await NM.makefile()
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+</div></div></main></div><script src="/Site-33/js/clipboard.js"></script></body></html>

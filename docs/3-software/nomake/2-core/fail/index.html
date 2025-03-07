@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>fail()</title><meta name="supported-color-schemes" content="light dark"><meta name="theme-color" content="hsl(220, 20%, 100%)" media="(prefers-color-scheme: light)"><meta name="theme-color" content="hsl(220, 20%, 10%)" media="(prefers-color-scheme: dark)"><link rel="stylesheet" href="/Site-33/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/Site-33/styles.css"><link rel="canonical" href="/Site-33/3-software/nomake/2-core/fail/"><link rel="icon" sizes="48x48" href="/Site-33/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/Site-33/apple-touch-icon.png">
+<script type="text/javascript" src="/Site-33/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded',()=>{new PagefindUI({"element":"#search","showImages":false,"excerptLength":0,"showEmptyFilters":true,"showSubResults":false,"resetStyles":true,"bundlePath":"/Site-33/pagefind/","baseUrl":"/Site-33/"});});</script></head><body><div></div><div class="container"><div class="toolbar"><div id="search" class="search"></div></div><nav class="menu-container"><a class="menu-highlight" href="/Site-33/">Site-33 by thautwarm</a><ul class="menu"></ul></nav><nav class="toc"><h2>On this page</h2><ol><li><a href="#usage">Usage</a></li></ol></nav><main class="main"><nav><ul class="breadcrumb"><li class="breadcrumb-item"><a href="/Site-33/">Site-33 by thautwarm</a></li><li class="breadcrumb-item"><a href="/Site-33/3-software/">Software 软件</a></li><li class="breadcrumb-item"><a href="/Site-33/3-software/nomake/">NoMake</a></li><li class="breadcrumb-item"><a href="/Site-33/3-software/nomake/2-core/">Core Build Operations</a></li></ul></nav><div class="body" data-pagefind-body="true"><em> 此文档创建于 2024/5/13 </em><em style="float: right"> 更新时间 2025/3/7 </em><div><h1>fail()</h1>
+<p><code>fail</code> is a function that throws a rescueable error. It has the following usage:</p>
+<ol>
+<li>
+<p>make the current target fail</p>
+</li>
+<li>
+<p>indicate that a help function has failed to complete, but is fine to be rescueable/not fatal (which is a useful assumption for downstream ruleset libraries)</p>
+ <details>
+ <summary> Examples </summary>
+
+<div style="position: relative">
+	<pre><code class="language-typescript hljs"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> <span class="hljs-variable constant_">NM</span> <span class="hljs-keyword">from</span> <span class="hljs-string">'https://github.com/thautwarm/nomake/raw/v0.1.12/mod.ts'</span>
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">operationTolerantToFailures</span>(<span class="hljs-params"></span>)
+{
+    <span class="hljs-comment">// ...</span>
+    <span class="hljs-variable constant_">NM</span>.<span class="hljs-title function_">fail</span>(<span class="hljs-string">'the operation failed'</span>)
+}
+
+<span class="hljs-variable constant_">NM</span>.<span class="hljs-title function_">target</span>(
+    {
+        <span class="hljs-attr">name</span>: <span class="hljs-string">'output.txt'</span>,
+        <span class="hljs-attr">deps</span>: [<span class="hljs-string">'input.txt'</span>],
+        <span class="hljs-keyword">async</span> <span class="hljs-title function_">build</span>(<span class="hljs-params"></span>)
+        {
+            <span class="hljs-keyword">await</span> <span class="hljs-variable constant_">NM</span>.<span class="hljs-title function_">allowFailAsync</span>(
+                <span class="hljs-comment">// trail</span>
+                <span class="hljs-keyword">async</span> () =&gt;
+                {
+                    <span class="hljs-keyword">await</span> <span class="hljs-title function_">operationTolerantToFailures</span>();
+                },
+                <span class="hljs-keyword">async</span> () =&gt;
+                {
+                    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">'the operation failed, but it is fine'</span>)
+                    <span class="hljs-comment">// go to the alternative path</span>
+                })
+        }
+    })
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.12/mod.ts'
+
+function operationTolerantToFailures()
+{
+    // ...
+    NM.fail('the operation failed')
+}
+
+NM.target(
+    {
+        name: 'output.txt',
+        deps: ['input.txt'],
+        async build()
+        {
+            await NM.allowFailAsync(
+                // trail
+                async () =>
+                {
+                    await operationTolerantToFailures();
+                },
+                async () =>
+                {
+                    console.log('the operation failed, but it is fine')
+                    // go to the alternative path
+                })
+        }
+    })
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+ </details>
+</li>
+</ol>
+<h2 id="usage" tabindex="-1"><a href="#usage" class="header-anchor">Usage</a></h2>
+
+<div style="position: relative">
+	<pre><code class="language-typescript hljs"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> <span class="hljs-variable constant_">NM</span> <span class="hljs-keyword">from</span> <span class="hljs-string">'https://github.com/thautwarm/nomake/raw/v0.1.12/mod.ts'</span>
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">helper</span>(<span class="hljs-params"></span>)
+{
+    <span class="hljs-variable constant_">NM</span>.<span class="hljs-title function_">fail</span>(<span class="hljs-string">'the helper function failed'</span>)
+}
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.12/mod.ts'
+
+function helper()
+{
+    NM.fail('the helper function failed')
+}
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+</div></div></main></div><script src="/Site-33/js/clipboard.js"></script></body></html>

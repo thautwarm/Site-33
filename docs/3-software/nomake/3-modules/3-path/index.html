@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Path</title><meta name="supported-color-schemes" content="light dark"><meta name="theme-color" content="hsl(220, 20%, 100%)" media="(prefers-color-scheme: light)"><meta name="theme-color" content="hsl(220, 20%, 10%)" media="(prefers-color-scheme: dark)"><link rel="stylesheet" href="/Site-33/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/Site-33/styles.css"><link rel="canonical" href="/Site-33/3-software/nomake/3-modules/3-path/"><link rel="icon" sizes="48x48" href="/Site-33/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/Site-33/apple-touch-icon.png">
+<script type="text/javascript" src="/Site-33/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded',()=>{new PagefindUI({"element":"#search","showImages":false,"excerptLength":0,"showEmptyFilters":true,"showSubResults":false,"resetStyles":true,"bundlePath":"/Site-33/pagefind/","baseUrl":"/Site-33/"});});</script></head><body><div></div><div class="container"><div class="toolbar"><div id="search" class="search"></div></div><nav class="menu-container"><a class="menu-highlight" href="/Site-33/">Site-33 by thautwarm</a><ul class="menu"></ul></nav><nav class="toc"><h2>On this page</h2><ol><li><a href="#creating-path-objects">Creating Path Objects</a></li><li><a href="#retriving-strings">Retriving Strings</a></li><li><a href="#non-io-predicates">Non-IO Predicates</a></li><li><a href="#io">IO</a><ul><li><a href="#copy%2C-remove-and-makedirs">Copy, Remove and Makedirs</a></li><li><a href="#read-and-write">Read and Write</a></li><li><a href="#predicates">Predicates</a></li><li><a href="#stats">Stats</a></li></ul></li></ol></nav><main class="main"><nav><ul class="breadcrumb"><li class="breadcrumb-item"><a href="/Site-33/">Site-33 by thautwarm</a></li><li class="breadcrumb-item"><a href="/Site-33/3-software/">Software 软件</a></li><li class="breadcrumb-item"><a href="/Site-33/3-software/nomake/">NoMake</a></li><li class="breadcrumb-item"><a href="/Site-33/3-software/nomake/3-modules/">Builtin Namespaces</a></li></ul></nav><div class="body" data-pagefind-body="true"><em> 此文档创建于 2024/5/13 </em><em style="float: right"> 更新时间 2025/3/7 </em><div><h1>Path</h1>
+<p><code>NM.Path</code> is a class that represents a file path. It provides a set of methods for working with files and directories. It is similar to the <code>pathlib.Path</code> class from Python's standard library.</p>
+<p>The <code>Path</code> object may handle discrepancies between different operating systems.</p>
+<p>You might also import <code>ParsedPath</code> from the Deno std library: <a href="https://deno.land/std@0.224.0/path/mod.ts">https://deno.land/std@0.224.0/path/mod.ts</a>.</p>
+<h2 id="creating-path-objects" tabindex="-1"><a href="#creating-path-objects" class="header-anchor">Creating Path Objects</a></h2>
+
+<div style="position: relative">
+	<pre><code class="language-typescript hljs"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> <span class="hljs-variable constant_">NM</span> <span class="hljs-keyword">from</span> <span class="hljs-string">'https://github.com/thautwarm/nomake/raw/v0.1.12/mod.ts'</span>
+
+<span class="hljs-comment">// create a Path object</span>
+<span class="hljs-keyword">const</span> p1 = <span class="hljs-keyword">new</span> <span class="hljs-variable constant_">NM</span>.<span class="hljs-title class_">Path</span>(<span class="hljs-string">"path/to/file.txt"</span>)
+
+<span class="hljs-comment">// get the current working directory</span>
+<span class="hljs-keyword">const</span> cwd = <span class="hljs-variable constant_">NM</span>.<span class="hljs-property">Path</span>.<span class="hljs-title function_">cwd</span>()
+
+<span class="hljs-comment">// get the home directory</span>
+<span class="hljs-keyword">const</span> home = <span class="hljs-variable constant_">NM</span>.<span class="hljs-property">Path</span>.<span class="hljs-title function_">home</span>()
+
+<span class="hljs-comment">// get the parent directory</span>
+<span class="hljs-keyword">const</span> parent = p1.<span class="hljs-title function_">parent</span>()
+
+<span class="hljs-comment">// join one or more other paths</span>
+<span class="hljs-keyword">const</span> joined = p1.<span class="hljs-title function_">join</span>(<span class="hljs-string">"another"</span>, <span class="hljs-string">"path"</span>)
+
+<span class="hljs-comment">// get the absolute path</span>
+<span class="hljs-keyword">const</span> absPath = p1.<span class="hljs-title function_">abs</span>()
+
+<span class="hljs-comment">// change the extension of the file</span>
+<span class="hljs-keyword">const</span> newExt = p1.<span class="hljs-title function_">withExt</span>(<span class="hljs-string">".md"</span>)
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.12/mod.ts'
+
+// create a Path object
+const p1 = new NM.Path(&quot;path/to/file.txt&quot;)
+
+// get the current working directory
+const cwd = NM.Path.cwd()
+
+// get the home directory
+const home = NM.Path.home()
+
+// get the parent directory
+const parent = p1.parent()
+
+// join one or more other paths
+const joined = p1.join(&quot;another&quot;, &quot;path&quot;)
+
+// get the absolute path
+const absPath = p1.abs()
+
+// change the extension of the file
+const newExt = p1.withExt(&quot;.md&quot;)
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<h2 id="retriving-strings" tabindex="-1"><a href="#retriving-strings" class="header-anchor">Retriving Strings</a></h2>
+
+<div style="position: relative">
+	<pre><code class="language-typescript hljs"><span class="hljs-comment">/* const p1: NM.Path */</span>
+
+<span class="hljs-comment">// get the file name</span>
+<span class="hljs-keyword">const</span> fileName = p1.<span class="hljs-property">name</span>
+
+<span class="hljs-comment">// get the file extension</span>
+<span class="hljs-keyword">const</span> ext = p1.<span class="hljs-property">ext</span>
+
+<span class="hljs-comment">// get the file name without the extension</span>
+<span class="hljs-keyword">const</span> stem = p1.<span class="hljs-property">stem</span>
+
+<span class="hljs-comment">// get a string that represents the posix path</span>
+<span class="hljs-keyword">const</span> posixPath = p1.<span class="hljs-title function_">asPosix</span>()
+
+<span class="hljs-comment">// get a string that represents the native path</span>
+<span class="hljs-comment">// for the current platform</span>
+<span class="hljs-keyword">const</span> nativePath = p1.<span class="hljs-title function_">asOsPath</span>()
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="/* const p1: NM.Path */
+
+// get the file name
+const fileName = p1.name
+
+// get the file extension
+const ext = p1.ext
+
+// get the file name without the extension
+const stem = p1.stem
+
+// get a string that represents the posix path
+const posixPath = p1.asPosix()
+
+// get a string that represents the native path
+// for the current platform
+const nativePath = p1.asOsPath()
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<h2 id="non-io-predicates" tabindex="-1"><a href="#non-io-predicates" class="header-anchor">Non-IO Predicates</a></h2>
+
+<div style="position: relative">
+	<pre><code class="language-typescript hljs"><span class="hljs-comment">// check if the path is absolute</span>
+p1.<span class="hljs-title function_">isAbs</span>()
+
+<span class="hljs-comment">// check if the path is relative</span>
+p1.<span class="hljs-title function_">isRelative</span>()
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="// check if the path is absolute
+p1.isAbs()
+
+// check if the path is relative
+p1.isRelative()
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<h2 id="io" tabindex="-1"><a href="#io" class="header-anchor">IO</a></h2>
+<h3 id="copy%2C-remove-and-makedirs" tabindex="-1"><a href="#copy%2C-remove-and-makedirs" class="header-anchor">Copy, Remove and Makedirs</a></h3>
+
+<div style="position: relative">
+	<pre><code class="language-typescript hljs"><span class="hljs-comment">// read the file or directory</span>
+<span class="hljs-keyword">await</span> p1.<span class="hljs-title function_">rm</span>({
+    <span class="hljs-comment">// onError: 'ignore' | ((error: Error) =&gt; void)</span>
+    <span class="hljs-attr">onError</span>: <span class="hljs-string">'ignore'</span>,
+    <span class="hljs-comment">// maxRetries?: number, default to 0</span>
+    <span class="hljs-comment">// retryDelay?: number, default to 100</span>
+    <span class="hljs-comment">// recursive?: boolean, default to false</span>
+})
+
+<span class="hljs-comment">// create the directory</span>
+<span class="hljs-keyword">await</span> p1.<span class="hljs-title function_">mkdir</span>({
+    <span class="hljs-comment">// parents?: boolean, default to false</span>
+    <span class="hljs-attr">parents</span>: <span class="hljs-literal">true</span>,
+    <span class="hljs-comment">// onError: 'ignore' | 'existOk' | ((error: Error) =&gt; void)</span>
+    <span class="hljs-attr">onError</span>: <span class="hljs-string">'ignore'</span>,
+    <span class="hljs-comment">// mode?: number,</span>
+    <span class="hljs-attr">mode</span>: <span class="hljs-number">0o755</span>
+})
+
+<span class="hljs-comment">// copy the file or directory to the destination</span>
+<span class="hljs-keyword">const</span> <span class="hljs-attr">dest</span>: <span class="hljs-built_in">string</span> | <span class="hljs-title class_">Path</span> = <span class="hljs-string">'path/to/destination'</span>
+<span class="hljs-keyword">await</span> p1.<span class="hljs-title function_">copyTo</span>(dest)
+<span class="hljs-comment">// you copy only the contents to the destination,</span>
+<span class="hljs-comment">// instead of the directory itself</span>
+<span class="hljs-keyword">await</span> p1.<span class="hljs-title function_">copyTo</span>(dest, { <span class="hljs-attr">contentsOnly</span>: <span class="hljs-literal">true</span> })
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="// read the file or directory
+await p1.rm({
+    // onError: 'ignore' | ((error: Error) => void)
+    onError: 'ignore',
+    // maxRetries?: number, default to 0
+    // retryDelay?: number, default to 100
+    // recursive?: boolean, default to false
+})
+
+// create the directory
+await p1.mkdir({
+    // parents?: boolean, default to false
+    parents: true,
+    // onError: 'ignore' | 'existOk' | ((error: Error) => void)
+    onError: 'ignore',
+    // mode?: number,
+    mode: 0o755
+})
+
+// copy the file or directory to the destination
+const dest: string | Path = 'path/to/destination'
+await p1.copyTo(dest)
+// you copy only the contents to the destination,
+// instead of the directory itself
+await p1.copyTo(dest, { contentsOnly: true })
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<h3 id="read-and-write" tabindex="-1"><a href="#read-and-write" class="header-anchor">Read and Write</a></h3>
+
+<div style="position: relative">
+	<pre><code class="language-typescript hljs"><span class="hljs-comment">// readText with the specified encoding</span>
+<span class="hljs-keyword">const</span> <span class="hljs-attr">text</span>: <span class="hljs-built_in">string</span> = <span class="hljs-keyword">await</span> p1.<span class="hljs-title function_">readText</span>(<span class="hljs-string">'utf-8'</span>)
+
+<span class="hljs-comment">// read the file as an array of bytes</span>
+<span class="hljs-keyword">const</span> <span class="hljs-attr">bytes</span>: <span class="hljs-title class_">Uint8Array</span> = <span class="hljs-keyword">await</span> p1.<span class="hljs-title function_">readBytes</span>()
+
+<span class="hljs-comment">// write text to the file with the specified encoding</span>
+<span class="hljs-keyword">await</span> p1.<span class="hljs-title function_">writeText</span>(<span class="hljs-string">'Hello, World!'</span>, <span class="hljs-string">'utf-8'</span>)
+
+<span class="hljs-comment">// write an array of bytes to the file</span>
+<span class="hljs-keyword">const</span> bytesToWrite = <span class="hljs-keyword">new</span> <span class="hljs-title class_">TextEncoder</span>().<span class="hljs-title function_">encode</span>(<span class="hljs-string">'Hello, World!'</span>)
+<span class="hljs-keyword">await</span> p1.<span class="hljs-title function_">writeBytes</span>(bytesToWrite)
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="// readText with the specified encoding
+const text: string = await p1.readText('utf-8')
+
+// read the file as an array of bytes
+const bytes: Uint8Array = await p1.readBytes()
+
+// write text to the file with the specified encoding
+await p1.writeText('Hello, World!', 'utf-8')
+
+// write an array of bytes to the file
+const bytesToWrite = new TextEncoder().encode('Hello, World!')
+await p1.writeBytes(bytesToWrite)
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<h3 id="predicates" tabindex="-1"><a href="#predicates" class="header-anchor">Predicates</a></h3>
+
+<div style="position: relative">
+	<pre><code class="language-typescript hljs"><span class="hljs-comment">// check if the path exists</span>
+<span class="hljs-keyword">await</span> p1.<span class="hljs-title function_">exists</span>()
+
+<span class="hljs-comment">// check if the path is a file</span>
+<span class="hljs-keyword">await</span> p1.<span class="hljs-title function_">isFile</span>()
+
+<span class="hljs-comment">// check if the path is a directory</span>
+<span class="hljs-keyword">await</span> p1.<span class="hljs-title function_">isDirectory</span>()
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="// check if the path exists
+await p1.exists()
+
+// check if the path is a file
+await p1.isFile()
+
+// check if the path is a directory
+await p1.isDirectory()
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<h3 id="stats" tabindex="-1"><a href="#stats" class="header-anchor">Stats</a></h3>
+
+<div style="position: relative">
+	<pre><code class="language-typescript hljs"><span class="hljs-comment">// get the file stats</span>
+<span class="hljs-keyword">const</span> <span class="hljs-attr">stats</span>: fs.<span class="hljs-property">promises</span>.<span class="hljs-property">Stats</span>  = <span class="hljs-keyword">await</span> p1.<span class="hljs-title function_">stat</span>()
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="// get the file stats
+const stats: fs.promises.Stats  = await p1.stat()
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+</div></div></main></div><script src="/Site-33/js/clipboard.js"></script></body></html>

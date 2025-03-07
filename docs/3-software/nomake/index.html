@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>NoMake</title><meta name="supported-color-schemes" content="light dark"><meta name="theme-color" content="hsl(220, 20%, 100%)" media="(prefers-color-scheme: light)"><meta name="theme-color" content="hsl(220, 20%, 10%)" media="(prefers-color-scheme: dark)"><link rel="stylesheet" href="/Site-33/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/Site-33/styles.css"><link rel="canonical" href="/Site-33/3-software/nomake/"><link rel="icon" sizes="48x48" href="/Site-33/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/Site-33/apple-touch-icon.png">
+<script type="text/javascript" src="/Site-33/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded',()=>{new PagefindUI({"element":"#search","showImages":false,"excerptLength":0,"showEmptyFilters":true,"showSubResults":false,"resetStyles":true,"bundlePath":"/Site-33/pagefind/","baseUrl":"/Site-33/"});});</script></head><body><div></div><div class="container"><div class="toolbar"><div id="search" class="search"></div></div><nav class="menu-container"><a class="menu-highlight" href="/Site-33/">Site-33 by thautwarm</a><ul class="menu"><li><a href="/Site-33/3-software/nomake/2-core/"><span class="icon"><svg viewbox="0 0 24 24" width="25" height="25" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 4L19 8.05512V15.9449L12 20L5 15.9449V8.05512L12 4ZM6.5 9.79002L11.25 12.5417L11.25 17.8306L6.5 15.0789V9.79002ZM12.75 17.8306L17.5 15.0789V9.79002L12.75 12.5417L12.75 17.8306ZM12 11.2413L16.7526 8.48809L12 5.73489L7.2474 8.48809L12 11.2413Z" fill="var(--color-dim)"></path></svg></span>Core Build Operations</a><ul><li><a href="/Site-33/3-software/nomake/2-core/fail/">fail()</a></li><li><a href="/Site-33/3-software/nomake/2-core/makefile/">makefile()</a></li><li><a href="/Site-33/3-software/nomake/2-core/option/">option()</a></li><li><a href="/Site-33/3-software/nomake/2-core/parseOptions/">parseOptions()</a></li><li><a href="/Site-33/3-software/nomake/2-core/target/">target()</a></li></ul></li><li><a href="/Site-33/3-software/nomake/3-modules/"><span class="icon"><svg viewbox="0 0 24 24" width="25" height="25" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 4L19 8.05512V15.9449L12 20L5 15.9449V8.05512L12 4ZM6.5 9.79002L11.25 12.5417L11.25 17.8306L6.5 15.0789V9.79002ZM12.75 17.8306L17.5 15.0789V9.79002L12.75 12.5417L12.75 17.8306ZM12 11.2413L16.7526 8.48809L12 5.73489L7.2474 8.48809L12 11.2413Z" fill="var(--color-dim)"></path></svg></span>Builtin Namespaces</a><ul><li><a href="/Site-33/3-software/nomake/3-modules/1-platform/">Platform</a></li><li><a href="/Site-33/3-software/nomake/3-modules/2-env/">Environment Variables</a></li><li><a href="/Site-33/3-software/nomake/3-modules/3-path/">Path</a></li><li><a href="/Site-33/3-software/nomake/3-modules/4-log/">Log</a></li></ul></li><li><a href="/Site-33/3-software/nomake/4-rules/"><span class="icon"><svg viewbox="0 0 24 24" width="25" height="25" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 4L19 8.05512V15.9449L12 20L5 15.9449V8.05512L12 4ZM6.5 9.79002L11.25 12.5417L11.25 17.8306L6.5 15.0789V9.79002ZM12.75 17.8306L17.5 15.0789V9.79002L12.75 12.5417L12.75 17.8306ZM12 11.2413L16.7526 8.48809L12 5.73489L7.2474 8.48809L12 11.2413Z" fill="var(--color-dim)"></path></svg></span>Rules</a><ul><li><a href="/Site-33/3-software/nomake/4-rules/bflat/">Bflat &amp; C# NAOT Toolchain</a></li><li><a href="/Site-33/3-software/nomake/4-rules/c-toolchain/">C/C++ Toolchains</a></li></ul></li></ul></nav><nav class="toc"><h2>On this page</h2><ol><li><a href="#installation">Installation</a></li><li><a href="#preview">Preview</a></li><li><a href="#namespaces">Namespaces</a></li><li><a href="#patterns">Patterns</a></li></ol></nav><main class="main"><nav><ul class="breadcrumb"><li class="breadcrumb-item"><a href="/Site-33/">Site-33 by thautwarm</a></li><li class="breadcrumb-item"><a href="/Site-33/3-software/">Software 软件</a></li></ul></nav><div class="body" data-pagefind-body="true"><em> 此文档创建于 2025/2/28 </em><em style="float: right"> 更新时间 2025/3/7 </em><div><h1>NoMake</h1>
+<p><a href="https://github.com/thautwarm/nomake">NoMake</a> is a build system for multi-language and multi-platform projects with the following highlighted practical features:</p>
+<ol>
+<li>Type-safe build scripts</li>
+<li>Intellisense support</li>
+<li>Minimal learning curve</li>
+<li>Url-based ruleset sharing</li>
+<li>Incremental, asynchronous, and distributed building</li>
+</ol>
+<details>
+<summary>
+<p>Why is NoMake created with TypeScript &amp; Deno?</p>
+</summary>
+<p>NoMake achieves most of these features by using TypeScript, a statically typed language that is widely adopted in the industry and has been proven to have a good trade-off between static typing and real-world usability.</p>
+<p>Deno fundamentally eases the sharing and reusing of build scripts and ruleset libraries. It also allows distributing the build process across multiple machines by cross-compiling and single-file bundling.</p>
+</details>
+<h2 id="installation" tabindex="-1"><a href="#installation" class="header-anchor">Installation</a></h2>
+<script type="text/javascript">
+    function copyToClipboard(id) {
+        var copyText = document.getElementById(id);
+        // Copy the text inside the text field
+        navigator.clipboard.writeText(copyText.innerText);
+    }
+</script>
+<ol>
+<li>
+<p>Install NoMake for your platform.</p>
+<p>Supported platforms: <code>win-x64</code>, <code>linux-x64</code>, <code>macos-x64</code>, <code>linux-arm64</code>, <code>macos-arm64</code>.</p>
+<div class="site33-tabs"><input type="radio" name="site33-tabs/download" id="download-1" checked="checked"><label for="download-1">GitHub Releases</label><input type="radio" name="site33-tabs/download" id="download-2"><label for="download-2">Deno Library</label><div class="site33-tab-content" style="min-height: 6em;"><p>Download the binaries and add them to your PATH: <a href="https://github.com/thautwarm/nomake/releases">https://github.com/thautwarm/nomake/releases</a></p>
+</div><div class="site33-tab-content" style="min-height: 6em;">
+<div style="position: relative">
+	<pre><code class="language-typescript hljs"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> <span class="hljs-variable constant_">NM</span> <span class="hljs-keyword">from</span> <span class="hljs-string">'https://github.com/thautwarm/nomake/raw/v0.1.12/mod.ts'</span>
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.12/mod.ts'
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+</div></div></li>
+<li>
+<p>Run your build script (requires a <code>build.ts</code> file as an entry point).</p>
+
+<div style="position: relative">
+	<pre><code class="language-bash hljs">nomake <span class="hljs-built_in">help</span>
+nomake &lt;build target&gt;
+
+<span class="hljs-comment">## or if you're using nomake as a Deno library:</span>
+<span class="hljs-comment"># deno run -A build.ts help</span>
+<span class="hljs-comment"># deno run -A build.ts &lt;build target&gt;</span>
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="nomake help
+nomake <build target>
+
+## or if you're using nomake as a Deno library:
+# deno run -A build.ts help
+# deno run -A build.ts <build target>
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+</li>
+</ol>
+<p>See examples at <a href="https://github.com/thautwarm/nomake/tree/main/example">NoMake Examples</a>.</p>
+<h2 id="preview" tabindex="-1"><a href="#preview" class="header-anchor">Preview</a></h2>
+
+<div style="position: relative">
+	<pre><code class="language-typescript hljs"><span class="hljs-comment">// build.ts</span>
+<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> <span class="hljs-variable constant_">NM</span> <span class="hljs-keyword">from</span> <span class="hljs-string">'https://github.com/thautwarm/nomake/raw/v0.1.12/mod.ts'</span>
+
+<span class="hljs-comment">// define options</span>
+<span class="hljs-variable constant_">NM</span>.<span class="hljs-title function_">option</span>(<span class="hljs-string">'legacy'</span>, <span class="hljs-function">(<span class="hljs-params">{ value }</span>) =&gt;</span> { <span class="hljs-comment">/* do stuff with value */</span> })
+
+<span class="hljs-comment">// parse options</span>
+<span class="hljs-variable constant_">NM</span>.<span class="hljs-title function_">parseOptions</span>()
+
+<span class="hljs-comment">// define one or more targets</span>
+<span class="hljs-variable constant_">NM</span>.<span class="hljs-title function_">target</span>(
+    {
+        <span class="hljs-attr">name</span>: <span class="hljs-string">'output.txt'</span>,
+        <span class="hljs-attr">deps</span>: { <span class="hljs-attr">file</span>: <span class="hljs-string">'input.txt'</span> },
+        <span class="hljs-keyword">async</span> <span class="hljs-title function_">build</span>(<span class="hljs-params">{ deps, target }</span>)
+        {
+            <span class="hljs-keyword">const</span> input = <span class="hljs-keyword">await</span> <span class="hljs-keyword">new</span> <span class="hljs-variable constant_">NM</span>.<span class="hljs-title class_">Path</span>(deps.<span class="hljs-property">file</span>).<span class="hljs-title function_">readText</span>();
+            <span class="hljs-keyword">await</span> <span class="hljs-keyword">new</span> <span class="hljs-variable constant_">NM</span>.<span class="hljs-title class_">Path</span>(target).<span class="hljs-title function_">writeText</span>(
+                <span class="hljs-string">'Hello, '</span> + input
+            )
+        }
+    })
+
+<span class="hljs-comment">// trigger the build process</span>
+<span class="hljs-keyword">await</span> <span class="hljs-variable constant_">NM</span>.<span class="hljs-title function_">makefile</span>()
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="// build.ts
+import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.12/mod.ts'
+
+// define options
+NM.option('legacy', ({ value }) => { /* do stuff with value */ })
+
+// parse options
+NM.parseOptions()
+
+// define one or more targets
+NM.target(
+    {
+        name: 'output.txt',
+        deps: { file: 'input.txt' },
+        async build({ deps, target })
+        {
+            const input = await new NM.Path(deps.file).readText();
+            await new NM.Path(target).writeText(
+                'Hello, ' + input
+            )
+        }
+    })
+
+// trigger the build process
+await NM.makefile()
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<h2 id="namespaces" tabindex="-1"><a href="#namespaces" class="header-anchor">Namespaces</a></h2>
+<p>Functionality in NoMake is organized into namespaces. Here are some of the most important ones:</p>
+<ul>
+<li><a href="/Site-33/3-software/nomake/3-modules/1-platform/"><code>NM.Platform</code></a>: Platform detection and manipulation</li>
+<li><a href="/Site-33/3-software/nomake/3-modules/2-env/"><code>NM.Env</code></a>: Type-safe environment variable access</li>
+<li><a href="/Site-33/3-software/nomake/3-modules/3-path/"><code>NM.Path</code></a>: Filesystem operations (similar to Python <code>pathlib</code>)</li>
+<li><a href="/Site-33/3-software/nomake/3-modules/4-log/"><code>NM.Log</code></a>: Logging utilities</li>
+<li><code>NM.Repo</code>: Git repository operations</li>
+<li><code>NM.CC</code>: C/C++ compilation toolchain</li>
+<li><code>NM.Bflat</code>: C# native compilation toolchain without .NET SDKs &amp; Visual Studio (<a href="https://github.com/bflattened/bflat/issues/110">Linux/Windows only</a>; for macOS support, use <a href="https://learn.microsoft.com/en-us/dotnet/core/install/macos">.NET SDKs</a> by Microsoft)</li>
+</ul>
+<p>The core operations are directly defined in the <code>NM</code> namespace, including:</p>
+<ul>
+<li><a href="/Site-33/3-software/nomake/2-core/target/"><code>NM.target()</code></a>: Define a build target</li>
+<li><a href="/Site-33/3-software/nomake/2-core/option/"><code>NM.option()</code></a>: Define a build option</li>
+<li><a href="/Site-33/3-software/nomake/2-core/parseOptions/"><code>NM.parseOptions()</code></a>: Parse the build options</li>
+<li><a href="/Site-33/3-software/nomake/2-core/makefile/"><code>NM.makefile()</code></a>: Invoke the build process</li>
+</ul>
+<h2 id="patterns" tabindex="-1"><a href="#patterns" class="header-anchor">Patterns</a></h2>
+<p>NoMake provides a set of patterns assign type safety for many common jobs in build systems, such as:</p>
+<ol>
+<li>Defining and organizing artifacts</li>
+<li>Platform-specific build rules</li>
+<li>Environment variables of interest</li>
+<li>Grouping and retrieving target dependencies</li>
+</ol>
+</div></div></main></div><script src="/Site-33/js/clipboard.js"></script></body></html>

@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Random Test Data Generation for Arbitrary Types</title><meta name="supported-color-schemes" content="light dark"><meta name="theme-color" content="hsl(220, 20%, 100%)" media="(prefers-color-scheme: light)"><meta name="theme-color" content="hsl(220, 20%, 10%)" media="(prefers-color-scheme: dark)"><link rel="stylesheet" href="/Site-33/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/Site-33/styles.css"><link rel="canonical" href="/Site-33/1-programming/03-tech/datagen/"><link rel="icon" sizes="48x48" href="/Site-33/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/Site-33/apple-touch-icon.png">
+<script type="text/javascript" src="/Site-33/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded',()=>{new PagefindUI({"element":"#search","showImages":false,"excerptLength":0,"showEmptyFilters":true,"showSubResults":false,"resetStyles":true,"bundlePath":"/Site-33/pagefind/","baseUrl":"/Site-33/"});});</script></head><body><div></div><div class="container"><div class="toolbar"><div id="search" class="search"></div></div><nav class="menu-container"><a class="menu-highlight" href="/Site-33/">Site-33 by thautwarm</a><ul class="menu"></ul></nav><nav class="toc"><h2>On this page</h2><ol><li><a href="#introduction">Introduction</a></li><li><a href="#mechanism">Mechanism</a></li><li><a href="#pattern-based-data-generation">Pattern-based Data Generation</a></li><li><a href="#miscellaneous">Miscellaneous</a></li></ol></nav><main class="main"><nav><ul class="breadcrumb"><li class="breadcrumb-item"><a href="/Site-33/">Site-33 by thautwarm</a></li><li class="breadcrumb-item"><a href="/Site-33/1-programming/">Programming 编程</a></li><li class="breadcrumb-item"><a href="/Site-33/1-programming/03-tech/">技术</a></li></ul></nav><div class="body" data-pagefind-body="true"><em> 此文档创建于 2022/12/15 </em><em style="float: right"> 更新时间 2022/12/16 </em><div><h1>Random Test Data Generation for Arbitrary Types</h1>
+<h2 id="introduction" tabindex="-1"><a href="#introduction" class="header-anchor">Introduction</a></h2>
+<p>In this article, we'd talk about a technique that provides random data generation for arbitrary data types. Whether you're working on testing code, creating mock data for demos or prototypes, or just want to quickly generate some sample data for whatever reason, this technique can come in handy.</p>
+<p>Such a technique does not have a special name, and we'll call it "datagen combinators" or "datagenc" in this article.</p>
+<p>The idea of "datagenc" is simple and well-known to functional programming guys. By observing and abstracting approaches of data generation and representing the generation process via generalised algebraic data types, we succeed in creating random data that conforms to the structure and constraints specified. Such a process is also type-safe, which means certain bugs are got rid of at compile time.</p>
+<p>The special part of this article is that we also discuss the further improvement to the application of "datagenc" for dynamic programming languages such as Julia and Python.</p>
+<h2 id="mechanism" tabindex="-1"><a href="#mechanism" class="header-anchor">Mechanism</a></h2>
+<p>Suppose we want to generate runtime data for purposes such as testing, we'll need a "generator":</p>
+<p>Using OCaml, what we want can be given as follows:</p>
+
+<div style="position: relative">
+	<pre><code class="language-ocaml hljs"><span class="hljs-keyword">type</span> <span class="hljs-symbol">'a</span> generator = <span class="hljs-built_in">unit</span> -&gt; <span class="hljs-symbol">'a</span>
+<span class="hljs-keyword">let</span> gen (g: <span class="hljs-symbol">'a</span> generator) = g <span class="hljs-literal">()</span>
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="type 'a generator = unit -> 'a
+let gen (g: 'a generator) = g ()
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>We can contrive a simple generator of integers`:</p>
+
+<div style="position: relative">
+	<pre><code class="language-ocaml hljs"><span class="hljs-keyword">let</span> int_g = <span class="hljs-keyword">fun</span> <span class="hljs-literal">()</span> -&gt; <span class="hljs-type">Random</span>.<span class="hljs-built_in">int</span> <span class="hljs-number">16</span>
+<span class="hljs-keyword">let</span> _ = gen int_g;;
+- : <span class="hljs-built_in">int</span> = <span class="hljs-number">3</span>
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="let int_g = fun () -> Random.int 16
+let _ = gen int_g;;
+- : int = 3
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>Such simple generators can be also made for other non-composite types, such as <code>string</code>, <code>float</code>, <code>bool</code>, etc.</p>
+<p>The first interesting part comes when we consider the composite types. Giving a composite type as below:</p>
+
+<div style="position: relative">
+	<pre><code class="language-ocaml hljs"><span class="hljs-keyword">type</span> (<span class="hljs-symbol">'a</span>, <span class="hljs-symbol">'b</span>) either = <span class="hljs-type">Left</span> <span class="hljs-keyword">of</span> <span class="hljs-symbol">'a</span> | <span class="hljs-type">Right</span> <span class="hljs-keyword">of</span> <span class="hljs-symbol">'b</span>
+<span class="hljs-keyword">let</span> either_g = ?
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="type ('a, 'b) either = Left of 'a | Right of 'b
+let either_g = ?
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>If we want to generate an <code>either</code> datum, we should provide information about its type arguments (<code>'a, 'b</code>). If you are familiar with solving problems with recursions, you may have immediately noticed that the generation of <code>either_g</code> can be also constructed by composting two generators, one for each type argument. In other words, we can generate an <code>either</code> datum by generating a datum of type <code>'a</code> and a datum of type <code>'b</code>, and then combine them into an <code>either</code> datum.</p>
+
+<div style="position: relative">
+	<pre><code class="language-ocaml hljs"><span class="hljs-keyword">let</span> either_g = <span class="hljs-keyword">fun</span> (g1: <span class="hljs-symbol">'a</span> generator) (g2: <span class="hljs-symbol">'b</span> generator) -&gt;
+    <span class="hljs-keyword">match</span> <span class="hljs-type">Random</span>.<span class="hljs-built_in">int</span> <span class="hljs-number">2</span> <span class="hljs-keyword">with</span>
+    | <span class="hljs-number">0</span> -&gt; <span class="hljs-type">Left</span> (gen g1)
+    | <span class="hljs-number">1</span> -&gt; <span class="hljs-type">Right</span> (gen g2)
+    | _ -&gt; failwith <span class="hljs-string">"impossible"</span>
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="let either_g = fun (g1: 'a generator) (g2: 'b generator) ->
+    match Random.int 2 with
+    | 0 -> Left (gen g1)
+    | 1 -> Right (gen g2)
+    | _ -> failwith &quot;impossible&quot;
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>It shows that constructing a generator for a composite type such as <code>either</code> can be represented by compositing the generator of its components.</p>
+<p><span><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mtext mathvariant="italic">Gen</mtext><mo stretchy="false">(</mo><mo stretchy="false">(</mo><msub><mi>t</mi><mn>1</mn></msub><mo separator="true">,</mo><mo>⋯</mo><mtext> </mtext><mo separator="true">,</mo><msub><mi>t</mi><mi>n</mi></msub><mo stretchy="false">)</mo><mo stretchy="false">)</mo><mo>=</mo><mo stretchy="false">(</mo><mtext mathvariant="italic">Gen</mtext><mo stretchy="false">(</mo><msub><mi>t</mi><mn>1</mn></msub><mo stretchy="false">)</mo><mo separator="true">,</mo><mo>⋯</mo><mtext> </mtext><mo separator="true">,</mo><mtext mathvariant="italic">Gen</mtext><mo stretchy="false">(</mo><msub><mi>t</mi><mi>n</mi></msub><mo stretchy="false">)</mo><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">
+\textit{Gen}((t_1, \cdots, t_n)) = (\textit{Gen}(t_1), \cdots, \textit{Gen}(t_n))
+</annotation></semantics></math></span></span></p>
+<p>The above case also shows that if the composite type is a sum type, we can also split the data generation process into the union of its constructors' data generation processes.</p>
+
+<div style="position: relative">
+	<pre><code class="language-ocaml hljs"><span class="hljs-keyword">let</span> or_g (gs: <span class="hljs-symbol">'a</span> generator <span class="hljs-built_in">list</span>) =
+    <span class="hljs-keyword">let</span> i = <span class="hljs-type">Random</span>.<span class="hljs-built_in">int</span> (<span class="hljs-type">List</span>.length gs) <span class="hljs-keyword">in</span> <span class="hljs-type">List</span>.nth gs i
+
+<span class="hljs-keyword">let</span> map_g (f: <span class="hljs-symbol">'a</span> -&gt; <span class="hljs-symbol">'b</span>) (ga: <span class="hljs-symbol">'a</span> generator) = <span class="hljs-keyword">fun</span> <span class="hljs-literal">()</span> -&gt; f (gen ga)
+<span class="hljs-keyword">let</span> left a = <span class="hljs-type">Left</span> a
+<span class="hljs-keyword">let</span> right a = <span class="hljs-type">Right</span> a
+
+<span class="hljs-keyword">let</span> either_g (ga: <span class="hljs-symbol">'a</span> generator) (gb: <span class="hljs-symbol">'b</span> generator) = or_g [map_g left ga; map_g left gb]
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="let or_g (gs: 'a generator list) =
+    let i = Random.int (List.length gs) in List.nth gs i
+
+let map_g (f: 'a -> 'b) (ga: 'a generator) = fun () -> f (gen ga)
+let left a = Left a
+let right a = Right a
+
+let either_g (ga: 'a generator) (gb: 'b generator) = or_g [map_g left ga; map_g left gb]
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>The above analysis, i.e., deconstructing the generation process of <code>either</code> into "primitive" generation processes, unveils more common patterns in data generation such as <code>map</code> and <code>or</code>.</p>
+<p>Another pattern is repeatedly generating a datum of a certain type. For example, if we want to generate a list of integers, we can repeatedly generate integers and then combine them into a list. This pattern is also common in data generation, and can be represented by the following function:</p>
+
+<div style="position: relative">
+	<pre><code class="language-ocaml hljs"><span class="hljs-keyword">let</span> <span class="hljs-keyword">rec</span> repeat_g (n: <span class="hljs-built_in">int</span>) (g: <span class="hljs-symbol">'a</span> generator) : <span class="hljs-symbol">'a</span> <span class="hljs-built_in">list</span> generator =
+    <span class="hljs-keyword">if</span> n = <span class="hljs-number">0</span> <span class="hljs-keyword">then</span> <span class="hljs-keyword">fun</span> <span class="hljs-literal">()</span> -&gt; <span class="hljs-literal">[]</span>
+    <span class="hljs-keyword">else</span> <span class="hljs-keyword">fun</span> <span class="hljs-literal">()</span> -&gt; (gen g) :: (gen (repeat_g (n - <span class="hljs-number">1</span>) g))
+
+<span class="hljs-keyword">let</span> _ = gen (repeat_g <span class="hljs-number">3</span> int_g);;
+- : <span class="hljs-built_in">int</span> <span class="hljs-built_in">list</span> = [<span class="hljs-number">8</span>; <span class="hljs-number">9</span>; <span class="hljs-number">4</span>]
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="let rec repeat_g (n: int) (g: 'a generator) : 'a list generator =
+    if n = 0 then fun () -> []
+    else fun () -> (gen g) :: (gen (repeat_g (n - 1) g))
+
+let _ = gen (repeat_g 3 int_g);;
+- : int list = [8; 9; 4]
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>Besides, you might also want to use predicate functions to assure the generation conforms to some requirements. For example, if we want to generate a list of integers, we may want to make sure that the list is not empty, or the integer elements are not prim numbers. We can use the following function to achieve this:</p>
+
+<div style="position: relative">
+	<pre><code class="language-ocaml hljs"><span class="hljs-keyword">let</span> guard_g (predicate: <span class="hljs-symbol">'a</span> -&gt; <span class="hljs-built_in">bool</span>) (g: <span class="hljs-symbol">'a</span> generator) : <span class="hljs-symbol">'a</span> generator =
+    <span class="hljs-keyword">let</span> <span class="hljs-keyword">rec</span> aux <span class="hljs-literal">()</span> =
+        <span class="hljs-keyword">let</span> x = gen g <span class="hljs-keyword">in</span>
+        <span class="hljs-keyword">if</span> predicate x <span class="hljs-keyword">then</span> x <span class="hljs-keyword">else</span> aux <span class="hljs-literal">()</span>
+    <span class="hljs-keyword">in</span> aux
+
+<span class="hljs-keyword">let</span> iseven x = (x <span class="hljs-keyword">mod</span> <span class="hljs-number">2</span> = <span class="hljs-number">0</span>)
+<span class="hljs-keyword">let</span> _ = guard_g iseven int_g
+- : <span class="hljs-built_in">int</span> = <span class="hljs-number">4</span>
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="let guard_g (predicate: 'a -> bool) (g: 'a generator) : 'a generator =
+    let rec aux () =
+        let x = gen g in
+        if predicate x then x else aux ()
+    in aux
+
+let iseven x = (x mod 2 = 0)
+let _ = guard_g iseven int_g
+- : int = 4
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>Using <code>map</code>, <code>or</code>, <code>repeat</code>, <code>guard</code> and existing "primitive" generators, we can automatically construct a generator for most composite types via code generation with respect to the type definition.</p>
+<p>By generalising the above patterns, we present the following code, which is adequate for generating data for arbitrary types:</p>
+
+<div style="position: relative">
+	<pre><code class="language-ocaml hljs"><span class="hljs-keyword">type</span> _ spec =
+    | <span class="hljs-type">Gen</span>    : <span class="hljs-symbol">'t</span> generator -&gt; <span class="hljs-symbol">'t</span> spec
+    | <span class="hljs-type">Rep</span>    : <span class="hljs-built_in">int</span> * <span class="hljs-symbol">'t</span> spec -&gt; <span class="hljs-symbol">'t</span> <span class="hljs-built_in">list</span> spec
+    | <span class="hljs-type">Map</span>    : (<span class="hljs-symbol">'a</span> -&gt; <span class="hljs-symbol">'b</span>) * <span class="hljs-symbol">'a</span> spec -&gt; <span class="hljs-symbol">'b</span> spec
+    | <span class="hljs-type">App</span>    : (<span class="hljs-symbol">'a</span> -&gt; <span class="hljs-symbol">'t</span>) spec * <span class="hljs-symbol">'a</span> spec -&gt; <span class="hljs-symbol">'t</span> spec
+    | <span class="hljs-type">Guard</span>  : (<span class="hljs-symbol">'a</span> -&gt; <span class="hljs-built_in">bool</span>) * <span class="hljs-symbol">'a</span> spec -&gt; <span class="hljs-symbol">'a</span> spec
+    | <span class="hljs-type">Or</span>     : <span class="hljs-symbol">'a</span> spec <span class="hljs-built_in">list</span> -&gt; <span class="hljs-symbol">'a</span> spec
+<span class="hljs-comment">(* `create_generator` creates `'a generator` from `'a spec` *)</span>
+<span class="hljs-keyword">let</span> create_generator =
+    <span class="hljs-keyword">let</span> <span class="hljs-keyword">rec</span> (!) : <span class="hljs-keyword">type</span> a. a spec -&gt; a generator =
+        <span class="hljs-keyword">function</span>
+        | <span class="hljs-type">Gen</span> g          -&gt; g
+        | <span class="hljs-type">Rep</span> (n, spec)  -&gt; repeat_g n !spec
+        | <span class="hljs-type">Map</span>(f, m)      -&gt; map_g f !m
+        | <span class="hljs-type">App</span>(s1, s2)    -&gt; <span class="hljs-keyword">let</span> a1 = !s1 <span class="hljs-keyword">in</span> <span class="hljs-keyword">let</span> a2 = !s2 <span class="hljs-keyword">in</span> <span class="hljs-keyword">fun</span> <span class="hljs-literal">()</span> -&gt; (gen a1) (gen a2)
+        | <span class="hljs-type">Guard</span> (p, s)   -&gt; guard_g p !s
+        | <span class="hljs-type">Or</span> ts          -&gt; or_g (<span class="hljs-type">List</span>.map (!) ts)
+    <span class="hljs-keyword">in</span> (!)
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="type _ spec =
+    | Gen    : 't generator -> 't spec
+    | Rep    : int * 't spec -> 't list spec
+    | Map    : ('a -> 'b) * 'a spec -> 'b spec
+    | App    : ('a -> 't) spec * 'a spec -> 't spec
+    | Guard  : ('a -> bool) * 'a spec -> 'a spec
+    | Or     : 'a spec list -> 'a spec
+(* `create_generator` creates `'a generator` from `'a spec` *)
+let create_generator =
+    let rec (!) : type a. a spec -> a generator =
+        function
+        | Gen g          -> g
+        | Rep (n, spec)  -> repeat_g n !spec
+        | Map(f, m)      -> map_g f !m
+        | App(s1, s2)    -> let a1 = !s1 in let a2 = !s2 in fun () -> (gen a1) (gen a2)
+        | Guard (p, s)   -> guard_g p !s
+        | Or ts          -> or_g (List.map (!) ts)
+    in (!)
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<h2 id="pattern-based-data-generation" tabindex="-1"><a href="#pattern-based-data-generation" class="header-anchor">Pattern-based Data Generation</a></h2>
+<p>The basics of "datagenc" described above have been well integrated into famous frameworks such as QuickCheck in Haskell or Hypothesis in Python.</p>
+<p>In Haskell, things are automatic as static typing is used to reason about the required generator.</p>
+
+<div style="position: relative">
+	<pre><code class="language-haskell hljs"><span class="hljs-keyword">import</span> Test.QuickCheck
+<span class="hljs-comment">-- suppose we already have</span>
+<span class="hljs-title">split</span> :: <span class="hljs-type">Char</span> -&gt; <span class="hljs-type">String</span> -&gt; [<span class="hljs-type">String</span>]
+<span class="hljs-title">unsplit</span> :: <span class="hljs-type">Char</span> -&gt; [<span class="hljs-type">String</span>] -&gt; <span class="hljs-type">String</span>
+
+<span class="hljs-comment">-- we don't need manually specify what data generators are needed.</span>
+<span class="hljs-title">invariant</span> c cs = unsplit c (split c xs) == xs
+
+<span class="hljs-comment">-- check!</span>
+<span class="hljs-title">main</span> = quickCheck invariant
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="import Test.QuickCheck
+-- suppose we already have
+split :: Char -> String -> [String]
+unsplit :: Char -> [String] -> String
+
+-- we don't need manually specify what data generators are needed.
+invariant c cs = unsplit c (split c xs) == xs
+
+-- check!
+main = quickCheck invariant
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>In Python, generators are manually specified, which is a little bit verbose.</p>
+
+<div style="position: relative">
+	<pre><code class="language-python hljs"><span class="hljs-keyword">from</span> hypothesis <span class="hljs-keyword">import</span> given, strategies <span class="hljs-keyword">as</span> st
+
+<span class="hljs-meta">@given(<span class="hljs-params">st.lists(<span class="hljs-params">st.integers(<span class="hljs-params"></span>)</span>)</span>)</span>
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">test_reversing_twice_gives_same_list</span>(<span class="hljs-params">xs</span>):
+    <span class="hljs-comment"># This will generate lists of arbitrary length (usually between 0 and</span>
+    <span class="hljs-comment"># 100 elements) whose elements are integers.</span>
+    ys = <span class="hljs-built_in">list</span>(xs)
+    ys.reverse()
+    ys.reverse()
+    <span class="hljs-keyword">assert</span> xs == ys
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="from hypothesis import given, strategies as st
+
+@given(st.lists(st.integers()))
+def test_reversing_twice_gives_same_list(xs):
+    # This will generate lists of arbitrary length (usually between 0 and
+    # 100 elements) whose elements are integers.
+    ys = list(xs)
+    ys.reverse()
+    ys.reverse()
+    assert xs == ys
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>Even if the framework is mature from an industrial perspective, the generation process can be still improved by introducing pattern-based data generation.</p>
+<p>Pattern-based generation uses the same mechanism as that in "datagenc", but performs a translation from pattern matching like syntax to data generator specifications (like <code>spec</code> defined in the above OCaml prototyping code).</p>
+<p>This was initially <a href="https://github.com/thautwarm/MLStyle.jl/blob/main/matrix-benchmark/sampler.jl">implemented</a> in MLStyle.jl (a pattern matching library for Julia by me) for generating random data using pattern matching syntax.</p>
+
+<div style="position: relative">
+	<pre><code class="language-julia-repl hljs"># generating primitives
+<span class="hljs-meta prompt_">julia&gt;</span><span class="language-julia"> t = <span class="hljs-meta">@spec</span> (::<span class="hljs-built_in">Int</span>)
+</span><span class="hljs-meta prompt_">julia&gt;</span><span class="language-julia"> generate(t)
+</span>10
+
+# generating tuples
+<span class="hljs-meta prompt_">julia&gt;</span><span class="language-julia"> t = <span class="hljs-meta">@spec</span> (::<span class="hljs-built_in">Int</span>, ::<span class="hljs-built_in">String</span>)
+</span><span class="hljs-meta prompt_">julia&gt;</span><span class="language-julia"> generate(t)
+</span>(10, "2as9p2")
+
+# generating like constructing
+<span class="hljs-meta prompt_">julia&gt;</span><span class="language-julia"> <span class="hljs-keyword">struct</span> Data1
+          f::<span class="hljs-built_in">Int</span>
+       <span class="hljs-keyword">end</span>
+</span><span class="hljs-meta prompt_">julia&gt;</span><span class="language-julia"> <span class="hljs-keyword">struct</span> Data2{T}
+          f1::<span class="hljs-built_in">String</span>
+          f2::T
+          f3::Data1
+       <span class="hljs-keyword">end</span>
+</span><span class="hljs-meta prompt_">julia&gt;</span><span class="language-julia"> t = <span class="hljs-meta">@spec</span> Data2(::<span class="hljs-built_in">String</span>, ::<span class="hljs-built_in">Int</span>, Data1(::<span class="hljs-built_in">Int</span>))
+</span><span class="hljs-meta prompt_">julia&gt;</span><span class="language-julia"> generate(t)
+</span>
+Data2{Int64}(
+    "Vnsz625lAvOo:hrB?utg]Zz72Q\\L\\f=_1ko5XXWws[g@", 6597270699655146706,
+    Data1(-7688086717226739915)
+)
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="# generating primitives
+julia> t = @spec (::Int)
+julia> generate(t)
+10
+
+# generating tuples
+julia> t = @spec (::Int, ::String)
+julia> generate(t)
+(10, &quot;2as9p2&quot;)
+
+# generating like constructing
+julia> struct Data1
+          f::Int
+       end
+julia> struct Data2{T}
+          f1::String
+          f2::T
+          f3::Data1
+       end
+julia> t = @spec Data2(::String, ::Int, Data1(::Int))
+julia> generate(t)
+
+Data2{Int64}(
+    &quot;Vnsz625lAvOo:hrB?utg]Zz72Q\\L\\f=_1ko5XXWws[g@&quot;, 6597270699655146706,
+    Data1(-7688086717226739915)
+)
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>The possibility of implementing pattern-based data generation comes from the observation of the similar structures between syntax trees and data generation specifications:</p>
+
+<div style="position: relative">
+	<pre><code class="language-julia hljs">
+<span class="hljs-meta">@data</span> Spec{T} <span class="hljs-keyword">begin</span>
+    S_or{A, B}  :: (Spec{A}, Spec{B}) =&gt; Spec{<span class="hljs-built_in">Union</span>{A, B}}
+    <span class="hljs-comment"># ...</span>
+<span class="hljs-keyword">end</span>
+
+<span class="hljs-keyword">function</span> ast2spec(ast)::Spec
+    <span class="hljs-meta">@switch</span> ast <span class="hljs-keyword">begin</span>
+        <span class="hljs-comment"># Julia can pattern match its ASTs in a homoiconic approach</span>
+        <span class="hljs-meta">@case</span> :($a || $b)
+            <span class="hljs-keyword">return</span> OrSpec(ast2spec(a), ast2spec(b))
+        <span class="hljs-comment"># ...</span>
+    <span class="hljs-keyword">end</span>
+<span class="hljs-keyword">end</span>
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="
+@data Spec{T} begin
+    S_or{A, B}  :: (Spec{A}, Spec{B}) => Spec{Union{A, B}}
+    # ...
+end
+
+function ast2spec(ast)::Spec
+    @switch ast begin
+        # Julia can pattern match its ASTs in a homoiconic approach
+        @case :($a || $b)
+            return OrSpec(ast2spec(a), ast2spec(b))
+        # ...
+    end
+end
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<h2 id="miscellaneous" tabindex="-1"><a href="#miscellaneous" class="header-anchor">Miscellaneous</a></h2>
+<p>The "datagenc" technique described in this article can save you a lot of time and effort by getting rid of manually creating data yourself and, ensuring that your data is representative and accurate.</p>
+<p>An interesting open problem is how to generate data for dynamic programming languages in a "visual" approach. Pattern-based data generation is a good start (see some uses at <a href="https://github.com/thautwarm/MLStyle.jl/blob/4773f8900bd534924d27d0082685ad79478c4301/matrix-benchmark/bench-datatype.jl#L25">bench-datagen.jl</a>), and may deserve better engineering for implementations in Python, Julia and other dynamic programming languages.</p>
+</div></div></main></div><script src="/Site-33/js/clipboard.js"></script></body></html>

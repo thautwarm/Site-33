@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Typed BNF</title><meta name="supported-color-schemes" content="light dark"><meta name="theme-color" content="hsl(220, 20%, 100%)" media="(prefers-color-scheme: light)"><meta name="theme-color" content="hsl(220, 20%, 10%)" media="(prefers-color-scheme: dark)"><link rel="stylesheet" href="/Site-33/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/Site-33/styles.css"><link rel="canonical" href="/Site-33/3-software/tbnf/"><link rel="icon" sizes="48x48" href="/Site-33/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/Site-33/apple-touch-icon.png">
+<script type="text/javascript" src="/Site-33/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded',()=>{new PagefindUI({"element":"#search","showImages":false,"excerptLength":0,"showEmptyFilters":true,"showSubResults":false,"resetStyles":true,"bundlePath":"/Site-33/pagefind/","baseUrl":"/Site-33/"});});</script></head><body><div></div><div class="container"><div class="toolbar"><div id="search" class="search"></div></div><nav class="menu-container"><a class="menu-highlight" href="/Site-33/">Site-33 by thautwarm</a><ul class="menu"><li><a href="/Site-33/3-software/tbnf/json-tutorials/">JSON Tutorials</a></li></ul></nav><nav class="toc"><h2>On this page</h2><ol><li><a href="#tutorials">Tutorials</a></li><li><a href="#overview">Overview</a><ul><li><a href="#key-features">Key Features</a></li></ul></li><li><a href="#supported-architectures">Supported Architectures</a></li><li><a href="#quick-start">Quick Start</a></li></ol></nav><main class="main"><nav><ul class="breadcrumb"><li class="breadcrumb-item"><a href="/Site-33/">Site-33 by thautwarm</a></li><li class="breadcrumb-item"><a href="/Site-33/3-software/">Software 软件</a></li></ul></nav><div class="body" data-pagefind-body="true"><em> 此文档创建于 2025/2/28 </em><div><h1>Typed BNF</h1>
+<p><a href="https://github.com/thautwarm/Typed-BNF">Typed BNF</a> enables you to write <strong>backend-agnostic</strong> BNF grammar with <strong>type inference</strong> and <strong>semantic actions</strong>.</p>
+<h2 id="tutorials" tabindex="-1"><a href="#tutorials" class="header-anchor">Tutorials</a></h2>
+<ul>
+<li><a href="/Site-33/3-software/tbnf/json-tutorials/">JSON Parser Tutorials</a></li>
+</ul>
+<h2 id="overview" tabindex="-1"><a href="#overview" class="header-anchor">Overview</a></h2>
+<p>Typed BNF (TBNF) is a powerful grammar specification language that combines the simplicity of BNF notation with the expressiveness of type systems. It allows you to define parsers with semantic actions that can be generated for multiple target languages from a single grammar specification.</p>
+<h3 id="key-features" tabindex="-1"><a href="#key-features" class="header-anchor">Key Features</a></h3>
+<ul>
+<li><strong>Type Inference</strong>: type-safe semantic actions with automatic type checking</li>
+<li><strong>Backend Agnostic</strong>: parsers for multiple programming languages from the same grammar</li>
+<li><strong>Semantic Actions</strong>: embed code (a minimal ML-like language; <a href="https://github.com/thautwarm/Typed-BNF/blob/ee0831eb3cbe7fc286bd4b20ee39eba99032d26d/core/Grammar.fs#L21">ast</a>;<a href="https://github.com/thautwarm/Typed-BNF/blob/ee0831eb3cbe7fc286bd4b20ee39eba99032d26d/TypedBNF.tbnf#L147">syntax</a>) directly in your grammar to build ASTs or perform other operations</li>
+<li><strong>Parametric Rules</strong>: parametric polymorphism in grammar rules</li>
+<li><strong>IDE Support</strong>: decent IDE support with syntax highlighting and navigation features</li>
+</ul>
+<h2 id="supported-architectures" tabindex="-1"><a href="#supported-architectures" class="header-anchor">Supported Architectures</a></h2>
+<table>
+<thead>
+<tr>
+<th>Architecture</th>
+<th>Backend (PGEN + PL)</th>
+<th>Lexer Impl</th>
+<th>Parser Capability</th>
+<th>ADT Encoding</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>antlr</td>
+<td>antlr4+csharp</td>
+<td>antlr</td>
+<td>ALL(*)</td>
+<td>case classes</td>
+</tr>
+<tr>
+<td>antlr</td>
+<td>antlr4+typescript (default)</td>
+<td>antlr</td>
+<td>ALL(*)</td>
+<td>tagged unions</td>
+</tr>
+<tr>
+<td>antlr</td>
+<td>antlr4+typescript (<code>-be case-class</code>)</td>
+<td>antlr</td>
+<td>ALL(*)</td>
+<td>case classes</td>
+</tr>
+<tr>
+<td>*pure bnf</td>
+<td>pure bnf</td>
+<td>antlr notation</td>
+<td>CFG</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>(<strong>PL</strong> = programming language; <strong>PGEN</strong> = parser generator; <strong>pure bnf</strong> means it is the pure BNF for readable syntax specification)</p>
+<h2 id="quick-start" tabindex="-1"><a href="#quick-start" class="header-anchor">Quick Start</a></h2>
+<p>Download the single executable file from <a href="https://github.com/thautwarm/Typed-BNF/releases">the release page</a> and run:</p>
+
+<div style="position: relative">
+	<pre><code class="language-bash hljs">tbnf -lang MyLanguage mygrammar.tbnf -be typescript-antlr -ae tagged-union
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="tbnf -lang MyLanguage mygrammar.tbnf -be typescript-antlr -ae tagged-union
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+<p>For C#/TypeScript backends, you will get a <code>.g4</code> file and some supporting <code>.cs</code>/<code>.ts</code> files for the lexer and parser.</p>
+<p>To actually get the parser, you need to compile the <code>.g4</code> file with ANTLR (for C#)/ANTLR NG(for TypeScript).</p>
+
+<div style="position: relative">
+	<pre><code class="language-bash hljs">&gt; <span class="hljs-built_in">cat</span> ./hello_world/MyLang.tbnf
+start: <span class="hljs-string">'hello'</span> <span class="hljs-string">'world'</span> { <span class="hljs-variable">$1</span> }
+
+<span class="hljs-comment"># create the directory for the generated files</span>
+&gt; <span class="hljs-built_in">mkdir</span> -p ./hello_world/src/grammar
+
+<span class="hljs-comment"># compile, type inference, and finally produce .g4 grammar and supporting files</span>
+&gt; tbnf -lang MyLang ./hello_world/MyLang.tbnf -o ./hello_world/src/grammar -be typescript-antlr
+
+<span class="hljs-comment"># compile the g4 file with ANTLR NG</span>
+<span class="hljs-comment"># use `antlr4` for non-TypeScript targets</span>
+&gt;  antlr-ng -Dlanguage=TypeScript ./hello_world/src/grammar/MyLang.g4 -o ./hello_world/src/grammar/
+</code></pre>
+
+	<button class="code-copy-button" data-clipboard-text="> cat ./hello_world/MyLang.tbnf
+start: 'hello' 'world' { $1 }
+
+# create the directory for the generated files
+> mkdir -p ./hello_world/src/grammar
+
+# compile, type inference, and finally produce .g4 grammar and supporting files
+> tbnf -lang MyLang ./hello_world/MyLang.tbnf -o ./hello_world/src/grammar -be typescript-antlr
+
+# compile the g4 file with ANTLR NG
+# use `antlr4` for non-TypeScript targets
+>  antlr-ng -Dlanguage=TypeScript ./hello_world/src/grammar/MyLang.g4 -o ./hello_world/src/grammar/
+">
+        <span class="code-copy-icon"></span>
+    </button>
+</div>
+</div></div></main></div><script src="/Site-33/js/clipboard.js"></script></body></html>

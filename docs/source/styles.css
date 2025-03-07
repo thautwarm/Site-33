@@ -1,0 +1,416 @@
+
+@import "https://unpkg.com/@lumeland/ds@0.5.2/ds.css" layer(ds);
+/* Lume's design system */
+@layer theme{
+/* overrides --font-display to make it smaller */
+/* Path: source/_includes/css/overrides.css */
+
+:root {
+    --font-display: var(--font-bold) clamp(1.3rem, 3vw, 2.2rem)/1 var(--font-family-display);
+}
+
+
+/* 点击效果 */
+details {
+    border: solid 1px var(--color-line);
+    border-radius: 0.25em;
+    padding-left: .5em;
+    padding-right: .5em;
+    padding-top: .3em;
+    padding-bottom: .1em;
+}
+
+details[open] p {
+    padding-left: 1em;
+}
+
+details[open] summary::before {
+    transform: rotate(90deg);
+}
+
+summary {
+    --marker-image: none;
+    outline: none;
+
+    padding-left: 0.3em;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    /* 移除默认的outline */
+}
+
+    summary::before {
+        content: '▶';
+        display: inline-block;
+        width: 1em;
+        font-size: 1em;
+        margin-right: 1em;
+        transform: rotate(0deg);
+        /* 初始状态为闭合 */
+        transition: transform 0.2s ease;
+    }
+
+.site33-tabs {
+    display: block;
+}
+
+.site33-tabs input[type="radio"] {
+    display: none;
+}
+
+/* First, make sure ALL tab content is hidden by default */
+.site33-tab-content {
+    display: none;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-top: none;
+    /* Hide top border to blend with tabs */
+    border-radius: 0 0 5px 5px;
+    background: #fff;
+}
+
+/* Then, show ONLY the selected tab content */
+.site33-tabs input[type="radio"]:nth-of-type(1):checked ~ .site33-tab-content:nth-of-type(1),
+.site33-tabs input[type="radio"]:nth-of-type(2):checked ~ .site33-tab-content:nth-of-type(2),
+.site33-tabs input[type="radio"]:nth-of-type(3):checked ~ .site33-tab-content:nth-of-type(3),
+.site33-tabs input[type="radio"]:nth-of-type(4):checked ~ .site33-tab-content:nth-of-type(4),
+.site33-tabs input[type="radio"]:nth-of-type(5):checked ~ .site33-tab-content:nth-of-type(5) {
+    display: block;
+}
+
+.site33-tabs input[type="radio"]:checked + label {
+    background: #fff;
+    border-bottom: none;
+    /* Hide bottom border to blend with content */
+}
+
+.site33-tabs label {
+    cursor: pointer;
+    padding: 10px 20px;
+    display: inline-block;
+    /* Change from block to inline-block */
+    margin-right: 2px;
+    /* Adjust margin for a better layout */
+    background: #ddd;
+    border: 1px solid #ccc;
+    border-radius: 5px 5px 0 0;
+}
+
+.site33-tabs label:hover {
+    background: #bbb;
+}
+
+.site33-copy-icon {
+    cursor: pointer;
+    -webkit-user-select: none;
+       -moz-user-select: none;
+            user-select: none; /* Prevent the icon from being selected */
+    float: right; /* Position the icon to the right */
+    margin-left: 10px;
+    margin-right: 5px;
+    font-size: 20px; /* Adjust size i   f necessary */
+    width: 32px;
+    height: 32px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+}
+/* Custom components */
+.menu-highlight {
+  font: var(--font-small);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  background: var(--color-line);
+  height: 52px;
+  margin-bottom: 1rem;
+  border-radius: var(--border-radius);
+  padding: .5rem;
+  color: inherit;
+}
+.menu-highlight:hover {
+    text-decoration: underline;
+  }
+.menu-logo {
+  font: var(--font-small);
+  display: block;
+  text-decoration: none;
+  margin-bottom: 1rem;
+  transition: opacity 200ms;
+  width: -moz-fit-content;
+  width: fit-content;
+}
+.menu-logo:hover {
+    opacity: 0.5;
+  }
+.menu-logo img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    max-height: 150px;
+  }
+@media (min-width: 500px) AND (max-width: 959px) {
+.menu-logo {
+    float: left;
+    margin-right: 1rem;
+    max-width: 150px;
+}
+  }
+@media (min-width: 960px) {
+.menu-logo {
+    margin-right: 1rem;
+}
+  }
+.menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-left: solid 1px var(--color-line);
+  font: var(--font-small);
+  color: var(--color-dim);
+  max-height: calc(100vh - 110px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+.menu ul {
+    list-style: none;
+    margin-left: .9em;
+    padding: 0;
+    border-left: solid 1px var(--color-line);
+  }
+.menu li {
+    position: relative;
+    padding-left: .6em;
+    margin-block: 2px;
+  }
+.menu li::before {
+      content: "";
+      display: block;
+      position: absolute;
+      width: .5em;
+      border-top: solid 1px var(--color-line);
+      left: 0;
+      top: 1em;
+    }
+.menu a,
+  .menu li > span {
+    display: block;
+    border-radius: .3em;
+    text-decoration: none;
+    padding: .3em;
+  }
+.menu a {
+    padding: .3em .5em;
+    text-decoration: none;
+  }
+.menu a:hover {
+      background: var(--color-line);
+    }
+@media (max-width: 949px) {
+.menu a {
+      max-width: -moz-max-content;
+      max-width: max-content;
+  }
+    }
+.menu a[aria-current="page"] {
+    color: var(--color-base);
+    background: var(--color-line);
+  }
+.updates time {
+    display: block;
+    font: var(--font-small);
+    color: var(--color-dim);
+  }
+.updates li + li {
+    margin-top: 1em;
+  }
+pre code.hljs{display:block;overflow-x:auto;padding:1em}
+code.hljs{padding:3px 5px}
+/*!
+  Theme: nnfx light
+  Description: a theme inspired by Netscape Navigator/Firefox
+  Author: (c) 2020-2021 Jim Mason <jmason@ibinx.com>
+  Maintainer: @RocketMan
+  License: https://creativecommons.org/licenses/by-sa/4.0  CC BY-SA 4.0
+  Updated: 2021-05-17
+
+  @version 1.1.0
+*/
+.hljs{background:#fff;color:#000}
+.language-xml .hljs-meta,.language-xml .hljs-meta-string{font-weight:700;font-style:italic;color:#48b}
+.hljs-comment,.hljs-quote{font-style:italic;color:#070}
+.hljs-built_in,.hljs-keyword,.hljs-name{color:#808}
+.hljs-attr,.hljs-name{font-weight:700}
+.hljs-string{font-weight:400}
+.hljs-code,.hljs-link,.hljs-meta .hljs-string,.hljs-number,.hljs-regexp,.hljs-string{color:#00f}
+.hljs-bullet,.hljs-symbol,.hljs-template-variable,.hljs-title,.hljs-variable{color:#f40}
+.hljs-class .hljs-title,.hljs-title.class_,.hljs-type{font-weight:700;color:#639}
+.hljs-attr,.hljs-function .hljs-title,.hljs-subst,.hljs-tag,.hljs-title.function_{color:#000}
+.hljs-formula{background-color:#eee;font-style:italic}
+.hljs-addition{background-color:#beb}
+.hljs-deletion{background-color:#fbb}
+.hljs-meta{color:#269}
+.hljs-section,.hljs-selector-class,.hljs-selector-id,.hljs-selector-pseudo,.hljs-selector-tag{font-weight:700;color:#48b}
+.hljs-selector-pseudo{font-style:italic}
+.hljs-doctag,.hljs-strong{font-weight:700}
+.hljs-emphasis{font-style:italic}
+/* Code copy button styling */
+.code-copy-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: transparent;
+  border: none;
+  color: var(--color-dim);
+  cursor: pointer;
+  padding: 0.25rem;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+.code-copy-button:hover {
+  opacity: 1;
+}
+.code-copy-icon::before {
+  content: "";
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='9' y='9' width='13' height='13' rx='2' ry='2'%3E%3C/rect%3E%3Cpath d='M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1'%3E%3C/path%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+/* Make sure code blocks have proper positioning for the button */
+pre {
+  position: relative;
+}
+.container {
+  min-height: 100vh;
+  display: grid;
+  justify-content: center;
+  align-content: start;
+  row-gap: 2em;
+  -moz-column-gap: 4em;
+       column-gap: 4em;
+  grid-template-columns: minmax(0, 800px);
+  grid-template-areas: "toolbar"
+                        "main"
+                        "menu"
+                        "footer";
+}
+@media (max-width: 949px) {
+.container {
+    padding: 5vw;
+}
+  }
+@media (min-width: 950px) {
+.container {
+    grid-template-columns: clamp(250px, 25vw, 300px) minmax(0, 800px) 1fr;
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas: "menu toolbar"
+                         "menu main"
+                         "menu footer";
+}
+  }
+@media (min-width: 1200px) {
+.container {
+    grid-template-columns: 1fr minmax(10vw, 250px) minmax(0, 800px) 200px 1fr;
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas: "menu menu toolbar ."
+                         "menu menu main toc"
+                         "menu menu footer toc";
+}
+  }
+.container > .toc {
+  display: none;
+  grid-area: toc;
+}
+@media (min-width: 1200px) {
+.container > .toc {
+    display: block;
+    position: sticky;
+    align-self: start;
+    top: 2rem;
+}
+  }
+.container > nav.menu-container {
+  grid-area: menu;
+  background-color: var(--color-highlight);
+  padding: 1rem;
+}
+@media (max-width: 949px) {
+.container > nav.menu-container {
+    border-radius: var(--border-radius);
+}
+  }
+@media (min-width: 950px) {
+.container > nav.menu-container {
+    display: grid;
+    align-content: start;
+    grid-template-columns: 1fr minmax(10vw, 250px);
+    padding-top: 2rem;
+    border-right: solid 1px var(--color-line);
+}
+
+    .container > nav.menu-container > * {
+      grid-column: 2;
+    }
+  }
+.container > .toolbar {
+  grid-area: toolbar;
+  display: flex;
+  align-items: center;
+  -moz-column-gap: .5rem;
+       column-gap: .5rem;
+}
+.container > .toolbar .search {
+    flex: 1 1 auto;
+  }
+@media (min-width: 950px) {
+.container > .toolbar {
+    padding-top: 2rem;
+}
+  }
+@media (min-width: 1200px) {
+    .container > .toolbar .theme {
+      position: fixed;
+      top: 1rem;
+      right: 1.2rem;
+    }
+  }
+main {
+  grid-area: main;
+}
+.body {
+  margin-top: var(--row-gap-xsmall);
+}
+.body-footer {
+  grid-area: footer;
+  font: var(--font-small);
+  color: var(--color-dim);
+  border-top: solid 1px var(--color-line);
+  padding: 1em 0;
+  margin-top: 1em;
+}
+/* Alignment fix */
+.icon:not(:has(svg)) {
+  padding-bottom: .25em;
+}
+.icon {
+  vertical-align: middle;
+}
+.article-list .article-list-item {
+  display: flex;
+  width: 100%;
+}
+.article-list .article-list-title {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 10px;
+}
+.article-list .article-list-date {
+  flex: 0;
+  text-align: right;
+}
