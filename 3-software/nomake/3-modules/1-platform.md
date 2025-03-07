@@ -3,7 +3,7 @@
 Platform-related utilities are provided in the `NM.Platform` namespace. The following types are used when working with platforms:
 
 ```typescript
-import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.5/mod.ts'
+import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.12/mod.ts'
 
 NM.Platform.current // e.g., { os: "linux", arch: "x64" }
 NM.Platform.currentOS // e.g., "linux"

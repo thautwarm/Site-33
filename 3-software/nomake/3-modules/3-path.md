@@ -9,7 +9,7 @@ You might also import `ParsedPath` from the Deno std library: [https://deno.land
 ## Creating Path Objects
 
 ```typescript
-import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.5/mod.ts'
+import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.12/mod.ts'
 
 // create a Path object
 const p1 = new NM.Path("path/to/file.txt")

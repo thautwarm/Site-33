@@ -58,7 +58,7 @@ export default function BlogLayout(it: Lume.Data) {
                     <Breadcrumb data={it} />
                     <div
                         className="body"
-                        {...(it.content && it.pagefind ? { "data-pagefind-body": true } : {})}
+                        data-pagefind-body
                     >
                         {!it.title && <h1>{it.basename}</h1>}
 

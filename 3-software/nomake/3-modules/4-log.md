@@ -18,7 +18,7 @@ The default severity of the levels is in the order listed above (higher to lower
 ## Basic Usage
 
 ```typescript
-import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.5/mod.ts'
+import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.12/mod.ts'
 
 // level: normal
 NM.Log.msg("<normal message>")

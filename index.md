@@ -50,7 +50,7 @@ Academic Records:
 - *JIT for Dynamic Programming Languages Considered Easy*, [Lambda Days 2021](https://www.lambdadays.org/lambdadays2021/taine-zhao) & [slides](https://www.lambdadays.org/static/upload/media/161673197138855tainezhaojitfordplsconsideredeasy.pdf), [repo](https://github.com/thautwarm/diojit)
 - *Typed BNF: Backend-independent Semantic Actions*, [PPL 2022](https://jssst-ppl.org/workshop/2022/program), [repo](https://github.com/thautwarm/Typed-BNF)
 
-> Typed BNF has emerged as an essential technique for TyMLang, a MATLAB-compatible language that I lead the development of at [TongYuan](https://github.com/Suzhou-Tongyuan/). This language seamlessly supports critical MATLAB open-source libraries, such as [Delta-Sigma](https://github.com/Matlab-Toolbox/delta_sigma). Its usability significantly surpasses that of Octave, Scilab, and other MATLAB-like alternatives.
+> Typed BNF has emerged as an essential technique for [TyMLang](https://www.tongyuan.cc/help/SyslabHelp.html#/Doc/Multi-languageProgrammingEnvironment/TyMLang.html), a MATLAB-compatible language that I lead the development of at [TongYuan](https://github.com/Suzhou-Tongyuan/). This language seamlessly supports critical MATLAB open-source libraries, such as [Delta-Sigma](https://github.com/Matlab-Toolbox/delta_sigma). Its usability significantly surpasses that of Octave, Scilab, and other MATLAB-like alternatives.
 
 ## Skills
 
@@ -81,16 +81,14 @@ I also developed these Julia-related packages for the [TongYuan](https://github.
 - [ObjectOriented.jl](https://github.com/Suzhou-Tongyuan/ObjectOriented.jl): full object-oriented programming support for Julia
 - [jnumpy](https://github.com/Suzhou-Tongyuan): Python C extensions powered by Julia; [JNumPy at HackerNews](https://news.ycombinator.com/item?id=32407451).
 
-
-
 ### Python
 
-I have developed extensive expertise in Python, actively contributing to its implementation. My contributions include proposing [PEP 622](https://peps.python.org/pep-0622/), which introduced a new syntax for pattern matching. This syntax has been integrated into Python from Python 3.10. I developed [Moshmosh](https://github.com/thautwarm/moshmosh) to support pattern matching for Python before the proposal.
+I have developed extensive expertise in Python and contributed to its evolution. I participated in the development of PEP 622, which introduced pattern matching to Python, by helping core developers refine the proposal and suggesting key features. This syntax has landed in Python 3.10. Prior to the proposal, I developed [Moshmosh](https://github.com/thautwarm/moshmosh) to support pattern matching for Python.
 
 Python implementations made/lead by me:
 
 - [UnityPython](https://github.com/thautwarm/Traffy.UnityPython/): An efficient Python implementation in C#, running on every platform via Unity IL2CPP. The language itself is completed, and the standard library is under development.
-- [YAPyPy](https://github.com/Xython/YAPyPy): This project comes from a brainstorming in PyCon China 2018. YAPyPy is a Python 3.6 implementation in Python, including a full Python parser and a bytecode compiler. The project has been verified to support a wide range of libraries in Python 3.6, including NumPy and Scikit-learn.
+- [YAPyPy](https://github.com/Xython/YAPyPy): This project comes from a brainstorming during PyCon China 2018. YAPyPy is a Python 3.6 implementation in Python, including a full Python parser and a bytecode compiler. The project has been verified to support a wide range of libraries in Python 3.6, including NumPy and Scikit-learn.
 
 ### PureScript
 
@@ -104,6 +102,12 @@ From 2017 to 2019, following the completion of my undergraduate courses as a sop
 
 ### TongYuan
 
-Besides TyMLang, I have also contributed to many other products in [TongYuan](https://github.com/Suzhou-Tongyuan/).
+From 2022 to the beginning of 2025, I was a tech leader of the programming language team at [TongYuan](https://github.com/Suzhou-Tongyuan/).
 
-Under my leadership, the programming language team at TongYuan has developed the world's first practical Julia AOT (Ahead-of-Time) compiler. This compiler is capable of efficiently compiling the Julia Base along with key community packages such as DataStructures.jl, Unitful.jl, FFTW.jl, and others. It produces compact binaries — approximately 2MB for executables or shared libraries for average scientific projects, bundled with all necessary artifacts.
+The most two notable commercial products I led to success are:
+
+- [TyMLang](https://www.tongyuan.cc/help/SyslabHelp.html#/Doc/Multi-languageProgrammingEnvironment/TyMLang.html): A MATLAB-compatible language; Comparing to the previous best alternative (i.e., Octave), TyMLang has significantly higher MATLAB compatibility and better performance (**usually 5-10x faster than Octave**). Numerous optimizations have been made to the language on memory model, runtime polymorphism, instruction sequence representation, and so on.
+
+- [SyslabCC](https://discourse.julialang.org/t/syslabcc-suzhou-tongyuans-proprietary-julia-aot-compiler-is-now-available-for-free-use-personal-educational-license-only/114633): The world's first practical Julia AOT (Ahead-of-Time) compiler. This compiler is capable of efficiently compiling the Julia Base along with key community packages such as DataStructures.jl, Unitful.jl, FFTW.jl, and others. It produces compact binaries (~1MB) for average scientific projects, bundled with all necessary artifacts. **SyslabCC helps Julia directly run on Android, iOS and embedded platforms**, see [syslab-deploy](https://github.com/Suzhou-Tongyuan/syslab-deploy) for examples.
+
+Besides TyMLang and SyslabCC, I have also contributed to many other products and [open-source projects](https://github.com/Suzhou-Tongyuan/) in TongYuan.

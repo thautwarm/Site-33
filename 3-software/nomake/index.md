@@ -50,7 +50,7 @@ Deno fundamentally eases the sharing and reusing of build scripts and ruleset li
     @tab Deno Library
 
     ```typescript
-    import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.5/mod.ts'
+    import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.12/mod.ts'
     ```
 
     :::
@@ -72,7 +72,7 @@ See examples at [NoMake Examples](https://github.com/thautwarm/nomake/tree/main/
 
 ```typescript
 // build.ts
-import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.5/mod.ts'
+import * as NM from 'https://github.com/thautwarm/nomake/raw/v0.1.12/mod.ts'
 
 // define options
 NM.option('legacy', ({ value }) => { /* do stuff with value */ })
